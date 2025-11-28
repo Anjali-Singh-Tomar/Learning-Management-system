@@ -84,6 +84,7 @@ public class BookController {
     // ----------------------------------------------------
     @GetMapping("/filter/genre")
     public ResponseEntity<List<BookResponseDTO>> filterByGenre(@RequestParam Genre genre) {
+        System.out.println("done");
         return ResponseEntity.ok(bookService.filterByGenre(genre));
     }
 
