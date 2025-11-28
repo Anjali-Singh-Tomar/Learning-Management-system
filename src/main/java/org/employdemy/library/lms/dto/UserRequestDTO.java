@@ -2,6 +2,7 @@ package org.employdemy.library.lms.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import org.employdemy.library.lms.model.Role;
 
 public class UserRequestDTO {
@@ -10,6 +11,11 @@ public class UserRequestDTO {
     private String name;
 
     @Email
+    @Pattern(
+            regexp = "^[A-Za-z0-9._%+-]+@employdemy\\.com$",
+            message = "Email must end with @employdemy.com"
+
+    )
     private String email;
 
     @NotBlank

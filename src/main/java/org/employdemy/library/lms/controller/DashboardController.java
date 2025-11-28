@@ -1,25 +1,42 @@
 package org.employdemy.library.lms.controller;
 
-import org.employdemy.library.lms.dto.DashboardResponseDTO;
+import lombok.RequiredArgsConstructor;
+import org.employdemy.library.lms.dto.AdminOverviewResponse;
+import org.employdemy.library.lms.dto.DueSoonResponseDTO;
+import org.employdemy.library.lms.dto.OverdueRecordDTO;
 import org.employdemy.library.lms.service.DashboardService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/dashboard")
+@RequiredArgsConstructor
 public class DashboardController {
 
     private final DashboardService dashboardService;
 
-
-    public DashboardController(DashboardService dashboardService){
-        this.dashboardService=dashboardService;
-    }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin/overview")
-    public ResponseEntity<DashboardResponseDTO> getAdminDashboard(){
-        return ResponseEntity.ok(dashboardService.getAdminDashboard());
+    public ResponseEntity<AdminOverviewResponse> getAdminOverview() {
+        return ResponseEntity.ok(dashboardService.getAdminOverview());
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/admin/overdue")
+    public ResponseEntity<List<OverdueRecordDTO>> getOverdueBooks() {
+        return ResponseEntity.ok(dashboardService.getOverdueBooks());
+    }
+
+    @GetMapping("/due-soon")
+    public ResponseEntity<List<DueSoonResponseDTO>> getDueSoonBooks(
+            @RequestParam(defaultValue = "7") int days) {
+        return ResponseEntity.ok(dashboardService.getDueSoonTransactions(days));
+    }
+
 }
