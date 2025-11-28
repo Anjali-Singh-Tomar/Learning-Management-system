@@ -22,6 +22,10 @@ public class BookRequestDTO {
 
     private Integer publishedYear;
 
+    private String imageName;
+    private String imageType;
+    private byte[] imageData;
+
     @Min(1)
     private Integer totalCopies;
 }

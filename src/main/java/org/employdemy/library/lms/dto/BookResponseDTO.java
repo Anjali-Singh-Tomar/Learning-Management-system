@@ -11,6 +11,9 @@ public class BookResponseDTO {
     private String author;
     private String isbn;
     private Genre genre;
+    private String imageName;
+    private String imageType;
+    private String imageBase64;
     private String publisher;
     private Integer publishedYear;
     private Integer totalCopies;

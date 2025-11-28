@@ -2,12 +2,16 @@ package org.employdemy.library.lms.controller;
 
 import org.employdemy.library.lms.dto.BookRequestDTO;
 import org.employdemy.library.lms.dto.BookResponseDTO;
+import org.employdemy.library.lms.model.Book;
 import org.employdemy.library.lms.model.Genre;
 import org.employdemy.library.lms.service.BookService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -19,14 +23,36 @@ public class BookController {
     public BookController(BookService bookService) {
         this.bookService = bookService;
     }
+    // ----------------------------------------------------
+    @PostMapping(consumes = "multipart/form-data")
+    public BookResponseDTO createBook(
+            @RequestPart("data") BookRequestDTO dto,
+            @RequestPart(value = "image", required = false) MultipartFile imageFile
+    ) throws IOException {
 
-    // ----------------------------------------------------
-    // 1. CREATE BOOK
-    // ----------------------------------------------------
-    @PostMapping
-    public ResponseEntity<BookResponseDTO> createBook(@Valid @RequestBody BookRequestDTO dto) {
-        return ResponseEntity.ok(bookService.createBook(dto));
+        if (imageFile != null && !imageFile.isEmpty()) {
+            dto.setImageName(imageFile.getOriginalFilename());
+            dto.setImageType(imageFile.getContentType());
+            dto.setImageData(imageFile.getBytes());
+        }
+
+        return bookService.createBook(dto);
     }
+
+    //-----------------------------------------------------------
+    // Get The Book image using Id
+    //-------------------------------------------------------------
+    @GetMapping("/{id}/image")
+    public ResponseEntity<byte[]> getBookImage(@PathVariable Long id) {
+        Book book = bookService.getBookEntity(id);
+
+        return ResponseEntity.ok()
+                .header("Content-Type", book.getImageType())
+                .header("Content-Disposition", "inline; filename=\"" + book.getImageName() + "\"")
+                .body(book.getImageData());
+    }
+
+
 
     // ----------------------------------------------------
     // 2. GET ALL BOOKS

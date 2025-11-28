@@ -5,10 +5,14 @@ import org.employdemy.library.lms.dto.BookResponseDTO;
 import org.employdemy.library.lms.model.Book;
 import org.springframework.stereotype.Component;
 
+import java.util.Base64;
+
 @Component
 public class BookMapper {
 
-    // Convert Entity → ResponseDTO
+    // --------------------------------------------------------
+    // ENTITY → RESPONSE DTO
+    // --------------------------------------------------------
     public BookResponseDTO toDTO(Book book) {
         BookResponseDTO dto = new BookResponseDTO();
         dto.setId(book.getId());
@@ -21,10 +25,22 @@ public class BookMapper {
         dto.setTotalCopies(book.getTotalCopies());
         dto.setAvailableCopies(book.getAvailableCopies());
         dto.setActive(book.isActive());
+
+        // ⭐ NEW IMAGE HANDLING
+        dto.setImageName(book.getImageName());
+        dto.setImageType(book.getImageType());
+
+        if (book.getImageData() != null) {
+            dto.setImageBase64(Base64.getEncoder()
+                    .encodeToString(book.getImageData()));
+        }
+
         return dto;
     }
 
-    // Convert RequestDTO → Entity
+    // --------------------------------------------------------
+    // REQUEST DTO → ENTITY
+    // --------------------------------------------------------
     public Book toEntity(BookRequestDTO dto) {
         Book book = new Book();
         book.setTitle(dto.getTitle());
@@ -34,12 +50,20 @@ public class BookMapper {
         book.setPublisher(dto.getPublisher());
         book.setPublishedYear(dto.getPublishedYear());
         book.setTotalCopies(dto.getTotalCopies());
-        book.setAvailableCopies(dto.getTotalCopies()); // initially equal
+        book.setAvailableCopies(dto.getTotalCopies()); // initially available
         book.setActive(true);
+
+        // ⭐ NEW IMAGE FIELDS
+        book.setImageName(dto.getImageName());
+        book.setImageType(dto.getImageType());
+        book.setImageData(dto.getImageData());
+
         return book;
     }
 
-    // Update existing book from RequestDTO
+    // --------------------------------------------------------
+    // UPDATE ENTITY from REQUEST DTO
+    // --------------------------------------------------------
     public void updateEntity(Book book, BookRequestDTO dto) {
         book.setTitle(dto.getTitle());
         book.setAuthor(dto.getAuthor());
@@ -47,12 +71,25 @@ public class BookMapper {
         book.setGenre(dto.getGenre());
         book.setPublisher(dto.getPublisher());
         book.setPublishedYear(dto.getPublishedYear());
-        book.setTotalCopies(dto.getTotalCopies());
 
-        // adjust available copies if total increases
-        if (dto.getTotalCopies() > book.getAvailableCopies()) {
-            int diff = dto.getTotalCopies() - book.getTotalCopies();
-            book.setAvailableCopies(book.getAvailableCopies() + diff);
+        // Update total/available copies logic
+        if (dto.getTotalCopies() != null) {
+            int oldTotal = book.getTotalCopies();
+            int newTotal = dto.getTotalCopies();
+
+            if (newTotal > oldTotal) {
+                int diff = newTotal - oldTotal;
+                book.setAvailableCopies(book.getAvailableCopies() + diff);
+            }
+
+            book.setTotalCopies(newTotal);
+        }
+
+        // ⭐ UPDATE IMAGE ONLY IF NEW IMAGE PROVIDED
+        if (dto.getImageData() != null) {
+            book.setImageName(dto.getImageName());
+            book.setImageType(dto.getImageType());
+            book.setImageData(dto.getImageData());
         }
     }
 }

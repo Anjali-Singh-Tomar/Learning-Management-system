@@ -40,6 +40,12 @@ public class Book {
 
     private boolean active = true;
 
+    private String imageName;
+    private String imageType;
+
+    @Lob
+    private byte[] imageData;
+
     @Version
     private Long version;
 
