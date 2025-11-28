@@ -39,6 +39,10 @@ public class SecurityConfig {
                         // Allow CORS preflight
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
+                        // Allow PUT only for roles (important)
+                        .requestMatchers(HttpMethod.PUT, "/api/books/**")
+                        .hasAnyRole("ADMIN", "LIBRARIAN")
+
                         // Public endpoints
                         .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()

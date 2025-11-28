@@ -35,4 +35,6 @@ public class BookRequestDTO {
     @NotNull(message = "Total copies must be provided")
     @Min(value = 1, message = "At least one copy is required")
     private Integer totalCopies;
+
+
 }

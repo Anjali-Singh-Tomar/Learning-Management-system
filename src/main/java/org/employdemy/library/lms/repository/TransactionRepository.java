@@ -7,6 +7,7 @@ import org.employdemy.library.lms.model.TransactionStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +21,12 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             ORDER BY t.dueDate ASC
            """)
     List<Transaction> findOverdueTransactions();
+
+    List<Transaction> findByStatusAndDueDateBetween(
+            TransactionStatus status,
+            LocalDate start,
+            LocalDate end
+    );
 
     long countByStatus(TransactionStatus status);
 

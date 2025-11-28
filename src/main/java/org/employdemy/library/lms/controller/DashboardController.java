@@ -2,12 +2,14 @@ package org.employdemy.library.lms.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.employdemy.library.lms.dto.AdminOverviewResponse;
+import org.employdemy.library.lms.dto.DueSoonResponseDTO;
 import org.employdemy.library.lms.dto.OverdueRecordDTO;
 import org.employdemy.library.lms.service.DashboardService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -29,6 +31,12 @@ public class DashboardController {
     @GetMapping("/admin/overdue")
     public ResponseEntity<List<OverdueRecordDTO>> getOverdueBooks() {
         return ResponseEntity.ok(dashboardService.getOverdueBooks());
+    }
+
+    @GetMapping("/due-soon")
+    public ResponseEntity<List<DueSoonResponseDTO>> getDueSoonBooks(
+            @RequestParam(defaultValue = "7") int days) {
+        return ResponseEntity.ok(dashboardService.getDueSoonTransactions(days));
     }
 
 }

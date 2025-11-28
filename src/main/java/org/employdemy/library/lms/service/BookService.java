@@ -24,6 +24,7 @@ public class BookService {
         this.bookMapper = bookMapper;
     }
 
+
     // ------------------------------------------------------------------------
     // 1. ADD BOOK--Done
     // ------------------------------------------------------------------------
@@ -34,31 +35,14 @@ public class BookService {
             throw new RuntimeException("A book with this ISBN already exists");
         }
 
-        // Convert DTO → Entity
-        Book book = new Book();
-        book.setTitle(dto.getTitle());
-        book.setAuthor(dto.getAuthor());
-        book.setIsbn(dto.getIsbn());
-        book.setGenre(dto.getGenre());  // genre already enum
-        book.setPublisher(dto.getPublisher());
-        book.setPublishedYear(dto.getPublishedYear());
-        book.setTotalCopies(dto.getTotalCopies());
-        book.setAvailableCopies(dto.getTotalCopies());
+        // Convert DTO → Entity using Mapper
+        Book book = bookMapper.toEntity(dto);
 
         // Save to DB
-        Book saved = bookRepository.save(book);
+        Book savedBook = bookRepository.save(book);
 
-        // Convert Entity → Response DTO
-        BookResponseDTO response = new BookResponseDTO();
-        response.setId(saved.getId());
-        response.setTitle(saved.getTitle());
-        response.setAuthor(saved.getAuthor());
-        response.setIsbn(saved.getIsbn());
-        response.setGenre(saved.getGenre());  // still enum, no need .name()
-        response.setTotalCopies(saved.getTotalCopies());
-        response.setAvailableCopies(saved.getAvailableCopies());
-
-        return response;
+        // Convert back Entity → ResponseDTO
+        return bookMapper.toDTO(savedBook);
     }
 
 
@@ -75,7 +59,7 @@ public class BookService {
     }
 
     // ------------------------------------------------------------------------
-    // 3. GET ALL BOOKS
+    // 3. GET ALL BOOKS-no change required
     // ------------------------------------------------------------------------
     public List<BookResponseDTO> getAllBooks() {
         return bookRepository.findAll().stream()
@@ -84,7 +68,7 @@ public class BookService {
     }
 
     // ------------------------------------------------------------------------
-    // 4. UPDATE BOOK
+    // 4. UPDATE BOOK--working: active state cant update through this method
     // ------------------------------------------------------------------------
     public BookResponseDTO updateBook(Long id, BookRequestDTO dto) {
         Book book = getBookEntity(id);
@@ -113,17 +97,14 @@ public class BookService {
     // ------------------------------------------------------------------------
     // 6. SEARCH BOOKS
     // ------------------------------------------------------------------------
-    public List<BookResponseDTO> searchByTitle(String title) {
-        return bookRepository.findByTitleContainingIgnoreCase(title).stream()
+
+    //by author + title
+    public List<BookResponseDTO> searchBooks(String keyword) {
+        return bookRepository.searchBooks(keyword).stream()
                 .map(bookMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
-    public List<BookResponseDTO> searchByAuthor(String author) {
-        return bookRepository.findByAuthorContainingIgnoreCase(author).stream()
-                .map(bookMapper::toDTO)
-                .collect(Collectors.toList());
-    }
 
     public List<BookResponseDTO> filterByGenre(Genre genre) {
         return bookRepository.findByGenre(genre).stream()

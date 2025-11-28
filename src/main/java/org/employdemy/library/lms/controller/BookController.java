@@ -22,9 +22,9 @@ public class BookController {
     }
 
     // ----------------------------------------------------
-    // 1. ADD BOOK
+    // 1. ADD BOOK-Done
     // ----------------------------------------------------
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
     @PostMapping("/add")
     public ResponseEntity<BookResponseDTO> addBook(
             @Valid @RequestBody BookRequestDTO request) {
@@ -33,8 +33,9 @@ public class BookController {
     }
 
     // ----------------------------------------------------
-    // 2. GET ALL BOOKS
+    // 2. GET ALL BOOKS-no change required
     // ----------------------------------------------------
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN','MEMBER')")
     @GetMapping
     public ResponseEntity<List<BookResponseDTO>> getAllBooks() {
         return ResponseEntity.ok(bookService.getAllBooks());
@@ -49,8 +50,9 @@ public class BookController {
     }
 
     // ----------------------------------------------------
-    // 4. UPDATE BOOK
+    // 4. UPDATE BOOK--working: active state cant update through this method
     // ----------------------------------------------------
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
     @PutMapping("/{id}")
     public ResponseEntity<BookResponseDTO> updateBook(
             @PathVariable Long id,
@@ -60,7 +62,7 @@ public class BookController {
     }
 
     // ----------------------------------------------------
-    // 5. DELETE / DEACTIVATE BOOK
+    // 5. DELETE / DEACTIVATE BOOK--no change required
     // ----------------------------------------------------
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBook(@PathVariable Long id) {
@@ -69,23 +71,16 @@ public class BookController {
     }
 
     // ----------------------------------------------------
-    // 6. SEARCH BY TITLE
+    // 7. SEARCH BY AUTHOR or TITLE -done
     // ----------------------------------------------------
-    @GetMapping("/search/title")
-    public ResponseEntity<List<BookResponseDTO>> searchByTitle(@RequestParam String title) {
-        return ResponseEntity.ok(bookService.searchByTitle(title));
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN','MEMBER')")
+    @GetMapping("/search")
+    public ResponseEntity<List<BookResponseDTO>> searchBooks(@RequestParam String keyword) {
+        return ResponseEntity.ok(bookService.searchBooks(keyword));
     }
 
     // ----------------------------------------------------
-    // 7. SEARCH BY AUTHOR
-    // ----------------------------------------------------
-    @GetMapping("/search/author")
-    public ResponseEntity<List<BookResponseDTO>> searchByAuthor(@RequestParam String author) {
-        return ResponseEntity.ok(bookService.searchByAuthor(author));
-    }
-
-    // ----------------------------------------------------
-    // 8. FILTER BY GENRE
+    // 8. FILTER BY GENRE - no change required
     // ----------------------------------------------------
     @GetMapping("/filter/genre")
     public ResponseEntity<List<BookResponseDTO>> filterByGenre(@RequestParam Genre genre) {
