@@ -26,7 +26,7 @@ public class DashboardService {
 
         long totalBooks = bookRepository.count();
         long borrowedBooks = transactionRepository.countByStatus(TransactionStatus.BORROWED);
-        long overdueBooks = transactionRepository.countOverdueBooks();
+        long overdueBooks = transactionRepository.countByStatusAndDueDateBefore(TransactionStatus.BORROWED, LocalDate.now());
         long activeUsers = userRepository.countByActiveTrue();
 
         return new AdminOverviewResponse(

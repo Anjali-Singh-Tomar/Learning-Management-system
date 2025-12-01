@@ -36,5 +36,9 @@ public class BookRequestDTO {
     @Min(value = 1, message = "At least one copy is required")
     private Integer totalCopies;
 
+    private String imageName;
+    private String imageType;
+    private byte[] imageData;
+
 
 }
