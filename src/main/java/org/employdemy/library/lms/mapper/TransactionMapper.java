@@ -13,7 +13,9 @@ public class TransactionMapper {
         TransactionResponseDTO dto = new TransactionResponseDTO();
         dto.setId(transaction.getId());
         dto.setUserId(transaction.getUser().getId());
+        dto.setUserName(transaction.getUser().getName());
         dto.setBookId(transaction.getBook().getId());
+        dto.setBookTitle(transaction.getBook().getTitle());
         dto.setBorrowedAt(transaction.getBorrowedAt());
         dto.setDueDate(transaction.getDueDate());
         dto.setReturnedAt(transaction.getReturnedAt());

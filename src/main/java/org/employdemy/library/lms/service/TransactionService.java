@@ -102,14 +102,53 @@ public class TransactionService {
     }
 
     // ---------------------------------------------------------------------
-    // GET USER TRANSACTIONS
+    // GET USER TRANSACTIONS-NO USE
     // ---------------------------------------------------------------------
-    public List<TransactionResponseDTO> getTransactionsByUser(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + userId));
+//    public List<TransactionResponseDTO> getTransactionsByUser(Long userId) {
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + userId));
+//
+//        return transactionRepository.findByUser(user).stream()
+//                .map(transactionMapper::toDTO)
+//                .collect(Collectors.toList());
+//    }
 
-        return transactionRepository.findByUser(user).stream()
+
+    // ---------------------------------------------------------------------
+    // GET ALL THE BORROWED BOOKS
+    // ---------------------------------------------------------------------
+    public List<TransactionResponseDTO> getAllBorrowedBooks() {
+        return transactionRepository.findAll()
+                .stream()
                 .map(transactionMapper::toDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
+
+    // ---------------------------------------------------------------------
+    // SEARCH BORROWED BOOKS
+    // ---------------------------------------------------------------------
+    public List<TransactionResponseDTO> searchBorrowedBooks(String query) {
+
+        return transactionRepository.searchBorrowedBooks(query)
+                .stream()
+                .map(t -> new TransactionResponseDTO(
+                        t.getId(),
+                        t.getUser().getId(),
+                        t.getUser().getName(),
+                        t.getBook().getId(),
+                        t.getBook().getTitle(),
+                        t.getBorrowedAt(),
+                        t.getDueDate(),
+                        t.getReturnedAt(),
+                        t.getStatus()
+                )).toList();
+    }
+
+    public List<TransactionResponseDTO> getTransactionsByStatus(TransactionStatus status) {
+        return transactionRepository.findByStatus(status)
+                .stream()
+                .map(transactionMapper::toDTO)
+                .toList();
+    }
+
 }

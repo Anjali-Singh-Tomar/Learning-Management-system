@@ -6,6 +6,7 @@ import org.employdemy.library.lms.model.Book;
 import org.employdemy.library.lms.model.TransactionStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -39,4 +40,20 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             LocalDate start,
             LocalDate end
     );
+
+    //fetch by given status
+    List<Transaction> findByStatus(TransactionStatus status);
+
+    //search from the list of borrowed books on based on either username or book title
+    @Query("""
+    SELECT t FROM Transaction t
+    JOIN t.user u
+    JOIN t.book b
+    WHERE (LOWER(u.name) LIKE LOWER(CONCAT('%', :query, '%'))
+         OR LOWER(b.title) LIKE LOWER(CONCAT('%', :query, '%')))
+""")
+    List<Transaction> searchBorrowedBooks(@Param("query") String query);
+
+
+
 }

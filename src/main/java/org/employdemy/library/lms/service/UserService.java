@@ -2,6 +2,7 @@ package org.employdemy.library.lms.service;
 
 import org.employdemy.library.lms.dto.UserRequestDTO;
 import org.employdemy.library.lms.dto.UserResponseDTO;
+import org.employdemy.library.lms.dto.UserUpdateDTO;
 import org.employdemy.library.lms.exception.ResourceNotFoundException;
 import org.employdemy.library.lms.mapper.UserMapper;
 import org.employdemy.library.lms.model.User;
@@ -39,15 +40,18 @@ public class UserService {
         return userMapper.toDTO(user);
     }
 
-    public UserResponseDTO updateUser(Long id, UserRequestDTO dto) {
+    public UserResponseDTO updateUser(Long id, UserUpdateDTO dto) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found: " + id));
 
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
-        user.setPassword(dto.getPassword());
         user.setRole(dto.getRole());
         user.setEmpId(dto.getEmpId());
+
+        if (user.getPassword() != null && !user.getPassword().isBlank()) {
+            user.setPassword(user.getPassword());
+        }
 
         User updated = userRepository.save(user);
         return userMapper.toDTO(updated);

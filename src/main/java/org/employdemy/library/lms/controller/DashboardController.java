@@ -33,7 +33,8 @@ public class DashboardController {
         return ResponseEntity.ok(dashboardService.getOverdueBooks());
     }
 
-    @GetMapping("/due-soon")
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("admin/due-soon")
     public ResponseEntity<List<DueSoonResponseDTO>> getDueSoonBooks(
             @RequestParam(defaultValue = "7") int days) {
         return ResponseEntity.ok(dashboardService.getDueSoonTransactions(days));

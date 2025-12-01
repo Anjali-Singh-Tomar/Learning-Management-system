@@ -39,6 +39,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
 
+                        // Allow PUT only for roles (important)
+                        .requestMatchers(HttpMethod.PUT, "/api/books/**")
+                        .hasAnyRole("ADMIN", "LIBRARIAN")
+
                         // ===============================
                         // ROLE-BASED ACCESS CONTROL
                         // ===============================
