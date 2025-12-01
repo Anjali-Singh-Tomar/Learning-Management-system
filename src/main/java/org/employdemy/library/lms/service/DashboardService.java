@@ -26,7 +26,7 @@ public class DashboardService {
 
         long totalBooks = bookRepository.count();
         long borrowedBooks = transactionRepository.countByStatus(TransactionStatus.BORROWED);
-        long overdueBooks = transactionRepository.countOverdueBooks();
+        long overdueBooks = transactionRepository.countByStatusAndDueDateBefore(TransactionStatus.BORROWED,LocalDate.now());
         long activeUsers = userRepository.countByActiveTrue();
 
         return new AdminOverviewResponse(
@@ -37,45 +37,45 @@ public class DashboardService {
         );
     }
 
-    public List<OverdueRecordDTO> getOverdueBooks() {
-
-        List<Transaction> transactions = transactionRepository.findOverdueTransactions();
-
-        return transactions.stream().map(t -> {
-            OverdueRecordDTO dto = new OverdueRecordDTO();
-            dto.setTransactionId(t.getId());
-            dto.setBookTitle(t.getBook().getTitle());
-            dto.setIsbn(t.getBook().getIsbn());
-            dto.setBorrowerName(t.getUser().getName());
-            dto.setBorrowerEmail(t.getUser().getEmail());
-            dto.setDueDate(t.getDueDate().toString());
-
-            long daysOverdue = java.time.temporal.ChronoUnit.DAYS.between(t.getDueDate(), java.time.LocalDate.now());
-            dto.setDaysOverdue(daysOverdue);
-
-            return dto;
-        }).toList();
-    }
-
-    public List<DueSoonResponseDTO> getDueSoonTransactions(int days) {
-
-        LocalDate today = LocalDate.now();
-        LocalDate limit = today.plusDays(days);
-
-        List<Transaction> transactions = transactionRepository
-                .findByStatusAndDueDateBetween(TransactionStatus.BORROWED, today, limit);
-
-        return transactions.stream().map(tx -> {
-            DueSoonResponseDTO dto = new DueSoonResponseDTO();
-            dto.setBorrowId(tx.getId());
-            dto.setMemberName(tx.getUser().getName());
-            dto.setBookTitle(tx.getBook().getTitle());
-            dto.setIssuedDate(tx.getBorrowedAt());
-            dto.setDueDate(tx.getDueDate());
-            dto.setDaysRemaining(java.time.temporal.ChronoUnit.DAYS.between(today, tx.getDueDate()));
-            return dto;
-        }).toList();
-    }
+//    public List<OverdueRecordDTO> getOverdueBooks() {
+//
+//        List<Transaction> transactions = transactionRepository.findOverdueTransactions();
+//
+//        return transactions.stream().map(t -> {
+//            OverdueRecordDTO dto = new OverdueRecordDTO();
+//            dto.setTransactionId(t.getId());
+//            dto.setBookTitle(t.getBook().getTitle());
+//            dto.setIsbn(t.getBook().getIsbn());
+//            dto.setBorrowerName(t.getUser().getName());
+//            dto.setBorrowerEmail(t.getUser().getEmail());
+//            dto.setDueDate(t.getDueDate().toString());
+//
+//            long daysOverdue = java.time.temporal.ChronoUnit.DAYS.between(t.getDueDate(), java.time.LocalDate.now());
+//            dto.setDaysOverdue(daysOverdue);
+//
+//            return dto;
+//        }).toList();
+//    }
+//
+//    public List<DueSoonResponseDTO> getDueSoonTransactions(int days) {
+//
+//        LocalDate today = LocalDate.now();
+//        LocalDate limit = today.plusDays(days);
+//
+//        List<Transaction> transactions = transactionRepository
+//                .findByStatusAndDueDateBetween(TransactionStatus.BORROWED, today, limit);
+//
+//        return transactions.stream().map(tx -> {
+//            DueSoonResponseDTO dto = new DueSoonResponseDTO();
+//            dto.setBorrowId(tx.getId());
+//            dto.setMemberName(tx.getUser().getName());
+//            dto.setBookTitle(tx.getBook().getTitle());
+//            dto.setIssuedDate(tx.getBorrowedAt());
+//            dto.setDueDate(tx.getDueDate());
+//            dto.setDaysRemaining(java.time.temporal.ChronoUnit.DAYS.between(today, tx.getDueDate()));
+//            return dto;
+//        }).toList();
+//    }
 
 }
 

@@ -36,7 +36,7 @@ public class BookController {
             dto.setImageData(imageFile.getBytes());
         }
 
-        return bookService.createBook(dto);
+        return bookService.addBook(dto);
     }
 
     //-----------------------------------------------------------
@@ -93,18 +93,18 @@ public class BookController {
     // ----------------------------------------------------
     // 6. SEARCH BY TITLE
     // ----------------------------------------------------
-    @GetMapping("/search/title")
-    public ResponseEntity<List<BookResponseDTO>> searchByTitle(@RequestParam String title) {
-        return ResponseEntity.ok(bookService.searchByTitle(title));
+    @GetMapping("/search")
+    public ResponseEntity<List<BookResponseDTO>> searchBooks(@RequestParam String keyword) {
+        return ResponseEntity.ok(bookService.searchBooks(keyword));
     }
 
     // ----------------------------------------------------
     // 7. SEARCH BY AUTHOR
     // ----------------------------------------------------
-    @GetMapping("/search/author")
-    public ResponseEntity<List<BookResponseDTO>> searchByAuthor(@RequestParam String author) {
-        return ResponseEntity.ok(bookService.searchByAuthor(author));
-    }
+//    @GetMapping("/search/author")
+//    public ResponseEntity<List<BookResponseDTO>> searchByAuthor(@RequestParam String author) {
+//        return ResponseEntity.ok(bookService.searchByAuthor(author));
+//    }
 
     // ----------------------------------------------------
     // 8. FILTER BY GENRE

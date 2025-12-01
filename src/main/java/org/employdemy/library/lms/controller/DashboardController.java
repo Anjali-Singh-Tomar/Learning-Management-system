@@ -27,16 +27,16 @@ public class DashboardController {
         return ResponseEntity.ok(dashboardService.getAdminOverview());
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/admin/overdue")
-    public ResponseEntity<List<OverdueRecordDTO>> getOverdueBooks() {
-        return ResponseEntity.ok(dashboardService.getOverdueBooks());
-    }
-
-    @GetMapping("/due-soon")
-    public ResponseEntity<List<DueSoonResponseDTO>> getDueSoonBooks(
-            @RequestParam(defaultValue = "7") int days) {
-        return ResponseEntity.ok(dashboardService.getDueSoonTransactions(days));
-    }
+//    @PreAuthorize("hasRole('ADMIN')")
+//    @GetMapping("/admin/overdue")
+//    public ResponseEntity<List<OverdueRecordDTO>> getOverdueBooks() {
+//        return ResponseEntity.ok(dashboardService.getOverdueBooks());
+//    }
+//
+//    @GetMapping("/due-soon")
+//    public ResponseEntity<List<DueSoonResponseDTO>> getDueSoonBooks(
+//            @RequestParam(defaultValue = "7") int days) {
+//        return ResponseEntity.ok(dashboardService.getDueSoonTransactions(days));
+//    }
 
 }
