@@ -8,6 +8,7 @@ import org.employdemy.library.lms.model.User;
 import org.employdemy.library.lms.repository.UserRepository;
 import org.employdemy.library.lms.security.JwtUtil;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
@@ -19,15 +20,17 @@ public class AuthController {
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
 
+    private final PasswordEncoder passwordEncoder;
     // Unified Admin Credentials
     private static final String ADMIN_EMAIL = "admin@lms.com";
     private static final String ADMIN_EMPID = "EMP0000";
     private static final String ADMIN_PASSWORD = "admin123";
     private static final Long ADMIN_USER_ID=0L;
 
-    public AuthController(JwtUtil jwtUtil, UserRepository userRepository) {
+    public AuthController(JwtUtil jwtUtil, UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.jwtUtil = jwtUtil;
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @PostMapping("/login")
@@ -63,8 +66,9 @@ public class AuthController {
                     .orElseThrow(() -> new ResourceNotFoundException("Invalid credentials"));
         }
 
-        if (!user.getPassword().equals(password))
+        if (!passwordEncoder.matches(password, user.getPassword()))
             throw new ResourceNotFoundException("Invalid credentials");
+
 
         if (!user.isActive())
             throw new ResourceNotFoundException("User account is inactive");

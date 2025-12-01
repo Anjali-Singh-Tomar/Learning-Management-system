@@ -3,10 +3,13 @@ package org.employdemy.library.lms.mapper;
 import org.employdemy.library.lms.dto.UserRequestDTO;
 import org.employdemy.library.lms.dto.UserResponseDTO;
 import org.employdemy.library.lms.model.User;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UserMapper {
+
+    private BCryptPasswordEncoder encoder= new BCryptPasswordEncoder(10);
 
     public UserResponseDTO toDTO(User user) {
         UserResponseDTO dto = new UserResponseDTO();
@@ -23,7 +26,7 @@ public class UserMapper {
         User user = new User();
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
-        user.setPassword(dto.getPassword());
+        user.setPassword(encoder.encode(dto.getPassword()));//bcrypting the password and saving in the entity
         user.setRole(dto.getRole());
         user.setEmpId(dto.getEmpId());
         return user;
