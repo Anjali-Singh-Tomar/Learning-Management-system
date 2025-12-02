@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/transactions")
@@ -22,53 +23,107 @@ public class TransactionController {
         this.transactionService = transactionService;
     }
 
-    // BORROW BOOK--working fine
+    // --------------------------------------------------------------
+    // 1. BORROW BOOK
+    // --------------------------------------------------------------
     @PostMapping("/borrow")
-    public ResponseEntity<TransactionResponseDTO> borrowBook(@Valid @RequestBody TransactionRequestDTO dto) {
-        return ResponseEntity.ok(transactionService.borrowBook(dto));
+    public ResponseEntity<?> borrowBook(@Valid @RequestBody TransactionRequestDTO dto) {
+        try {
+            return ResponseEntity.ok(transactionService.borrowBook(dto));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "error", e.getMessage()
+            ));
+        }
     }
 
-    // RETURN BOOK--working fine
+    // --------------------------------------------------------------
+    // 2. RETURN BOOK
+    // --------------------------------------------------------------
     @PostMapping("/return")
-    public ResponseEntity<TransactionResponseDTO> returnBook(@Valid @RequestBody TransactionRequestDTO dto) {
-        return ResponseEntity.ok(transactionService.returnBook(dto));
+    public ResponseEntity<?> returnBook(@Valid @RequestBody TransactionRequestDTO dto) {
+        try {
+            return ResponseEntity.ok(transactionService.returnBook(dto));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "error", e.getMessage()
+            ));
+        }
     }
 
-    // RENEW BOOK
+    // --------------------------------------------------------------
+    // 3. RENEW BOOK
+    // --------------------------------------------------------------
     @PostMapping("/renew")
-    public ResponseEntity<TransactionResponseDTO> renewBook(@Valid @RequestBody TransactionRequestDTO dto) {
-        return ResponseEntity.ok(transactionService.renewBook(dto));
+    public ResponseEntity<?> renewBook(@Valid @RequestBody TransactionRequestDTO dto) {
+        try {
+            return ResponseEntity.ok(transactionService.renewBook(dto));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "error", e.getMessage()
+            ));
+        }
     }
 
-//    // GET USER TRANSACTIONS
-//    @GetMapping("/user/{userId}")
-//    public ResponseEntity<List<TransactionResponseDTO>> getUserTransactions(@PathVariable Long userId) {
-//        return ResponseEntity.ok(transactionService.getTransactionsByUser(userId));
-//    }
-
-    // GET ALL THE BORROWED BOOKS-DONE
+    // --------------------------------------------------------------
+    // 4. GET ALL BORROWED BOOKS (Admin + Librarian)
+    // --------------------------------------------------------------
     @GetMapping("/borrowed-books")
     @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
-    public ResponseEntity<List<TransactionResponseDTO>> getAllBorrowedBooks() {
-        return ResponseEntity.ok(transactionService.getAllBorrowedBooks());
+    public ResponseEntity<?> getAllBorrowedBooks() {
+        try {
+            return ResponseEntity.ok(transactionService.getAllBorrowedBooks());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of(
+                    "error", "Failed to fetch borrowed books"
+            ));
+        }
     }
 
-    // SEARCH FROM THE BORROWED BOOKS BY USERNAME OR BOOK TITLE-DONE
+    // --------------------------------------------------------------
+    // 5. SEARCH BORROWED BOOKS
+    // --------------------------------------------------------------
     @GetMapping("/search")
-    @PreAuthorize("hasAnyRole('ADMIN','LIBRARIAN')")
-    public ResponseEntity<List<TransactionResponseDTO>> searchBorrowedBooks(
-            @RequestParam String query) {
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
+    public ResponseEntity<?> searchBorrowedBooks(@RequestParam String query) {
+        try {
+            List<TransactionResponseDTO> results = transactionService.searchBorrowedBooks(query);
 
-        return ResponseEntity.ok(transactionService.searchBorrowedBooks(query));
+            if (results.isEmpty())
+                return ResponseEntity.ok(Map.of(
+                        "message", "No records found for: " + query
+                ));
+
+            return ResponseEntity.ok(results);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of(
+                    "error", "Search failed"
+            ));
+        }
     }
 
-    // FILTER THE TRANSACTIONS ACCORDING TO STATUS-DONE
-    @PreAuthorize("hasAnyRole('ADMIN','LIBRARIAN')")
+    // --------------------------------------------------------------
+    // 6. FILTER TRANSACTIONS BY STATUS
+    // --------------------------------------------------------------
     @GetMapping("/filter")
-    public ResponseEntity<List<TransactionResponseDTO>> filterByStatus(
-            @RequestParam TransactionStatus status) {
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
+    public ResponseEntity<?> filterByStatus(@RequestParam TransactionStatus status) {
+        try {
+            List<TransactionResponseDTO> results = transactionService.getTransactionsByStatus(status);
 
-        return ResponseEntity.ok(transactionService.getTransactionsByStatus(status));
+            if (results.isEmpty())
+                return ResponseEntity.ok(Map.of(
+                        "message", "No transactions found with status: " + status
+                ));
+
+            return ResponseEntity.ok(results);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of(
+                    "error", "Failed to filter transactions"
+            ));
+        }
     }
-
 }
+

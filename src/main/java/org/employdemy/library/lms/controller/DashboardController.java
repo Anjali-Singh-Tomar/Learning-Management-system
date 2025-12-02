@@ -8,6 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/dashboard")
@@ -17,40 +18,99 @@ public class DashboardController {
 
     private final DashboardService dashboardService;
 
+    // ==========================
+    // ADMIN OVERVIEW
+    // ==========================
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin/overview")
-    public ResponseEntity<AdminOverviewResponse> getAdminOverview() {
-        return ResponseEntity.ok(dashboardService.getAdminOverview());
+    public ResponseEntity<?> getAdminOverview() {
+        try {
+            return ResponseEntity.ok(dashboardService.getAdminOverview());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", "Failed to load admin overview"));
+        }
     }
 
+    // ==========================
+    // ADMIN OVERDUE BOOKS
+    // ==========================
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin/overdue")
-    public ResponseEntity<List<OverdueRecordDTO>> getOverdueBooks() {
-        return ResponseEntity.ok(dashboardService.getOverdueBooks());
+    public ResponseEntity<?> getOverdueBooks() {
+        try {
+            return ResponseEntity.ok(dashboardService.getOverdueBooks());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", "Failed to fetch overdue books"));
+        }
     }
 
+    // ==========================
+    // MEMBER OVERVIEW
+    // ==========================
     @PreAuthorize("hasRole('MEMBER')")
     @GetMapping("/member/{memberId}/overview")
-    public ResponseEntity<MemberDashboardResponseDTO> getMemberOverview(@PathVariable Long memberId){
-        return ResponseEntity.ok(dashboardService.getMemberOverview(memberId));
+    public ResponseEntity<?> getMemberOverview(@PathVariable Long memberId) {
+        try {
+            MemberDashboardResponseDTO dto = dashboardService.getMemberOverview(memberId);
+
+            if (dto == null) {
+                return ResponseEntity.status(404).body(Map.of("error", "Member not found"));
+            }
+            return ResponseEntity.ok(dto);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", "Failed to fetch member overview"));
+        }
     }
 
+    // ==========================
+    // MEMBER CURRENT BORROWED BOOKS
+    // ==========================
     @PreAuthorize("hasRole('MEMBER')")
     @GetMapping("/member/{memberId}/borrowedbooks")
-    public ResponseEntity<List<BorrowedBookDTO>> getBorrowedBooks(@PathVariable Long memberId) {
-        return ResponseEntity.ok(dashboardService.getBorrowedBooks(memberId));
+    public ResponseEntity<?> getBorrowedBooks(@PathVariable Long memberId) {
+        try {
+            List<BorrowedBookDTO> books = dashboardService.getBorrowedBooks(memberId);
+
+            if (books == null || books.isEmpty()) {
+                return ResponseEntity.ok(Map.of("message", "No borrowed books found"));
+            }
+            return ResponseEntity.ok(books);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", "Failed to load borrowed books"));
+        }
     }
+
+    // ==========================
+    // ADMIN - DUE SOON LIST
+    // ==========================
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("admin/due-soon")
-    public ResponseEntity<List<DueSoonResponseDTO>> getDueSoonBooks(
-            @RequestParam(defaultValue = "7") int days) {
-        return ResponseEntity.ok(dashboardService.getDueSoonTransactions(days));
+    public ResponseEntity<?> getDueSoonBooks(@RequestParam(defaultValue = "7") int days) {
+        try {
+            return ResponseEntity.ok(dashboardService.getDueSoonTransactions(days));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", "Failed to fetch due-soon books"));
+        }
     }
 
-
+    // ==========================
+    // MEMBER RECOMMENDED BOOKS
+    // ==========================
     @PreAuthorize("hasRole('MEMBER')")
     @GetMapping("/member/{memberId}/recommendedbooks")
-    public ResponseEntity<List<RecommendedBookDTO>> getRecommendedBooks(@PathVariable Long memberId){
-        return ResponseEntity.ok(dashboardService.getRecommendedBooks(memberId));
+    public ResponseEntity<?> getRecommendedBooks(@PathVariable Long memberId) {
+        try {
+            List<RecommendedBookDTO> books = dashboardService.getRecommendedBooks(memberId);
+
+            if (books == null || books.isEmpty()) {
+                return ResponseEntity.ok(Map.of("message", "No recommendations available"));
+            }
+            return ResponseEntity.ok(books);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", "Failed to load recommended books"));
+        }
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
@@ -19,38 +20,84 @@ public class UserController {
 
     private final UserService userService;
 
-    public UserController(UserService userService) { this.userService = userService; }
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
-    // Create new user--working fine
+    // ---------------------------------------------------------
+    // CREATE USER  (ADMIN ONLY)
+    // ---------------------------------------------------------
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<UserResponseDTO> createUser(@Valid @RequestBody UserRequestDTO dto) {
-        return ResponseEntity.ok(userService.createUser(dto));
+    public ResponseEntity<?> createUser(@Valid @RequestBody UserRequestDTO dto) {
+        try {
+            return ResponseEntity.ok(userService.createUser(dto));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "error", e.getMessage()
+            ));
+        }
     }
 
-    // Fetch all the users details
+    // ---------------------------------------------------------
+    // FETCH ALL USERS
+    // ---------------------------------------------------------
     @GetMapping
-    public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
+    public ResponseEntity<?> getAllUsers() {
+        try {
+            return ResponseEntity.ok(userService.getAllUsers());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of(
+                    "error", "Unable to fetch user list"
+            ));
+        }
     }
 
-    // Fetch User details by ID
+    // ---------------------------------------------------------
+    // FETCH USER BY ID
+    // ---------------------------------------------------------
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponseDTO> getUserById(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.getUserById(id));
+    public ResponseEntity<?> getUserById(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(userService.getUserById(id));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(Map.of(
+                    "error", "User not found with ID: " + id
+            ));
+        }
     }
 
-    // Update User Details By ID
+    // ---------------------------------------------------------
+    // UPDATE USER BY ID
+    // ---------------------------------------------------------
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Long id,
-                                                      @Valid @RequestBody UserUpdateDTO dto) {
-        return ResponseEntity.ok(userService.updateUser(id, dto));
+    public ResponseEntity<?> updateUser(
+            @PathVariable Long id,
+            @Valid @RequestBody UserUpdateDTO dto
+    ) {
+        try {
+            return ResponseEntity.ok(userService.updateUser(id, dto));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "error", e.getMessage()
+            ));
+        }
     }
 
-    // Delete the user details
+    // ---------------------------------------------------------
+    // DELETE USER
+    // ---------------------------------------------------------
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+        try {
+            userService.deleteUser(id);
+            return ResponseEntity.ok(Map.of(
+                    "message", "User deleted successfully"
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(Map.of(
+                    "error", "User not found with ID: " + id
+            ));
+        }
     }
 }
