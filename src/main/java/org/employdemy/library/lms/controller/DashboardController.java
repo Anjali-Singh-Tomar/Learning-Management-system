@@ -1,10 +1,7 @@
 package org.employdemy.library.lms.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.employdemy.library.lms.dto.AdminOverviewResponse;
-import org.employdemy.library.lms.dto.DueSoonResponseDTO;
-import org.employdemy.library.lms.dto.MemberDashboardResponseDTO;
-import org.employdemy.library.lms.dto.OverdueRecordDTO;
+import org.employdemy.library.lms.dto.*;
 import org.employdemy.library.lms.service.DashboardService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,6 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/dashboard")
 @RequiredArgsConstructor
+@CrossOrigin
 public class DashboardController {
 
     private final DashboardService dashboardService;
