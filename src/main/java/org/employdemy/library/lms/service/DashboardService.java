@@ -4,6 +4,10 @@ import lombok.RequiredArgsConstructor;
 //import org.employdemy.library.lms.dto.AdminOverviewResponseDTO;
 import org.employdemy.library.lms.dto.*;
 import org.employdemy.library.lms.model.Book;
+import org.employdemy.library.lms.dto.AdminOverviewResponse;
+import org.employdemy.library.lms.dto.DueSoonResponseDTO;
+import org.employdemy.library.lms.dto.OverdueRecordDTO;
+import org.employdemy.library.lms.model.Book;
 import org.employdemy.library.lms.model.Transaction;
 import org.employdemy.library.lms.model.TransactionStatus;
 import org.employdemy.library.lms.repository.BookRepository;
@@ -26,7 +30,7 @@ public class DashboardService {
 
         long totalBooks = bookRepository.count();
         long borrowedBooks = transactionRepository.countByStatus(TransactionStatus.BORROWED);
-        long overdueBooks = transactionRepository.countByStatusAndDueDateBefore(TransactionStatus.BORROWED,LocalDate.now());
+        long overdueBooks = transactionRepository.countByStatusAndDueDateBefore(TransactionStatus.BORROWED, LocalDate.now());
         long activeUsers = userRepository.countByActiveTrue();
 
         return new AdminOverviewResponse(
@@ -138,8 +142,6 @@ public class DashboardService {
             return dto;
         }).toList();
     }
-
-
 
 }
 

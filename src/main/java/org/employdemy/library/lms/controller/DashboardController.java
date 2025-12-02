@@ -23,6 +23,12 @@ public class DashboardController {
         return ResponseEntity.ok(dashboardService.getAdminOverview());
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/admin/overdue")
+    public ResponseEntity<List<OverdueRecordDTO>> getOverdueBooks() {
+        return ResponseEntity.ok(dashboardService.getOverdueBooks());
+    }
+
     @PreAuthorize("hasRole('MEMBER')")
     @GetMapping("/member/{memberId}/overview")
     public ResponseEntity<MemberDashboardResponseDTO> getMemberOverview(@PathVariable Long memberId){
@@ -41,11 +47,6 @@ public class DashboardController {
         return ResponseEntity.ok(dashboardService.getDueSoonTransactions(days));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/admin/overdue")
-    public ResponseEntity<List<OverdueRecordDTO>> getOverdueBooks() {
-        return ResponseEntity.ok(dashboardService.getOverdueBooks());
-    }
 
     @PreAuthorize("hasRole('MEMBER')")
     @GetMapping("/member/{memberId}/recommendedbooks")
