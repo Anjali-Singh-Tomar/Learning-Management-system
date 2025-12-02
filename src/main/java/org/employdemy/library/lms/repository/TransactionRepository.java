@@ -5,6 +5,7 @@ import org.employdemy.library.lms.model.User;
 import org.employdemy.library.lms.model.Book;
 import org.employdemy.library.lms.model.TransactionStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -21,4 +22,39 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     long countByStatus(TransactionStatus status);
 
     long countByStatusAndDueDateBefore(TransactionStatus status, LocalDate date);
+
+
+    // 1. Current borrowed books (not returned)
+    long countByUser_IdAndReturnedAtIsNull(Long userId);
+
+    // 2. Books user has already read (returned)
+    long countByUser_IdAndReturnedAtIsNotNull(Long userId);
+
+    // 3. Items due soon (next 5 days)
+    @Query("""
+        SELECT COUNT(t)
+        FROM Transaction t
+        WHERE t.user.id = :userId
+          AND t.returnedAt IS NULL
+          AND t.dueDate BETWEEN :today AND :fiveDays
+    """)
+    long countDueSoon(Long userId, LocalDate today, LocalDate fiveDays);
+
+    // 4. List of currently borrowed books
+    @Query("""
+        SELECT t
+        FROM Transaction t
+        WHERE t.user.id = :userId
+          AND t.returnedAt IS NULL
+    """)
+    List<Transaction> findCurrentBorrowed(Long userId);
+
+    // 5. Recommended books (simple: recent books)
+    @Query("""
+        SELECT b
+        FROM Book b
+        WHERE b.active = true
+        ORDER BY b.publishedYear DESC
+    """)
+    List<Book> findRecommendedBooks(Long userId);
 }

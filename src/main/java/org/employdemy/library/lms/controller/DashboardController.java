@@ -1,16 +1,13 @@
 package org.employdemy.library.lms.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.employdemy.library.lms.dto.AdminOverviewResponse;
-import org.employdemy.library.lms.dto.DueSoonResponseDTO;
-import org.employdemy.library.lms.dto.OverdueRecordDTO;
+import org.employdemy.library.lms.dto.*;
+import org.employdemy.library.lms.model.Book;
+import org.employdemy.library.lms.model.Transaction;
 import org.employdemy.library.lms.service.DashboardService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,16 +24,21 @@ public class DashboardController {
         return ResponseEntity.ok(dashboardService.getAdminOverview());
     }
 
-//    @PreAuthorize("hasRole('ADMIN')")
-//    @GetMapping("/admin/overdue")
-//    public ResponseEntity<List<OverdueRecordDTO>> getOverdueBooks() {
-//        return ResponseEntity.ok(dashboardService.getOverdueBooks());
-//    }
-//
-//    @GetMapping("/due-soon")
-//    public ResponseEntity<List<DueSoonResponseDTO>> getDueSoonBooks(
-//            @RequestParam(defaultValue = "7") int days) {
-//        return ResponseEntity.ok(dashboardService.getDueSoonTransactions(days));
-//    }
+    @PreAuthorize("hasRole('MEMBER')")
+    @GetMapping("/member/{memberId}/overview")
+    public ResponseEntity<MemberDashboardResponseDTO> getMemberOverview(@PathVariable Long memberId){
+        return ResponseEntity.ok(dashboardService.getMemberOverview(memberId));
+    }
 
+    @PreAuthorize("hasRole('MEMBER')")
+    @GetMapping("/member/{memberId}/borrowedbooks")
+    public ResponseEntity<List<BorrowedBookDTO>> getBorrowedBooks(@PathVariable Long memberId){
+        return ResponseEntity.ok(dashboardService.getBorrowedBooks(memberId));
+    }
+
+    @PreAuthorize("hasRole('MEMBER')")
+    @GetMapping("/member/{memberId}/recommendedbooks")
+    public ResponseEntity<List<RecommendedBookDTO>> getRecommendedBooks(@PathVariable Long memberId){
+        return ResponseEntity.ok(dashboardService.getRecommendedBooks(memberId));
+    }
 }

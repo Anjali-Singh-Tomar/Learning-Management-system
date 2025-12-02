@@ -1,9 +1,12 @@
 package org.employdemy.library.lms.service;
 
 import lombok.RequiredArgsConstructor;
+//import org.employdemy.library.lms.dto.AdminOverviewResponseDTO;
 import org.employdemy.library.lms.dto.AdminOverviewResponse;
-import org.employdemy.library.lms.dto.DueSoonResponseDTO;
-import org.employdemy.library.lms.dto.OverdueRecordDTO;
+import org.employdemy.library.lms.dto.BorrowedBookDTO;
+import org.employdemy.library.lms.dto.MemberDashboardResponseDTO;
+import org.employdemy.library.lms.dto.RecommendedBookDTO;
+import org.employdemy.library.lms.model.Book;
 import org.employdemy.library.lms.model.Transaction;
 import org.employdemy.library.lms.model.TransactionStatus;
 import org.employdemy.library.lms.repository.BookRepository;
@@ -37,45 +40,68 @@ public class DashboardService {
         );
     }
 
-//    public List<OverdueRecordDTO> getOverdueBooks() {
-//
-//        List<Transaction> transactions = transactionRepository.findOverdueTransactions();
-//
-//        return transactions.stream().map(t -> {
-//            OverdueRecordDTO dto = new OverdueRecordDTO();
-//            dto.setTransactionId(t.getId());
-//            dto.setBookTitle(t.getBook().getTitle());
-//            dto.setIsbn(t.getBook().getIsbn());
-//            dto.setBorrowerName(t.getUser().getName());
-//            dto.setBorrowerEmail(t.getUser().getEmail());
-//            dto.setDueDate(t.getDueDate().toString());
-//
-//            long daysOverdue = java.time.temporal.ChronoUnit.DAYS.between(t.getDueDate(), java.time.LocalDate.now());
-//            dto.setDaysOverdue(daysOverdue);
-//
-//            return dto;
-//        }).toList();
-//    }
-//
-//    public List<DueSoonResponseDTO> getDueSoonTransactions(int days) {
-//
-//        LocalDate today = LocalDate.now();
-//        LocalDate limit = today.plusDays(days);
-//
-//        List<Transaction> transactions = transactionRepository
-//                .findByStatusAndDueDateBetween(TransactionStatus.BORROWED, today, limit);
-//
-//        return transactions.stream().map(tx -> {
-//            DueSoonResponseDTO dto = new DueSoonResponseDTO();
-//            dto.setBorrowId(tx.getId());
-//            dto.setMemberName(tx.getUser().getName());
-//            dto.setBookTitle(tx.getBook().getTitle());
-//            dto.setIssuedDate(tx.getBorrowedAt());
-//            dto.setDueDate(tx.getDueDate());
-//            dto.setDaysRemaining(java.time.temporal.ChronoUnit.DAYS.between(today, tx.getDueDate()));
-//            return dto;
-//        }).toList();
-//    }
+    public MemberDashboardResponseDTO getMemberOverview(Long memberId){
+        long currentlyBorrowed= transactionRepository.countByUser_IdAndReturnedAtIsNull(memberId);
+        long booksRead=transactionRepository.countByUser_IdAndReturnedAtIsNotNull(memberId);
+
+        long dueSoon;
+        if(currentlyBorrowed>0){
+             dueSoon= transactionRepository.countDueSoon(memberId, LocalDate.now(),LocalDate.now().plusDays(5));
+        } else dueSoon=0L;
+
+
+        return new MemberDashboardResponseDTO(
+                currentlyBorrowed,
+                booksRead,
+                dueSoon
+        );
+    }
+
+    public List<BorrowedBookDTO> getBorrowedBooks(Long memberId) {
+
+        return transactionRepository.findCurrentBorrowed(memberId)
+                .stream()
+                .map(t -> {
+                    BorrowedBookDTO dto = new BorrowedBookDTO();
+                    dto.setTransactionId(t.getId());
+                    dto.setBookId(t.getBook().getId());
+                    dto.setTitle(t.getBook().getTitle());
+                    dto.setAuthor(t.getBook().getAuthor());
+                    dto.setBorrowedAt(t.getBorrowedAt());
+                    dto.setDueDate(t.getDueDate());
+                    return dto;
+                })
+                .toList();
+    }
+
+
+    public List<RecommendedBookDTO> getRecommendedBooks(Long memberId) {
+
+        return transactionRepository.findRecommendedBooks(memberId)
+                .stream()
+                .map(book -> {
+                    RecommendedBookDTO dto = new RecommendedBookDTO();
+                    dto.setId(book.getId());
+                    dto.setTitle(book.getTitle());
+                    dto.setAuthor(book.getAuthor());
+                    dto.setGenre(book.getGenre() != null ? book.getGenre().name() : null);
+                    dto.setPublishedYear(book.getPublishedYear());
+
+                    // Image mapping
+                    dto.setImageName(book.getImageName());
+                    dto.setImageType(book.getImageType());
+                    if (book.getImageData() != null) {
+                        dto.setImageBase64(
+                                java.util.Base64.getEncoder().encodeToString(book.getImageData())
+                        );
+                    }
+
+                    return dto;
+                })
+                .toList();
+    }
+
+
 
 }
 

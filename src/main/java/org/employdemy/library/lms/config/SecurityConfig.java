@@ -61,6 +61,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/dashboard/admin")
                         .hasRole("ADMIN")
 
+                        //Dashboard Module
+                        .requestMatchers("/api/dashboard/member/**")
+                        .hasRole("MEMBER")
+
                         // Any other request requires authentication
                         .anyRequest().authenticated()
                 );
