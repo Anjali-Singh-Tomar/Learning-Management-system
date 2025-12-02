@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 
+import java.util.Map;
+
 @RestController
 @CrossOrigin
 @RequestMapping("/api/auth")
@@ -35,7 +37,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponseDTO> login(@Valid @RequestBody AuthRequestDTO request) {
+    public ResponseEntity<?> login(@Valid @RequestBody AuthRequestDTO request) {
 
         String identifier = request.getIdentifier();
         String password = request.getPassword();
@@ -55,24 +57,36 @@ public class AuthController {
 
             return ResponseEntity.ok(response);
         }
-
-        // 2️⃣ NORMAL USER LOGIN (email OR empId)
-        User user;
-
-        if (identifier.contains("@")) {
-            user = userRepository.findByEmail(identifier)
-                    .orElseThrow(() -> new ResourceNotFoundException("Invalid credentials"));
-        } else {
-            user = userRepository.findByEmpId(identifier)
-                    .orElseThrow(() -> new ResourceNotFoundException("Invalid credentials"));
+        if (identifier.equalsIgnoreCase(ADMIN_EMAIL) || identifier.equalsIgnoreCase(ADMIN_EMPID)) {
+            return ResponseEntity
+                    .status(401)
+                    .body(Map.of("error", "Invalid admin credentials"));
         }
 
-        if (!passwordEncoder.matches(password, user.getPassword()))
-            throw new ResourceNotFoundException("Invalid credentials");
+        // 2️⃣ NORMAL USER LOGIN (email OR empId)
+        User user=null;
 
+        // If user not found
+        if (user == null) {
+            return ResponseEntity
+                    .status(401)
+                    .body(Map.of("error", "Invalid username or password"));
+        }
 
-        if (!user.isActive())
-            throw new ResourceNotFoundException("User account is inactive");
+        // If password incorrect
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            return ResponseEntity
+                    .status(401)
+                    .body(Map.of("error", "Invalid username or password"));
+        }
+
+        // If inactive user
+        if (!user.isActive()) {
+            return ResponseEntity
+                    .status(403)
+                    .body(Map.of("error", "User account is inactive"));
+        }
+
 
         // Token stores identifier (email OR empId)
         String token = jwtUtil.generateToken(identifier, user.getRole());
