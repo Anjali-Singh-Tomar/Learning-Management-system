@@ -5,6 +5,8 @@ import org.employdemy.library.lms.model.User;
 import org.employdemy.library.lms.model.Book;
 import org.employdemy.library.lms.model.TransactionStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;

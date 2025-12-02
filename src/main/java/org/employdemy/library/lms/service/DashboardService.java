@@ -2,10 +2,7 @@ package org.employdemy.library.lms.service;
 
 import lombok.RequiredArgsConstructor;
 //import org.employdemy.library.lms.dto.AdminOverviewResponseDTO;
-import org.employdemy.library.lms.dto.AdminOverviewResponse;
-import org.employdemy.library.lms.dto.BorrowedBookDTO;
-import org.employdemy.library.lms.dto.MemberDashboardResponseDTO;
-import org.employdemy.library.lms.dto.RecommendedBookDTO;
+import org.employdemy.library.lms.dto.*;
 import org.employdemy.library.lms.model.Book;
 import org.employdemy.library.lms.model.Transaction;
 import org.employdemy.library.lms.model.TransactionStatus;
@@ -100,6 +97,46 @@ public class DashboardService {
                     return dto;
                 })
                 .toList();
+    }
+
+    public List<OverdueRecordDTO> getOverdueBooks() {
+
+        List<Transaction> transactions = transactionRepository.findOverdueTransactions();
+
+        return transactions.stream().map(t -> {
+            OverdueRecordDTO dto = new OverdueRecordDTO();
+            dto.setTransactionId(t.getId());
+            dto.setBookTitle(t.getBook().getTitle());
+            dto.setIsbn(t.getBook().getIsbn());
+            dto.setBorrowerName(t.getUser().getName());
+            dto.setBorrowerEmail(t.getUser().getEmail());
+            dto.setDueDate(t.getDueDate().toString());
+
+            long daysOverdue = java.time.temporal.ChronoUnit.DAYS.between(t.getDueDate(), java.time.LocalDate.now());
+            dto.setDaysOverdue(daysOverdue);
+
+            return dto;
+        }).toList();
+    }
+
+    public List<DueSoonResponseDTO> getDueSoonTransactions(int days) {
+
+        LocalDate today = LocalDate.now();
+        LocalDate limit = today.plusDays(days);
+
+        List<Transaction> transactions = transactionRepository
+                .findByStatusAndDueDateBetween(TransactionStatus.BORROWED, today, limit);
+
+        return transactions.stream().map(tx -> {
+            DueSoonResponseDTO dto = new DueSoonResponseDTO();
+            dto.setBorrowId(tx.getId());
+            dto.setMemberName(tx.getUser().getName());
+            dto.setBookTitle(tx.getBook().getTitle());
+            dto.setIssuedDate(tx.getBorrowedAt());
+            dto.setDueDate(tx.getDueDate());
+            dto.setDaysRemaining(java.time.temporal.ChronoUnit.DAYS.between(today, tx.getDueDate()));
+            return dto;
+        }).toList();
     }
 
 
