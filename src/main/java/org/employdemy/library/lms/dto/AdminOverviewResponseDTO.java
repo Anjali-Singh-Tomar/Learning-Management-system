@@ -1,9 +1,12 @@
 package org.employdemy.library.lms.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-public class DashboardResponseDTO {
+@AllArgsConstructor
+public class AdminOverviewResponseDTO {
 
     private long totalBooks;
     private long booksBorrowed;

@@ -22,6 +22,11 @@ public class BookRequestDTO {
     )
     private String isbn;
 
+
+    private String imageName;
+    private String imageType;
+    private byte[] imageData;
+
     @NotNull(message = "Genre must be selected")
     private Genre genre;
 
@@ -36,9 +41,6 @@ public class BookRequestDTO {
     @Min(value = 1, message = "At least one copy is required")
     private Integer totalCopies;
 
-    private String imageName;
-    private String imageType;
-    private byte[] imageData;
 
 
 }
