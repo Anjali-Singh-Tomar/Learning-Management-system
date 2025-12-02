@@ -49,6 +49,7 @@ public class DashboardService {
              dueSoon= transactionRepository.countDueSoon(memberId, LocalDate.now(),LocalDate.now().plusDays(5));
         } else dueSoon=0L;
 
+        List<Transaction> transactions = transactionRepository.findOverdueTransactions();
 
         return new MemberDashboardResponseDTO(
                 currentlyBorrowed,
