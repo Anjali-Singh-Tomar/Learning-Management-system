@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.employdemy.library.lms.dto.AdminOverviewResponse;
 import org.employdemy.library.lms.dto.DueSoonResponseDTO;
 import org.employdemy.library.lms.dto.OverdueRecordDTO;
+import org.employdemy.library.lms.model.Book;
 import org.employdemy.library.lms.model.Transaction;
 import org.employdemy.library.lms.model.TransactionStatus;
 import org.employdemy.library.lms.repository.BookRepository;
@@ -76,6 +77,18 @@ public class DashboardService {
             return dto;
         }).toList();
     }
+
+
+
+    public List<Transaction> getBorrowedBooks(Long memberId){
+        return transactionRepository.findCurrentBorrowed(memberId);
+    }
+
+
+    public List<Book> getRecommendedBooks(Long memberId){
+        return transactionRepository.findRecommendedBooks(memberId);
+    }
+
 
 }
 
