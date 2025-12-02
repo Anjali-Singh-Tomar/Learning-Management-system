@@ -36,6 +36,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            request.setAttribute("jwt_error", "Token missing. Please login again.");
             filterChain.doFilter(request, response);
             return;
         }
@@ -43,6 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = authHeader.substring(7);
 
         if (!jwtUtil.isTokenValid(token)) {
+            request.setAttribute("jwt_error", "Invalid or expired token.");
             filterChain.doFilter(request, response);
             return;
         }
