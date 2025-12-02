@@ -18,7 +18,6 @@ import java.util.Map;
 @RestController
 @CrossOrigin
 @RequestMapping("/api/auth")
-@CrossOrigin
 public class AuthController {
 
     private final JwtUtil jwtUtil;
