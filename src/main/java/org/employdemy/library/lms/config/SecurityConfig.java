@@ -1,5 +1,6 @@
 package org.employdemy.library.lms.config;
 
+import org.employdemy.library.lms.security.CustomJwtEntryPoint;
 import org.employdemy.library.lms.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,10 +25,12 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final UserDetailsService userDetailsService;
+    private final CustomJwtEntryPoint customJwtEntryPoint;
 
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, UserDetailsService userDetailsService) {
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, UserDetailsService userDetailsService, CustomJwtEntryPoint customJwtEntryPoint) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.userDetailsService = userDetailsService;
+        this.customJwtEntryPoint=customJwtEntryPoint;
     }
 
     @Bean
@@ -44,6 +47,11 @@ public class SecurityConfig {
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .sessionManagement(sess ->
                         sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                // custom error handler for missing token
+                .exceptionHandling(ex ->
+                        ex.authenticationEntryPoint(customJwtEntryPoint)
+                )
 
                 .authorizeHttpRequests(auth -> auth
                         // CORS preflight
