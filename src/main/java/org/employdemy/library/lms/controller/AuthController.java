@@ -64,7 +64,8 @@ public class AuthController {
         }
 
         // 2️⃣ NORMAL USER LOGIN (email OR empId)
-        User user=null;
+        User user=userRepository.findByEmail(identifier)
+                .orElseGet(() -> userRepository.findByEmpId(identifier).orElse(null));
 
         // If user not found
         if (user == null) {
