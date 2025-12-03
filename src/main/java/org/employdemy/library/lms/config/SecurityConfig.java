@@ -18,19 +18,20 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationFilter jwtFilter;
     private final UserDetailsService userDetailsService;
-    private final CustomJwtEntryPoint customJwtEntryPoint;
+    private final CustomJwtEntryPoint entryPoint;
 
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, UserDetailsService userDetailsService, CustomJwtEntryPoint customJwtEntryPoint) {
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    public SecurityConfig(JwtAuthenticationFilter jwtFilter,
+                          UserDetailsService userDetailsService,
+                          CustomJwtEntryPoint entryPoint) {
+        this.jwtFilter = jwtFilter;
         this.userDetailsService = userDetailsService;
-        this.customJwtEntryPoint=customJwtEntryPoint;
+        this.entryPoint = entryPoint;
     }
 
     @Bean
@@ -39,72 +40,31 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
                 .csrf(csrf -> csrf.disable())
+                .httpBasic(hb -> hb.disable())
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(entryPoint))
                 .authenticationProvider(authenticationProvider())
-                .httpBasic(httpBasic -> httpBasic.disable())
-                .sessionManagement(sess ->
-                        sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
-                // custom error handler for missing token
-                .exceptionHandling(ex ->
-                        ex.authenticationEntryPoint(customJwtEntryPoint)
-                )
-
                 .authorizeHttpRequests(auth -> auth
-                        // CORS preflight
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-
-                        // Public endpoints
                         .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
 
-                        // Allow PUT only for roles (important)
-                        .requestMatchers(HttpMethod.PUT, "/api/books/**")
-                        .hasAnyRole("ADMIN", "LIBRARIAN")
-
-                        // ===============================
-                        // ROLE-BASED ACCESS CONTROL
-                        // ===============================
-
-                        // ADMIN ONLY — user management
-                        .requestMatchers("/api/users/**")
-                        .hasRole("ADMIN")
-
-                        // Public GET access for members
                         .requestMatchers(HttpMethod.GET, "/api/books/**").permitAll()
+                        .requestMatchers("/api/users/**").hasRole("ADMIN")
+                        .requestMatchers("/api/books/**").hasAnyRole("ADMIN", "LIBRARIAN")
+                        .requestMatchers("/api/transactions/**").hasAnyRole("ADMIN", "LIBRARIAN", "MEMBER")
+                        .requestMatchers("/api/dashboard/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/dashboard/member/**").hasRole("MEMBER")
 
-                        // Admin + Librarian can create/update/delete
-                        .requestMatchers(HttpMethod.POST, "/api/books/**").hasAnyRole("ADMIN", "LIBRARIAN")
-                        .requestMatchers(HttpMethod.PUT, "/api/books/**").hasAnyRole("ADMIN", "LIBRARIAN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/books/**").hasAnyRole("ADMIN", "LIBRARIAN")
-
-
-                        // TRANSACTIONS MODULE
-                        // Admin + Librarian → FULL access
-                        // Members → only their own allowed
-                        .requestMatchers("/api/transactions/**")
-                        .hasAnyRole("ADMIN", "LIBRARIAN", "MEMBER")
-
-                        //Dashboard Module
-                        .requestMatchers("/api/dashboard/admin")
-                        .hasRole("ADMIN")
-
-                        //Dashboard Module
-                        .requestMatchers("/api/dashboard/member/**")
-                        .hasRole("MEMBER")
-
-                        // Any other request requires authentication
                         .anyRequest().authenticated()
                 );
 
-        // H2 console frame support
-        http.headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
+        http.headers(h -> h.frameOptions(f -> f.sameOrigin()));
 
-        // Add JWT filter
-        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -114,11 +74,12 @@ public class SecurityConfig {
             throws Exception {
         return config.getAuthenticationManager();
     }
+
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setPasswordEncoder(passwordEncoder());
         provider.setUserDetailsService(userDetailsService);
-        provider.setPasswordEncoder(new BCryptPasswordEncoder(10));
         return provider;
     }
 }
