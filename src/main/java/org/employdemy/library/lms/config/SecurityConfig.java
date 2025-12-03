@@ -89,7 +89,7 @@ public class SecurityConfig {
                         .hasAnyRole("ADMIN", "LIBRARIAN", "MEMBER")
 
                         //Dashboard Module
-                        .requestMatchers("/api/dashboard/admin")
+                        .requestMatchers("/api/dashboard/admin/**")
                         .hasRole("ADMIN")
 
                         //Dashboard Module
