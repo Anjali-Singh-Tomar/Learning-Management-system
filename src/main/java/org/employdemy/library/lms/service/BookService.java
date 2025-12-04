@@ -9,6 +9,7 @@ import org.employdemy.library.lms.model.Book;
 import org.employdemy.library.lms.model.Genre;
 import org.employdemy.library.lms.repository.BookRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -99,13 +100,14 @@ public class BookService {
     // ------------------------------------------------------------------------
 
     //by author + title
+    @Transactional
     public List<BookResponseDTO> searchBooks(String keyword) {
         return bookRepository.searchBooks(keyword).stream()
                 .map(bookMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
-
+    @Transactional
     public List<BookResponseDTO> filterByGenre(Genre genre) {
         return bookRepository.findByGenre(genre).stream()
                 .map(bookMapper::toDTO)

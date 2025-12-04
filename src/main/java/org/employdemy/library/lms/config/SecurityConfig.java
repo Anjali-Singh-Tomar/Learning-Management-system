@@ -45,10 +45,10 @@ public class SecurityConfig {
 
         http
                 .csrf(csrf -> csrf.disable())
+                .authenticationProvider(authenticationProvider())
                 .httpBasic(hb -> hb.disable())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(entryPoint))
-                .authenticationProvider(authenticationProvider())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
