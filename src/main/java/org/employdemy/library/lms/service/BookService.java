@@ -9,7 +9,6 @@ import org.employdemy.library.lms.model.Book;
 import org.employdemy.library.lms.model.Genre;
 import org.employdemy.library.lms.repository.BookRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
