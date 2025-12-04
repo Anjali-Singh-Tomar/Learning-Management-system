@@ -64,21 +64,21 @@ public class AuthController {
         }
 
         // 2️⃣ NORMAL USER LOGIN (email OR empId)
-        User user = userRepository.findByEmail(identifier)
+        User user=userRepository.findByEmail(identifier)
                 .orElseGet(() -> userRepository.findByEmpId(identifier).orElse(null));
 
         // If user not found
         if (user == null) {
             return ResponseEntity
                     .status(401)
-                    .body(Map.of("error", "User Not Available"));
+                    .body(Map.of("error", "Invalid username or password"));
         }
 
         // If password incorrect
         if (!passwordEncoder.matches(password, user.getPassword())) {
             return ResponseEntity
                     .status(401)
-                    .body(Map.of("error", "Invalid password"));
+                    .body(Map.of("error", "Invalid username or password"));
         }
 
         // If inactive user

@@ -21,65 +21,66 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final CustomUserDetailsService userDetailsService;
 
-    public JwtAuthenticationFilter(JwtUtil jwtUtil, CustomUserDetailsService userDetailsService) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil,
+                                   CustomUserDetailsService userDetailsService) {
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
     }
 
     @Override
-    protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain
-    ) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain)
+            throws ServletException, IOException {
 
-        String authHeader = request.getHeader("Authorization");
+        String header = request.getHeader("Authorization");
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            request.setAttribute("jwt_error", "Token missing. Please login again.");
+        if (header == null || !header.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String token = authHeader.substring(7);
+        String token = header.substring(7);
 
         if (!jwtUtil.isTokenValid(token)) {
-            request.setAttribute("jwt_error", "Invalid or expired token.");
-            filterChain.doFilter(request, response);
-            return;
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
+                    "Invalid or expired token");
+            return;  // important
         }
 
         String identifier = jwtUtil.extractUsername(token);
 
-        if (identifier != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (identifier != null &&
+                SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            // Admin
+            // ADMIN
             if (identifier.equals("admin@lms.com") || identifier.equals("EMP0000")) {
 
-                UsernamePasswordAuthenticationToken authToken =
+                UsernamePasswordAuthenticationToken auth =
                         new UsernamePasswordAuthenticationToken(
                                 identifier,
                                 null,
                                 List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))
                         );
 
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(auth);
 
             } else {
 
-                // Normal user
-                UserDetails userDetails = userDetailsService.loadUserByUsername(identifier);
+                // NORMAL USER
+                UserDetails userDetails =
+                        userDetailsService.loadUserByUsername(identifier);
 
-                UsernamePasswordAuthenticationToken authToken =
+                UsernamePasswordAuthenticationToken auth =
                         new UsernamePasswordAuthenticationToken(
                                 userDetails,
                                 null,
                                 userDetails.getAuthorities()
                         );
 
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(auth);
             }
         }
 

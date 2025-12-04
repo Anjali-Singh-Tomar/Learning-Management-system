@@ -17,13 +17,16 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String identifier) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String identifier)
+            throws UsernameNotFoundException {
 
-        // 1️⃣ Admin login
-        if (identifier.equals("admin@lms.com") || identifier.equals("EMP0000")) {
+        // 1️⃣ Admin login (email or empId)
+        if (identifier.equalsIgnoreCase("admin@lms.com") ||
+                identifier.equalsIgnoreCase("EMP0000")) {
+
             return org.springframework.security.core.userdetails.User
                     .withUsername("admin@lms.com")
-                    .password("{noop}admin123")
+                    .password("{noop}admin123")   // Keep noop unless moving to bcrypt
                     .roles("ADMIN")
                     .build();
         }
