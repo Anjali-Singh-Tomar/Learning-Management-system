@@ -35,5 +35,15 @@ public interface BookRepository extends JpaRepository<Book, Long> {
             "   OR LOWER(b.author) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<Book> searchBooks(@Param("keyword") String keyword);
 
+    // 5. Recommended books (simple: recent books)
+    @Query("""
+    SELECT b.id
+    FROM Book b
+    WHERE b.active = true
+    ORDER BY b.publishedYear DESC
+""")
+    List<Long> findRecommendedBookIds(Long userId);
+
+
     List<Book> findByGenreOrderByPublishedYearDesc(Genre genre);
 }

@@ -110,7 +110,8 @@ public class DashboardController {
             return ResponseEntity.ok(books);
 
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(Map.of("error", "Failed to load recommended books"));
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
         }
     }
+
 }

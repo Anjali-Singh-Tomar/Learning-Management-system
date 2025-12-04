@@ -16,6 +16,7 @@ import org.employdemy.library.lms.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Base64;
 import java.util.List;
 
 @Service
@@ -79,29 +80,30 @@ public class DashboardService {
 
     public List<RecommendedBookDTO> getRecommendedBooks(Long memberId) {
 
-        return transactionRepository.findRecommendedBooks(memberId)
-                .stream()
-                .map(book -> {
-                    RecommendedBookDTO dto = new RecommendedBookDTO();
-                    dto.setId(book.getId());
-                    dto.setTitle(book.getTitle());
-                    dto.setAuthor(book.getAuthor());
-                    dto.setGenre(book.getGenre() != null ? book.getGenre().name() : null);
-                    dto.setPublishedYear(book.getPublishedYear());
+        // Fetch only IDs from JPQL — no LOBs touched
+        List<Long> bookIds = bookRepository.findRecommendedBookIds(memberId);
 
-                    // Image mapping
-                    dto.setImageName(book.getImageName());
-                    dto.setImageType(book.getImageType());
-                    if (book.getImageData() != null) {
-                        dto.setImageBase64(
-                                java.util.Base64.getEncoder().encodeToString(book.getImageData())
-                        );
-                    }
-
-                    return dto;
-                })
+        return bookIds.stream()
+                .map(id -> bookRepository.findById(id).orElse(null))
+                .filter(book -> book != null)
+                .map(book -> new RecommendedBookDTO(
+                        book.getId(),
+                        book.getTitle(),
+                        book.getAuthor(),
+                        book.getGenre(),
+                        book.getPublishedYear(),
+                        book.getImageData() != null
+                                ? Base64.getEncoder().encodeToString(book.getImageData())
+                                : null,
+                        book.getImageName(),
+                        book.getImageType()
+                ))
                 .toList();
     }
+
+
+
+
 
     public List<OverdueRecordDTO> getOverdueBooks() {
 

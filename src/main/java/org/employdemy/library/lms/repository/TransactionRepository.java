@@ -50,14 +50,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     """)
     List<Transaction> findCurrentBorrowed(Long userId);
 
-    // 5. Recommended books (simple: recent books)
-    @Query("""
-        SELECT b
-        FROM Book b
-        WHERE b.active = true
-        ORDER BY b.publishedYear DESC
-    """)
-    List<Book> findRecommendedBooks(Long userId);
+
 
     //find the overdue list
     @Query("""

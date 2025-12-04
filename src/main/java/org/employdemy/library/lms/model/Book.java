@@ -44,6 +44,7 @@ public class Book {
     private String imageType;
 
     @Lob
+    @Basic(fetch = FetchType.EAGER)
     private byte[] imageData;
 
     @Version
