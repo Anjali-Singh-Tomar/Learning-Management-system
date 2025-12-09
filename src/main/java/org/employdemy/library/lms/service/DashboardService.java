@@ -14,6 +14,7 @@ import org.employdemy.library.lms.repository.BookRepository;
 import org.employdemy.library.lms.repository.TransactionRepository;
 import org.employdemy.library.lms.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Base64;
@@ -143,6 +144,39 @@ public class DashboardService {
             dto.setDaysRemaining(java.time.temporal.ChronoUnit.DAYS.between(today, tx.getDueDate()));
             return dto;
         }).toList();
+    }
+
+    @Transactional
+    public List<MyBooksDTO> getMyBooks(Long memberId){
+        List<Transaction> list=transactionRepository.findCurrentBorrowed(memberId);
+
+        return list.stream().map(t -> {
+            LocalDate today=LocalDate.now();
+            int daysLeft=(int) today.until(t.getDueDate()).getDays();
+
+            String status;
+            if(daysLeft < 0) status = "OVERDUE";
+            else if (daysLeft <= 5) {
+                status="DUE_SOON";
+            }
+            else status = "SAFE";
+
+            return new MyBooksDTO(
+                    t.getId(),
+                    t.getBook().getId(),
+                    t.getBook().getTitle(),
+                    t.getBook().getAuthor(),
+                    t.getBorrowedAt().toString(),
+                    t.getDueDate().toString(),
+                    daysLeft,
+                    status,
+                    t.getBook().getImageData() != null
+                            ? Base64.getEncoder().encodeToString(t.getBook().getImageData())
+                            : null
+
+            );
+        }).toList();
+
     }
 
 }

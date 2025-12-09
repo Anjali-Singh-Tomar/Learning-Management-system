@@ -114,4 +114,20 @@ public class DashboardController {
         }
     }
 
+    @PreAuthorize("hasRole('MEMBER')")
+    @GetMapping("/member/{memberId}/mybooks")
+    public ResponseEntity<?> getMyBooks(@PathVariable Long memberId){
+        try {
+            List<MyBooksDTO> books=dashboardService.getMyBooks(memberId);
+
+            if(books == null || books.isEmpty()){
+                return ResponseEntity.ok(Map.of("message", "No Borrowed books"));
+            }
+
+            return ResponseEntity.ok(books);
+        } catch (Exception e){
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
+    }
+
 }
