@@ -61,6 +61,7 @@ public class DashboardService {
         );
     }
 
+    @Transactional
     public List<BorrowedBookDTO> getBorrowedBooks(Long memberId) {
 
         return transactionRepository.findCurrentBorrowed(memberId)
