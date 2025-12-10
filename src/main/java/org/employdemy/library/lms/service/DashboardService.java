@@ -62,9 +62,9 @@ public class DashboardService {
     }
 
     @Transactional
-    public List<BorrowedBookDTO> getBorrowedBooks(Long memberId) {
+    public List<BorrowedBookDTO> getAllBooks(Long memberId) {
 
-        return transactionRepository.findCurrentBorrowed(memberId)
+        return transactionRepository.findTransactionHistory(memberId)
                 .stream()
                 .map(t -> {
                     BorrowedBookDTO dto = new BorrowedBookDTO();
