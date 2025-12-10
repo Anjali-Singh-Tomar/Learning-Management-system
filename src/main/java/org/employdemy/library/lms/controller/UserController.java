@@ -40,7 +40,7 @@ public class UserController {
     }
 
     // ---------------------------------------------------------
-    // FETCH ALL USERS
+    // FETCH ALL USERS WITH NUMBER OF BOOKS BORROWED IN LIFETIME
     // ---------------------------------------------------------
     @GetMapping
     public ResponseEntity<?> getAllUsers() {

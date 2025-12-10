@@ -74,6 +74,8 @@ public class DashboardService {
                     dto.setAuthor(t.getBook().getAuthor());
                     dto.setBorrowedAt(t.getBorrowedAt());
                     dto.setDueDate(t.getDueDate());
+                    dto.setStatus(t.getStatus());
+                    dto.setReturnedAt(t.getReturnedAt());
                     return dto;
                 })
                 .toList();

@@ -11,7 +11,12 @@ public class UserResponseDTO {
     private String empId;
     private boolean active;
 
+    private int totalBorrowedBooks;
+
     // getters & setters
+    public int getTotalBorrowedBooks(){ return totalBorrowedBooks;}
+    public void setTotalBorrowedBooks(int totalBorrowedBooks){ this.totalBorrowedBooks=totalBorrowedBooks;}
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

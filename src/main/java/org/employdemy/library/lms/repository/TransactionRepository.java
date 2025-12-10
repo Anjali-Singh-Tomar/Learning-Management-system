@@ -88,5 +88,13 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 """)
     List<Transaction> searchBorrowedBooks(@Param("query") String query);
 
+    //COUNT THE NUMBER OF BOOKS BORROWED BY THE USER IN
+    @Query("""
+    SELECT COUNT(t)
+    FROM Transaction t
+    WHERE t.user.id = :userId
+""")
+    int countAllBorrowedBooks(@Param("userId") Long userId);
+
 
 }
