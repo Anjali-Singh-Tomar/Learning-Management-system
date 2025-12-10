@@ -22,6 +22,18 @@ public class UserMapper {
         return dto;
     }
 
+    public UserResponseDTO toDTO(User user, int borrowedCount) {
+        UserResponseDTO dto = new UserResponseDTO();
+        dto.setId(user.getId());
+        dto.setName(user.getName());
+        dto.setEmail(user.getEmail());
+        dto.setRole(user.getRole());
+        dto.setEmpId(user.getEmpId());
+        dto.setActive(user.isActive());
+        dto.setTotalBorrowedBooks(borrowedCount);
+        return dto;
+    }
+
     public User toEntity(UserRequestDTO dto) {
         User user = new User();
         user.setName(dto.getName());

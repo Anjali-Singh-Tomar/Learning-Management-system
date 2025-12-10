@@ -1,6 +1,7 @@
 package org.employdemy.library.lms.dto;
 
 import lombok.Data;
+import org.employdemy.library.lms.model.TransactionStatus;
 
 import java.time.LocalDate;
 
@@ -12,5 +13,8 @@ public class BorrowedBookDTO {
     private String title;
     private String author;
     private LocalDate borrowedAt;
+    private LocalDate returnedAt;
     private LocalDate dueDate;
+    private TransactionStatus status;
+
 }

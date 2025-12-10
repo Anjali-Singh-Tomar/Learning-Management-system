@@ -2,6 +2,7 @@ package org.employdemy.library.lms.mapper;
 
 import org.employdemy.library.lms.dto.TransactionRequestDTO;
 import org.employdemy.library.lms.dto.TransactionResponseDTO;
+import org.employdemy.library.lms.model.Book;
 import org.employdemy.library.lms.model.Transaction;
 import org.employdemy.library.lms.model.User;
 import org.springframework.stereotype.Component;
@@ -23,7 +24,7 @@ public class TransactionMapper {
         return dto;
     }
 
-    public Transaction toEntity(TransactionRequestDTO dto, User user, org.employdemy.library.lms.model.Book book) {
+    public Transaction toEntity(TransactionRequestDTO dto, User user, Book book) {
         Transaction transaction = new Transaction();
         transaction.setUser(user);
         transaction.setBook(book);

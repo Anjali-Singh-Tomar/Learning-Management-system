@@ -64,7 +64,7 @@ public class DashboardController {
     }
 
     // ==========================
-    // MEMBER CURRENT BORROWED BOOKS
+    // MEMBER TRANSACTION HISTORY
     // ==========================
     @PreAuthorize("hasRole('MEMBER')")
     @GetMapping("/member/{memberId}/history")

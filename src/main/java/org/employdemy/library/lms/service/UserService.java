@@ -6,6 +6,7 @@ import org.employdemy.library.lms.dto.UserUpdateDTO;
 import org.employdemy.library.lms.exception.ResourceNotFoundException;
 import org.employdemy.library.lms.mapper.UserMapper;
 import org.employdemy.library.lms.model.User;
+import org.employdemy.library.lms.repository.TransactionRepository;
 import org.employdemy.library.lms.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -17,10 +18,12 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final TransactionRepository transactionRepository;
 
-    public UserService(UserRepository userRepository, UserMapper userMapper) {
+    public UserService(UserRepository userRepository, UserMapper userMapper, TransactionRepository transactionRepository) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.transactionRepository=transactionRepository;
     }
 
     public UserResponseDTO createUser(UserRequestDTO dto) {
@@ -28,9 +31,13 @@ public class UserService {
         return userMapper.toDTO(saved);
     }
 
+    //GET AL USER WITH TOTAL NUMBER OF TRANSACTIONS
     public List<UserResponseDTO> getAllUsers() {
         return userRepository.findAll().stream()
-                .map(userMapper::toDTO)
+                .map(user -> {
+                    int borrowedCount = transactionRepository.countAllBorrowedBooks(user.getId());
+                    return userMapper.toDTO(user, borrowedCount);
+                })
                 .collect(Collectors.toList());
     }
 
