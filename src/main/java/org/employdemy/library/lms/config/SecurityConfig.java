@@ -76,8 +76,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/users/**").hasRole("ADMIN")
                         .requestMatchers("/api/books/**").hasAnyRole("ADMIN", "LIBRARIAN")
                         .requestMatchers("/api/transactions/**").hasAnyRole("ADMIN", "LIBRARIAN", "MEMBER")
-                        .requestMatchers("/api/dashboard/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/dashboard/member/**").hasRole("MEMBER")
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/member/**").hasRole("MEMBER")
 
                         .anyRequest().authenticated()
                 );

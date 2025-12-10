@@ -42,7 +42,7 @@ public class AuthController {
         String identifier = request.getIdentifier();
         String password = request.getPassword();
 
-        // 1️⃣ ADMIN LOGIN (email OR empId)
+        // ADMIN LOGIN (email OR empId)
         if ((identifier.equalsIgnoreCase(ADMIN_EMAIL) || identifier.equalsIgnoreCase(ADMIN_EMPID))
                 && password.equals(ADMIN_PASSWORD)) {
 
@@ -63,7 +63,7 @@ public class AuthController {
                     .body(Map.of("error", "Invalid admin credentials"));
         }
 
-        // 2️⃣ NORMAL USER LOGIN (email OR empId)
+        //NORMAL USER LOGIN (email OR empId)
         User user=userRepository.findByEmail(identifier)
                 .orElseGet(() -> userRepository.findByEmpId(identifier).orElse(null));
 
