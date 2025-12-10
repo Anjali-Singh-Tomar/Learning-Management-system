@@ -67,10 +67,10 @@ public class DashboardController {
     // MEMBER CURRENT BORROWED BOOKS
     // ==========================
     @PreAuthorize("hasRole('MEMBER')")
-    @GetMapping("/member/{memberId}/borrowedbooks")
+    @GetMapping("/member/{memberId}/history")
     public ResponseEntity<?> getBorrowedBooks(@PathVariable Long memberId) {
         try {
-            List<BorrowedBookDTO> books = dashboardService.getBorrowedBooks(memberId);
+            List<BorrowedBookDTO> books = dashboardService.getAllBooks(memberId);
 
             if (books == null || books.isEmpty()) {
                 return ResponseEntity.ok(Map.of("message", "No borrowed books found"));

@@ -20,4 +20,6 @@ public class MyBooksDTO {
 
     private String imageBase64;
 
+
+
 }

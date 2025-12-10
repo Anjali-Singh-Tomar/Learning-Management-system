@@ -46,11 +46,17 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
         SELECT t
         FROM Transaction t
         WHERE t.user.id = :userId
-          AND t.returnedAt IS NULL
+        AND t.status = 'BORROWED'
     """)
     List<Transaction> findCurrentBorrowed(Long userId);
 
-
+    // History of user transaction
+    @Query("""
+        SELECT t
+        FROM Transaction t
+        WHERE t.user.id = :userId
+    """)
+    List<Transaction> findTransactionHistory(Long userId);
 
     //find the overdue list
     @Query("""
@@ -72,7 +78,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     //fetch by given status
     List<Transaction> findByStatus(TransactionStatus status);
 
-    //search from the list of borrowed books on based on either username or book title
+    //search from the list of borrowed books on based on either username or book title -->edit for
     @Query("""
     SELECT t FROM Transaction t
     JOIN t.user u
