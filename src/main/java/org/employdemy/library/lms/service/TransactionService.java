@@ -54,7 +54,7 @@ public class TransactionService {
         List<User> librarians = userRepository.findByRole(Role.LIBRARIAN);
         for (User librarian : librarians) {
             notificationService.sendNotification(
-                    tx.getUser().getId(),
+                    librarian.getId(),
                     "Return Request Pending",
                     "User '" + tx.getUser().getName() +
                             "' has requested to return the book '" + tx.getBook().getTitle() + "'."
@@ -204,11 +204,7 @@ public class TransactionService {
                 .orElseThrow(() -> new RuntimeException("Book not found"));
 
         // Create pending transaction
-        Transaction tx = new Transaction();
-        tx.setUser(user);
-        tx.setBook(book);
-        tx.setStatus(TransactionStatus.REQUESTED);
-        tx.setRequestedAt(LocalDateTime.now());
+        Transaction tx = transactionMapper.toEntity(dto,user,book);
 
         Transaction saved = transactionRepository.save(tx);
 
