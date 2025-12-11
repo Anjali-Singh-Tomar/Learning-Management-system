@@ -54,7 +54,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().getAuthentication() == null) {
 
             // ADMIN
-            if (identifier.equals("admin@lms.com") || identifier.equals("EMP0000")) {
+            if (identifier.equals("anjali206542@gmail.com") || identifier.equals("EMP0001")) {
 
                 UsernamePasswordAuthenticationToken auth =
                         new UsernamePasswordAuthenticationToken(
