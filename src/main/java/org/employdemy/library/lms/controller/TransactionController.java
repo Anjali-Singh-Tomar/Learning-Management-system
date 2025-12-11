@@ -24,12 +24,12 @@ public class TransactionController {
     }
 
     // --------------------------------------------------------------
-    // 1. BORROW BOOK
+    // 1. REQUEST BORROW
     // --------------------------------------------------------------
     @PostMapping("/borrow")
-    public ResponseEntity<?> borrowBook(@Valid @RequestBody TransactionRequestDTO dto) {
+    public ResponseEntity<?> requestBorrow(@Valid @RequestBody TransactionRequestDTO dto) {
         try {
-            return ResponseEntity.ok(transactionService.borrowBook(dto));
+            return ResponseEntity.ok(transactionService.createBorrowRequest(dto));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of(
                     "error", e.getMessage()
@@ -38,7 +38,27 @@ public class TransactionController {
     }
 
     // --------------------------------------------------------------
-    // 2. RETURN BOOK
+    // 1. APPROVE BORROW REQUEST
+    // --------------------------------------------------------------
+    @PostMapping("/borrow/approve/{transactionId}")
+    public ResponseEntity<?> approveBorrow(@PathVariable Long transactionId) {
+        try {
+            return ResponseEntity.ok(transactionService.approveBorrow(transactionId));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    // --------------------------------------------------------------
+    // 1. DECLINE BORROW REQUEST
+    // --------------------------------------------------------------
+    @PostMapping("/borrow/decline/{transactionId}")
+    public ResponseEntity<?> declineBorrow(@PathVariable Long transactionId) {
+        return ResponseEntity.ok(transactionService.declineBorrow(transactionId));
+    }
+
+    // --------------------------------------------------------------
+    // 2. RETURN - REQUEST
     // --------------------------------------------------------------
     @PostMapping("/return")
     public ResponseEntity<?> returnBook(@Valid @RequestBody TransactionRequestDTO dto) {
@@ -50,6 +70,33 @@ public class TransactionController {
             ));
         }
     }
+
+    // --------------------------------------------------------------
+    // 1. APPROVE RETURN REQUEST
+    // --------------------------------------------------------------
+    @PostMapping("/return/approve/{transactionId}")
+    public ResponseEntity<?> approveReturn(@PathVariable Long transactionId) {
+        try {
+            return ResponseEntity.ok(transactionService.approveReturn(transactionId));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    // --------------------------------------------------------------
+    // 1. DECLINE RETURN REQUEST
+    // --------------------------------------------------------------
+    @PostMapping("/return/decline/{transactionId}")
+    public ResponseEntity<?> declineReturn(
+            @PathVariable Long transactionId,
+            @RequestParam(required = false) String reason) {
+        try {
+            return ResponseEntity.ok(transactionService.declineReturn(transactionId, reason));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
 
     // --------------------------------------------------------------
     // 3. RENEW BOOK

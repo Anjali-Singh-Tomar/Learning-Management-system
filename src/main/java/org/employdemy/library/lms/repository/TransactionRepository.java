@@ -96,5 +96,9 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 """)
     int countAllBorrowedBooks(@Param("userId") Long userId);
 
+    List<Transaction> findByStatusAndDueDate(TransactionStatus status, LocalDate dueDate);
+
+    List<Transaction> findByStatusAndDueDateBefore(TransactionStatus status, LocalDate date);
+
 
 }

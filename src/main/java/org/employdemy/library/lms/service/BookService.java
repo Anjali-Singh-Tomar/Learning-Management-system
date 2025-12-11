@@ -1,5 +1,6 @@
 package org.employdemy.library.lms.service;
 
+import lombok.AllArgsConstructor;
 import org.employdemy.library.lms.dto.BookRequestDTO;
 import org.employdemy.library.lms.dto.BookResponseDTO;
 import org.employdemy.library.lms.exception.ResourceAlreadyExistsException;
@@ -7,7 +8,10 @@ import org.employdemy.library.lms.exception.ResourceNotFoundException;
 import org.employdemy.library.lms.mapper.BookMapper;
 import org.employdemy.library.lms.model.Book;
 import org.employdemy.library.lms.model.Genre;
+import org.employdemy.library.lms.model.Role;
+import org.employdemy.library.lms.model.User;
 import org.employdemy.library.lms.repository.BookRepository;
+import org.employdemy.library.lms.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,15 +19,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class BookService {
 
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
-
-    public BookService(BookRepository bookRepository, BookMapper bookMapper) {
-        this.bookRepository = bookRepository;
-        this.bookMapper = bookMapper;
-    }
+    private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
 
     // ------------------------------------------------------------------------
@@ -42,6 +44,16 @@ public class BookService {
         // Save to DB
         Book savedBook = bookRepository.save(book);
 
+        List<User> members = userRepository.findByRole(Role.MEMBER);
+
+
+        for (User m : members) {
+            notificationService.sendNotification(
+                    m.getId(),
+                    "New Book Added",
+                    "A new book '" + savedBook.getTitle() + "' has been added."
+            );
+        }
         // Convert back Entity → ResponseDTO
         return bookMapper.toDTO(savedBook);
     }

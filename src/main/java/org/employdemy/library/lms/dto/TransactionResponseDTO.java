@@ -4,6 +4,7 @@ import lombok.*;
 import org.employdemy.library.lms.model.TransactionStatus;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -20,7 +21,9 @@ public class TransactionResponseDTO {
     private LocalDate borrowedAt;
     private LocalDate dueDate;
     private LocalDate returnedAt;
+    private LocalDateTime requestedAt;
     private TransactionStatus status;
+
 
     // getters & setters
 }
