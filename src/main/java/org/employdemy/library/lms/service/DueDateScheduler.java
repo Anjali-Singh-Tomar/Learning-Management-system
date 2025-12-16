@@ -19,12 +19,13 @@ public class DueDateScheduler {
     @Autowired
     private NotificationService notificationService;
 
+
     // Runs every day at 9 AM
     @Scheduled(cron = "0 0 9 * * *")
     public void sendDueSoonNotifications() {
         LocalDate today = LocalDate.now();
         LocalDate dueSoonDate = today.plusDays(1);
-
+        //TODO : SEND NOTIFICATION TO ADMIN AND LIBRARIAN WITH A LIST OF MEMBER
         List<Transaction> dueSoonTransactions =
                 transactionRepository.findByStatusAndDueDate(TransactionStatus.BORROWED, dueSoonDate);
 
@@ -37,6 +38,7 @@ public class DueDateScheduler {
     public void sendOverdueNotifications() {
         LocalDate today = LocalDate.now();
 
+        //TODO : SEND NOTIFICATION TO ADMIN AND LIBRARIAN WITH A LIST OF MEMBER
         List<Transaction> overdue = transactionRepository
                 .findByStatusAndDueDateBefore(TransactionStatus.BORROWED, today);
 

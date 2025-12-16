@@ -2,12 +2,14 @@ package org.employdemy.library.lms.service;
 
 import lombok.RequiredArgsConstructor;
 import org.employdemy.library.lms.model.Notification;
+import org.employdemy.library.lms.model.Role;
 import org.employdemy.library.lms.model.Transaction;
 import org.employdemy.library.lms.model.User;
 import org.employdemy.library.lms.repository.NotificationRepository;
 import org.employdemy.library.lms.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -16,6 +18,17 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
+    private final EmailService emailService;
+
+    // get the list of librarian with admin
+    private List<User> getAdminAndLibrarians() {
+
+        List<User> recipients = new ArrayList<>();
+        recipients.addAll(userRepository.findByRole(Role.ADMIN));
+        recipients.addAll(userRepository.findByRole(Role.LIBRARIAN));
+
+        return recipients;
+    }
 
     public void sendNotification(Long userId, String title, String message) {
 
@@ -28,6 +41,15 @@ public class NotificationService {
         notification.setMessage(message);
 
         notificationRepository.save(notification);
+
+        // TODO: include if condition to filter the email that should be sent
+        if (user.getEmail() != null) {
+            emailService.sendEmail(
+                    user.getEmail(),
+                    title,
+                    message
+            );
+        }
     }
 
     public List<Notification> getUserNotifications(Long userId) {
@@ -60,10 +82,19 @@ public class NotificationService {
         String message = "Your borrowed book '" + tx.getBook().getTitle()
                 + "' is due on " + tx.getDueDate();
 
-           // TODO: send email or push
-//        System.out.println("Sending reminder to user " + tx.getUser().getEmail() + ": " + message);
-
         sendNotification(tx.getUser().getId(), "Due Soon Books", message);
+        //TODO : SENDS NOTIFICATION/EMAIL TO LIB AND ADMIN ONE EACH
+//        List<User> recipients = getAdminAndLibrarians();
+//
+//        for (User user : recipients) {
+//            sendNotification(
+//                    user.getId(),
+//                    "Book Due Tomorrow",
+//                    "Book '" + tx.getBook().getTitle() +
+//                            "' borrowed by " + tx.getUser().getName() +
+//                            " is due tomorrow."
+//            );
+//        }
     }
 
     public void sendOverdueReminder(Transaction tx) {
