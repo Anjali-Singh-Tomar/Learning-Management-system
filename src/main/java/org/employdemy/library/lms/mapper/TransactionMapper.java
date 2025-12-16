@@ -4,6 +4,7 @@ import org.employdemy.library.lms.dto.TransactionRequestDTO;
 import org.employdemy.library.lms.dto.TransactionResponseDTO;
 import org.employdemy.library.lms.model.Book;
 import org.employdemy.library.lms.model.Transaction;
+import org.employdemy.library.lms.model.TransactionStatus;
 import org.employdemy.library.lms.model.User;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +21,7 @@ public class TransactionMapper {
         dto.setBorrowedAt(transaction.getBorrowedAt());
         dto.setDueDate(transaction.getDueDate());
         dto.setReturnedAt(transaction.getReturnedAt());
+        dto.setRequestedAt(transaction.getRequestedAt());
         dto.setStatus(transaction.getStatus());
         return dto;
     }
@@ -28,9 +30,9 @@ public class TransactionMapper {
         Transaction transaction = new Transaction();
         transaction.setUser(user);
         transaction.setBook(book);
-        transaction.setBorrowedAt(java.time.LocalDate.now());
-        transaction.setDueDate(java.time.LocalDate.now().plusDays(14)); // default 2 weeks
-        transaction.setStatus(org.employdemy.library.lms.model.TransactionStatus.BORROWED);
+        transaction.setRequestedAt(java.time.LocalDateTime.now());
+//        transaction.setDueDate(java.time.LocalDate.now().plusDays(14)); // default 2 weeks
+        transaction.setStatus(TransactionStatus.REQUESTED);
         return transaction;
     }
 }

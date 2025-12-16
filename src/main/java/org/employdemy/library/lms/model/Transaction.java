@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "transactions")
@@ -24,6 +25,7 @@ public class Transaction {
     @JoinColumn(name = "book_id")
     private Book book;
 
+    private LocalDateTime requestedAt;
     private LocalDate borrowedAt;
     private LocalDate dueDate;
     private LocalDate returnedAt;

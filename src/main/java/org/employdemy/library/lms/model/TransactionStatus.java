@@ -1,7 +1,11 @@
 package org.employdemy.library.lms.model;
 
 public enum TransactionStatus {
+    REQUESTED,
     BORROWED,
     RETURNED,
-    RENEWED
+    RENEWED,
+    DECLINED,
+    RETURN_REQUESTED,
+    RETURN_DECLINED
 }
