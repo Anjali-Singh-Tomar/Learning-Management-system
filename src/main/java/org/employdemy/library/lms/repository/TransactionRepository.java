@@ -97,4 +97,42 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     int countAllBorrowedBooks(@Param("userId") Long userId);
 
 
+    //Librarian Dashboard
+    long countByStatusAndBorrowedAt(TransactionStatus status, LocalDate date);
+
+    long countByStatusAndReturnedAt(TransactionStatus status, LocalDate date);
+
+    long countByReturnedAtIsNullAndDueDate(LocalDate date);
+
+    @Query("""
+    SELECT t
+    FROM Transaction t
+    WHERE t.status = 'BORROWED'
+      AND t.borrowedAt = :today
+""")
+    List<Transaction> findIssuedToday(LocalDate today);
+
+
+    @Query("""
+    SELECT t
+    FROM Transaction t
+    WHERE t.status = 'RETURNED'
+      AND t.returnedAt = :today
+""")
+    List<Transaction> findReturnedToday(LocalDate today);
+
+
+    @Query("""
+    SELECT t
+    FROM Transaction t
+    WHERE t.returnedAt IS NULL
+      AND t.dueDate BETWEEN :today AND :sevenDays
+    ORDER BY t.dueDate ASC
+""")
+    List<Transaction> findPendingReturns(
+            LocalDate today,
+            LocalDate sevenDays
+    );
+
+
 }
