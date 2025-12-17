@@ -1,14 +1,13 @@
 package org.employdemy.library.lms.service;
 
 import lombok.RequiredArgsConstructor;
-import org.employdemy.library.lms.model.Notification;
-import org.employdemy.library.lms.model.Role;
-import org.employdemy.library.lms.model.Transaction;
-import org.employdemy.library.lms.model.User;
+import org.employdemy.library.lms.model.*;
 import org.employdemy.library.lms.repository.NotificationRepository;
+import org.employdemy.library.lms.repository.TransactionRepository;
 import org.employdemy.library.lms.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +18,7 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
     private final EmailService emailService;
+    private final TransactionRepository transactionRepository;
 
     // get the list of librarian with admin
     private List<User> getAdminAndLibrarians() {
@@ -28,6 +28,25 @@ public class NotificationService {
         recipients.addAll(userRepository.findByRole(Role.LIBRARIAN));
 
         return recipients;
+    }
+
+    // create a string of the transaction list
+    private String buildMessage(List<Transaction> transactions) {
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("The following books require attention:\n\n");
+        sb.append("User ID | User Name | Book Title | Due Date\n");
+        sb.append("------------------------------------------\n");
+
+        for (Transaction tx : transactions) {
+            sb.append(tx.getUser().getId()).append(" | ")
+                    .append(tx.getUser().getName()).append(" | ")
+                    .append(tx.getBook().getTitle()).append(" | ")
+                    .append(tx.getDueDate())
+                    .append("\n");
+        }
+
+        return sb.toString();
     }
 
     public void sendNotification(Long userId, String title, String message) {
@@ -81,20 +100,27 @@ public class NotificationService {
     public void sendDueSoonReminder(Transaction tx) {
         String message = "Your borrowed book '" + tx.getBook().getTitle()
                 + "' is due on " + tx.getDueDate();
-
         sendNotification(tx.getUser().getId(), "Due Soon Books", message);
-        //TODO : SENDS NOTIFICATION/EMAIL TO LIB AND ADMIN ONE EACH
-//        List<User> recipients = getAdminAndLibrarians();
-//
-//        for (User user : recipients) {
-//            sendNotification(
-//                    user.getId(),
-//                    "Book Due Tomorrow",
-//                    "Book '" + tx.getBook().getTitle() +
-//                            "' borrowed by " + tx.getUser().getName() +
-//                            " is due tomorrow."
-//            );
-//        }
+    }
+
+    public void sendDueSoonReminderToAdminLib(List<Transaction> transactions) {
+
+        if (transactions.isEmpty()) {
+            return;
+        }
+
+        List<User> recipients = getAdminAndLibrarians();
+
+        String title = "📘 Books Due Soon (Next 3 Days)";
+        String message = buildMessage(transactions);
+
+        for (User user : recipients) {
+            sendNotification(
+                    user.getId(),
+                    title,
+                    message
+            );
+        }
     }
 
     public void sendOverdueReminder(Transaction tx) {
@@ -104,6 +130,26 @@ public class NotificationService {
                 + " and is now OVERDUE. Please return it as soon as possible.";
 
         sendNotification(tx.getUser().getId(), "Book Overdue", message);
+    }
+
+    public void sendOverdueReminderToAdminLib(List<Transaction> transactions) {
+
+        if (transactions.isEmpty()) {
+            return;
+        }
+
+        List<User> recipients = getAdminAndLibrarians();
+
+        String title = "📘 Books Overdue for return";
+        String message = buildMessage(transactions);
+
+        for (User user : recipients) {
+            sendNotification(
+                    user.getId(),
+                    title,
+                    message
+            );
+        }
     }
 
 }

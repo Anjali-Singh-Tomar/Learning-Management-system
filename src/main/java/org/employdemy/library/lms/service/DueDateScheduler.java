@@ -24,11 +24,15 @@ public class DueDateScheduler {
     @Scheduled(cron = "0 0 9 * * *")
     public void sendDueSoonNotifications() {
         LocalDate today = LocalDate.now();
-        LocalDate dueSoonDate = today.plusDays(1);
-        //TODO : SEND NOTIFICATION TO ADMIN AND LIBRARIAN WITH A LIST OF MEMBER
+        LocalDate dueSoonDate = today.plusDays(3);
+
         List<Transaction> dueSoonTransactions =
                 transactionRepository.findByStatusAndDueDate(TransactionStatus.BORROWED, dueSoonDate);
 
+        // send notification to admin and librarian as a list
+        notificationService.sendDueSoonReminderToAdminLib(dueSoonTransactions);
+
+        // send notification to each member
         dueSoonTransactions.forEach(tx -> {
             notificationService.sendDueSoonReminder(tx);
         });
@@ -38,10 +42,13 @@ public class DueDateScheduler {
     public void sendOverdueNotifications() {
         LocalDate today = LocalDate.now();
 
-        //TODO : SEND NOTIFICATION TO ADMIN AND LIBRARIAN WITH A LIST OF MEMBER
         List<Transaction> overdue = transactionRepository
                 .findByStatusAndDueDateBefore(TransactionStatus.BORROWED, today);
 
+        // send notification to admin and librarian as a list
+        notificationService.sendOverdueReminderToAdminLib(overdue);
+
+        // send notification to each member
         overdue.forEach(tx -> {
             notificationService.sendOverdueReminder(tx);
         });
