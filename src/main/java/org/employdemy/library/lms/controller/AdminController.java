@@ -46,7 +46,7 @@ public class AdminController {
         try {
             return ResponseEntity.ok(adminService.getDueSoonTransactions(days));
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(Map.of("error", "Failed to fetch due-soon books"));
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
         }
     }
 }
