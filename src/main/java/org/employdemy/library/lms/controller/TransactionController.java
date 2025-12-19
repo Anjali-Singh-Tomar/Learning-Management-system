@@ -172,5 +172,18 @@ public class TransactionController {
             ));
         }
     }
+
+    // --------------------------------------------------------------
+    // 6. SEND REMINDER TO MEMBER FOR RETURN
+    // --------------------------------------------------------------
+    @PostMapping("/{transactionId}/reminder")
+    public ResponseEntity<?> sendReminder(@PathVariable Long transactionId) {
+
+        transactionService.sendReminder(transactionId);
+        return ResponseEntity.ok(Map.of(
+                "message", "Reminder sent successfully"
+        ));
+    }
+
 }
 

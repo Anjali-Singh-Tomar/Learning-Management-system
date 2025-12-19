@@ -1,11 +1,14 @@
 package org.employdemy.library.lms.service;
 
 import lombok.RequiredArgsConstructor;
+import org.employdemy.library.lms.dto.NotificationResponseDTO;
+import org.employdemy.library.lms.mapper.NotificationMapper;
 import org.employdemy.library.lms.model.*;
 import org.employdemy.library.lms.repository.NotificationRepository;
 import org.employdemy.library.lms.repository.TransactionRepository;
 import org.employdemy.library.lms.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -18,7 +21,7 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
     private final EmailService emailService;
-    private final TransactionRepository transactionRepository;
+    private final NotificationMapper notificationMapper;
 
     // get the list of librarian with admin
     private List<User> getAdminAndLibrarians() {
@@ -71,8 +74,12 @@ public class NotificationService {
         }
     }
 
-    public List<Notification> getUserNotifications(Long userId) {
-        return notificationRepository.findByUserIdOrderByCreatedAtDesc(userId);
+    public List<NotificationResponseDTO> getNotificationsForUser(Long userId) {
+
+        List<Notification> notifications =
+                notificationRepository.findByUserIdOrderByCreatedAtDesc(userId);
+
+        return notificationMapper.toDtoList(notifications);
     }
 
     public void markAsRead(Long id) {

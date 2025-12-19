@@ -31,6 +31,18 @@ public class TransactionService {
     private final NotificationService notificationService;
 
 
+    // HELPER METHOD FOR SEND-REMINDER
+    private String buildSingleReminderMessage(Transaction tx) {
+
+        return "Dear " + tx.getUser().getName() + ",\n\n" +
+                "This is a reminder to return the borrowed book:\n\n" +
+                "Book Title: " + tx.getBook().getTitle() + "\n" +
+                "Due Date: " + tx.getDueDate() + "\n\n" +
+                "Please return or renew the book at the earliest.\n\n" +
+                "Library Management System";
+    }
+
+
     // ---------------------------------------------------------------------
     // RETURN BOOK- REQUEST
     // ---------------------------------------------------------------------
@@ -276,6 +288,31 @@ public class TransactionService {
         );
 
         return "Borrow request declined successfully.";
+    }
+
+    public void sendReminder(Long transactionId) {
+
+        Transaction tx = transactionRepository.findById(transactionId)
+                .orElseThrow(() -> new RuntimeException("Transaction not found"));
+
+        if (tx.getStatus() != TransactionStatus.BORROWED) {
+            throw new RuntimeException("Reminder can only be sent for borrowed books");
+        }
+
+        User member = tx.getUser();
+
+        String title = "📚 Book Return Reminder";
+        String message = buildSingleReminderMessage(tx);
+
+        // Notify member
+        notificationService.sendNotification(
+                member.getId(),
+                title,
+                message
+        );
+
+        // OPTIONAL: notify admin
+//        notifyAdminForManualReminder(tx);
     }
 
 

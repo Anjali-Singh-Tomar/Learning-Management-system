@@ -112,6 +112,7 @@ public class BookService {
     // ------------------------------------------------------------------------
 
     //by author + title
+    @Transactional
     public List<BookResponseDTO> searchBooks(String keyword) {
         return bookRepository.searchBooks(keyword).stream()
                 .map(bookMapper::toDTO)
