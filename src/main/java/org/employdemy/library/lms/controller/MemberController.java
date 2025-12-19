@@ -78,10 +78,6 @@ public class MemberController {
         try {
             List<MyBooksDTO> books=memberService.getMyBooks(memberId);
 
-            if(books == null || books.isEmpty()){
-                return ResponseEntity.ok(Map.of("message", "No Borrowed books"));
-            }
-
             return ResponseEntity.ok(books);
         } catch (Exception e){
             return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));

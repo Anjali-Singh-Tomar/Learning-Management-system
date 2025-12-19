@@ -10,12 +10,14 @@ import org.employdemy.library.lms.repository.BookRepository;
 import org.employdemy.library.lms.repository.TransactionRepository;
 import org.employdemy.library.lms.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AdminService {
 
 

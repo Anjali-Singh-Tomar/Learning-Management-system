@@ -93,12 +93,6 @@ public class MemberService {
             LocalDate today=LocalDate.now();
             int daysLeft=(int) today.until(t.getDueDate()).getDays();
 
-            String status;
-            if(daysLeft < 0) status = "OVERDUE";
-            else if (daysLeft <= 5) {
-                status="DUE_SOON";
-            }
-            else status = "SAFE";
 
             return new MyBooksDTO(
                     t.getId(),
@@ -108,7 +102,7 @@ public class MemberService {
                     t.getBorrowedAt().toString(),
                     t.getDueDate().toString(),
                     daysLeft,
-                    status,
+                    transactionRepository.findStatus(t.getId()),
                     t.getBook().getImageData() != null
                             ? Base64.getEncoder().encodeToString(t.getBook().getImageData())
                             : null

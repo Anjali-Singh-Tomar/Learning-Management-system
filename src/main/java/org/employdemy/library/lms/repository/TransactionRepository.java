@@ -43,11 +43,11 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 
     // 4. List of currently borrowed books
     @Query("""
-        SELECT t
-        FROM Transaction t
-        WHERE t.user.id = :userId
-        AND t.status = 'BORROWED'
-    """)
+    SELECT t
+    FROM Transaction t
+    WHERE t.user.id = :userId
+      AND t.status IN ('BORROWED', 'RENEWED')
+""")
     List<Transaction> findCurrentBorrowed(Long userId);
 
     // History of user transaction
@@ -137,6 +137,14 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             LocalDate today,
             LocalDate sevenDays
     );
+
+
+    @Query("""
+            SELECT status
+            FROM Transaction t
+            WHERE t.id = :transactionId
+""")
+    String findStatus(Long transactionId);
 
 
 }

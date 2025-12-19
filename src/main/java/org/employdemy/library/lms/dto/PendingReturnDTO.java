@@ -1,9 +1,5 @@
 package org.employdemy.library.lms.dto;
 
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
 import java.time.LocalDate;
 
 public record PendingReturnDTO(
