@@ -139,4 +139,12 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     );
 
 
+    @Query("""
+            SELECT status
+            FROM Transaction t
+            WHERE t.id = :transactionId
+""")
+    String findStatus(Long transactionId);
+
+
 }
