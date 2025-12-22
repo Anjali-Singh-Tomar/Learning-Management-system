@@ -179,7 +179,7 @@ public class BookController {
     // ----------------------------------------------------
     @GetMapping("/filter/genre")
     @PermitAll
-    public ResponseEntity<?> filterByGenre(@RequestParam Genre genre) {
+    public ResponseEntity<?> filterByGenre(@RequestParam List<Genre> genre) {
         try {
             return ResponseEntity.ok(bookService.filterByGenre(genre));
         } catch (Exception e) {

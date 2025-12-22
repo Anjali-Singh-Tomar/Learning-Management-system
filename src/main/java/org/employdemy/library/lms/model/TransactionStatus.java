@@ -5,6 +5,8 @@ public enum TransactionStatus {
     BORROWED,
     RETURNED,
     RENEWED,
+    RENEW_REQUESTED,
+    RENEW_DECLINED,
     DECLINED,
     RETURN_REQUESTED,
     RETURN_DECLINED

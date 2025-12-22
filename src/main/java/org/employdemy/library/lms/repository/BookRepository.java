@@ -22,7 +22,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     List<Book> findByAuthorContainingIgnoreCase(String author);
 
     // Filter by genre
-    List<Book> findByGenre(Genre genre);
+    List<Book> findByGenreIn(List<Genre> genre);
 
     // Active books only
     List<Book> findByActiveTrue();
