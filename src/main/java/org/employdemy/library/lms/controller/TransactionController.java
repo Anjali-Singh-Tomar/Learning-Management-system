@@ -40,7 +40,7 @@ public class TransactionController {
     // --------------------------------------------------------------
     // 1. APPROVE BORROW REQUEST
     // --------------------------------------------------------------
-    @PostMapping("/borrow/approve/{transactionId}")
+    @PostMapping("/approve/borrow/{transactionId}")
     public ResponseEntity<?> approveBorrow(@PathVariable Long transactionId) {
         try {
             return ResponseEntity.ok(transactionService.approveBorrow(transactionId));
@@ -52,7 +52,7 @@ public class TransactionController {
     // --------------------------------------------------------------
     // 1. DECLINE BORROW REQUEST
     // --------------------------------------------------------------
-    @PostMapping("/borrow/decline/{transactionId}")
+    @PostMapping("/decline/borrow/{transactionId}")
     public ResponseEntity<?> declineBorrow(@PathVariable Long transactionId) {
         return ResponseEntity.ok(transactionService.declineBorrow(transactionId));
     }
@@ -74,7 +74,7 @@ public class TransactionController {
     // --------------------------------------------------------------
     // 1. APPROVE RETURN REQUEST
     // --------------------------------------------------------------
-    @PostMapping("/return/approve/{transactionId}")
+    @PostMapping("/approve/return/{transactionId}")
     public ResponseEntity<?> approveReturn(@PathVariable Long transactionId) {
         try {
             return ResponseEntity.ok(transactionService.approveReturn(transactionId));
@@ -86,7 +86,7 @@ public class TransactionController {
     // --------------------------------------------------------------
     // 1. DECLINE RETURN REQUEST
     // --------------------------------------------------------------
-    @PostMapping("/return/decline/{transactionId}")
+    @PostMapping("/decline/return/{transactionId}")
     public ResponseEntity<?> declineReturn(
             @PathVariable Long transactionId,
             @RequestParam(required = false) String reason) {
@@ -115,7 +115,7 @@ public class TransactionController {
     // --------------------------------------------------------------
     // 3. APPROVE - RENEW BOOK
     // --------------------------------------------------------------
-    @PostMapping("/renew/approve/{transactionId}")
+    @PostMapping("/approve/renew/{transactionId}")
     public ResponseEntity<?> renewApprove(@PathVariable Long transactionId) {
         try {
             return ResponseEntity.ok(transactionService.approveRenewRequest(transactionId));
@@ -129,7 +129,7 @@ public class TransactionController {
     // --------------------------------------------------------------
     // 1. DECLINE RENEW REQUEST
     // --------------------------------------------------------------
-    @PostMapping("/renew/decline/{transactionId}")
+    @PostMapping("/decline/renew/{transactionId}")
     public ResponseEntity<?> declineRenew(
             @PathVariable Long transactionId,
             @RequestParam(required = false) String reason) {
