@@ -112,6 +112,7 @@ public class BookService {
     // ------------------------------------------------------------------------
 
     //by author + title
+    @Transactional
     public List<BookResponseDTO> searchBooks(String keyword) {
         return bookRepository.searchBooks(keyword).stream()
                 .map(bookMapper::toDTO)
@@ -120,8 +121,8 @@ public class BookService {
 
 
     @Transactional
-    public List<BookResponseDTO> filterByGenre(Genre genre) {
-        return bookRepository.findByGenre(genre).stream()
+    public List<BookResponseDTO> filterByGenre(List<Genre> genres) {
+        return bookRepository.findByGenreIn(genres).stream()
                 .map(bookMapper::toDTO)
                 .collect(Collectors.toList());
     }

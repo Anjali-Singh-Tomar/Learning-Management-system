@@ -31,6 +31,18 @@ public class TransactionService {
     private final NotificationService notificationService;
 
 
+    // HELPER METHOD FOR SEND-REMINDER
+    private String buildSingleReminderMessage(Transaction tx) {
+
+        return "Dear " + tx.getUser().getName() + ",\n\n" +
+                "This is a reminder to return the borrowed book:\n\n" +
+                "Book Title: " + tx.getBook().getTitle() + "\n" +
+                "Due Date: " + tx.getDueDate() + "\n\n" +
+                "Please return or renew the book at the earliest.\n\n" +
+                "Library Management System";
+    }
+
+
     // ---------------------------------------------------------------------
     // RETURN BOOK- REQUEST
     // ---------------------------------------------------------------------
@@ -121,24 +133,82 @@ public class TransactionService {
 
 
     // ---------------------------------------------------------------------
-    // RENEW BOOK
+    // RENEW BOOK REQUEST
     // ---------------------------------------------------------------------
-    public TransactionResponseDTO renewBook(TransactionRequestDTO dto) {
-
-        User user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + dto.getUserId()));
-
-        Book book = bookService.getBookEntity(dto.getBookId());
+    public TransactionResponseDTO createRenewRequest(Long transactionId) {
 
         Transaction transaction = transactionRepository
-                .findByUserAndBookAndStatus(user, book, TransactionStatus.BORROWED)
+                .findById(transactionId)
                 .orElseThrow(() -> new ResourceNotFoundException("No active borrow record found"));
+        User user= transaction.getUser();
+        Book book= transaction.getBook();
 
-        transaction.setDueDate(transaction.getDueDate().plusDays(14));
-        transaction.setStatus(TransactionStatus.RENEWED);
+        // Send notification to librarians
+        List<User> librarians = userRepository.findByRole(Role.LIBRARIAN);
+        for (User librarian : librarians) {
+            notificationService.sendNotification(
+                    librarian.getId(),
+                    "Renew Request",
+                    user.getName() + " has requested to Renew" + book.getTitle()
+            );
+        }
 
+        transaction.setStatus(TransactionStatus.RENEW_REQUESTED);
         Transaction saved = transactionRepository.save(transaction);
         return transactionMapper.toDTO(saved);
+    }
+
+    // ---------------------------------------------------------------------
+    // RENEW REQUEST APPROVED
+    // ---------------------------------------------------------------------
+    @Transactional
+    public String approveRenewRequest(Long transactionId) {
+
+        Transaction tx = transactionRepository.findById(transactionId)
+                .orElseThrow(() -> new RuntimeException("Transaction not found"));
+
+        if (tx.getStatus() != TransactionStatus.RENEW_REQUESTED) {
+            throw new RuntimeException("This is not a renew request.");
+        }
+
+        tx.setStatus(TransactionStatus.RENEWED);
+        tx.setDueDate(LocalDate.now().plusDays(7));
+        transactionRepository.save(tx);
+
+        // Notify user
+        notificationService.sendNotification(
+                tx.getUser().getId(),
+                "Renew Approved",
+                "Your renew request for '" + tx.getBook().getTitle() + "' has been approved."
+        );
+
+        return "Renew successfully completed.";
+    }
+
+    // ---------------------------------------------------------------------
+    // RENEW REQUEST DECLINE
+    // ---------------------------------------------------------------------
+    @Transactional
+    public String declineRenew(Long transactionId, String reason) {
+
+        Transaction tx = transactionRepository.findById(transactionId)
+                .orElseThrow(() -> new RuntimeException("Transaction not found"));
+
+        if (tx.getStatus() != TransactionStatus.RENEW_REQUESTED) {
+            throw new RuntimeException("This is not a renew request.");
+        }
+
+        tx.setStatus(TransactionStatus.RENEW_DECLINED);
+        transactionRepository.save(tx);
+
+        notificationService.sendNotification(
+                tx.getUser().getId(),
+                "Renew Declined",
+                "Your request to renew '" + tx.getBook().getTitle() + "' was declined. " +
+                        (reason != null ? "Reason: " + reason : "")
+        );
+
+        return "Renew request declined.";
     }
 
     // ---------------------------------------------------------------------
@@ -276,6 +346,31 @@ public class TransactionService {
         );
 
         return "Borrow request declined successfully.";
+    }
+
+    public void sendReminder(Long transactionId) {
+
+        Transaction tx = transactionRepository.findById(transactionId)
+                .orElseThrow(() -> new RuntimeException("Transaction not found"));
+
+        if (tx.getStatus() != TransactionStatus.BORROWED) {
+            throw new RuntimeException("Reminder can only be sent for borrowed books");
+        }
+
+        User member = tx.getUser();
+
+        String title = "📚 Book Return Reminder";
+        String message = buildSingleReminderMessage(tx);
+
+        // Notify member
+        notificationService.sendNotification(
+                member.getId(),
+                title,
+                message
+        );
+
+        // OPTIONAL: notify admin
+//        notifyAdminForManualReminder(tx);
     }
 
 

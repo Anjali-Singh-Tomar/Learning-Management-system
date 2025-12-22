@@ -40,7 +40,7 @@ public class TransactionController {
     // --------------------------------------------------------------
     // 1. APPROVE BORROW REQUEST
     // --------------------------------------------------------------
-    @PostMapping("/borrow/approve/{transactionId}")
+    @PostMapping("/approve/borrow/{transactionId}")
     public ResponseEntity<?> approveBorrow(@PathVariable Long transactionId) {
         try {
             return ResponseEntity.ok(transactionService.approveBorrow(transactionId));
@@ -52,7 +52,7 @@ public class TransactionController {
     // --------------------------------------------------------------
     // 1. DECLINE BORROW REQUEST
     // --------------------------------------------------------------
-    @PostMapping("/borrow/decline/{transactionId}")
+    @PostMapping("/decline/borrow/{transactionId}")
     public ResponseEntity<?> declineBorrow(@PathVariable Long transactionId) {
         return ResponseEntity.ok(transactionService.declineBorrow(transactionId));
     }
@@ -74,7 +74,7 @@ public class TransactionController {
     // --------------------------------------------------------------
     // 1. APPROVE RETURN REQUEST
     // --------------------------------------------------------------
-    @PostMapping("/return/approve/{transactionId}")
+    @PostMapping("/approve/return/{transactionId}")
     public ResponseEntity<?> approveReturn(@PathVariable Long transactionId) {
         try {
             return ResponseEntity.ok(transactionService.approveReturn(transactionId));
@@ -86,7 +86,7 @@ public class TransactionController {
     // --------------------------------------------------------------
     // 1. DECLINE RETURN REQUEST
     // --------------------------------------------------------------
-    @PostMapping("/return/decline/{transactionId}")
+    @PostMapping("/decline/return/{transactionId}")
     public ResponseEntity<?> declineReturn(
             @PathVariable Long transactionId,
             @RequestParam(required = false) String reason) {
@@ -101,14 +101,42 @@ public class TransactionController {
     // --------------------------------------------------------------
     // 3. RENEW BOOK
     // --------------------------------------------------------------
-    @PostMapping("/renew")
-    public ResponseEntity<?> renewBook(@Valid @RequestBody TransactionRequestDTO dto) {
+    @PostMapping("/renew/{transactionId}")
+    public ResponseEntity<?> renewBook(@PathVariable Long transactionId) {
         try {
-            return ResponseEntity.ok(transactionService.renewBook(dto));
+            return ResponseEntity.ok(transactionService.createRenewRequest(transactionId));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of(
                     "error", e.getMessage()
             ));
+        }
+    }
+
+    // --------------------------------------------------------------
+    // 3. APPROVE - RENEW BOOK
+    // --------------------------------------------------------------
+    @PostMapping("/approve/renew/{transactionId}")
+    public ResponseEntity<?> renewApprove(@PathVariable Long transactionId) {
+        try {
+            return ResponseEntity.ok(transactionService.approveRenewRequest(transactionId));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "error", e.getMessage()
+            ));
+        }
+    }
+
+    // --------------------------------------------------------------
+    // 1. DECLINE RENEW REQUEST
+    // --------------------------------------------------------------
+    @PostMapping("/decline/renew/{transactionId}")
+    public ResponseEntity<?> declineRenew(
+            @PathVariable Long transactionId,
+            @RequestParam(required = false) String reason) {
+        try {
+            return ResponseEntity.ok(transactionService.declineRenew(transactionId, reason));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
 
@@ -172,5 +200,18 @@ public class TransactionController {
             ));
         }
     }
+
+    // --------------------------------------------------------------
+    // 6. SEND REMINDER TO MEMBER FOR RETURN
+    // --------------------------------------------------------------
+    @PostMapping("/{transactionId}/reminder")
+    public ResponseEntity<?> sendReminder(@PathVariable Long transactionId) {
+
+        transactionService.sendReminder(transactionId);
+        return ResponseEntity.ok(Map.of(
+                "message", "Reminder sent successfully"
+        ));
+    }
+
 }
 

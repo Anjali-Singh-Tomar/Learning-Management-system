@@ -1,6 +1,7 @@
 package org.employdemy.library.lms.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.employdemy.library.lms.dto.NotificationResponseDTO;
 import org.employdemy.library.lms.model.Notification;
 import org.employdemy.library.lms.service.NotificationService;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +20,12 @@ public class NotificationController {
     // GET ALL NOTIFICATIONS FOR A USER
     // ------------------------------------------------------------
     @GetMapping("/{userId}")
-    public ResponseEntity<List<Notification>> getUserNotifications(@PathVariable Long userId) {
-        List<Notification> notifications = notificationService.getUserNotifications(userId);
-        return ResponseEntity.ok(notifications);
+    public ResponseEntity<List<NotificationResponseDTO>> getNotifications(
+            @PathVariable Long userId) {
+
+        return ResponseEntity.ok(
+                notificationService.getNotificationsForUser(userId)
+        );
     }
 
     // ------------------------------------------------------------
