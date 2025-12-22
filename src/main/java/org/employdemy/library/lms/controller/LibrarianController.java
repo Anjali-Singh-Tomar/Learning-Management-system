@@ -1,14 +1,12 @@
 package org.employdemy.library.lms.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.employdemy.library.lms.dto.IssueBookRequestDTO;
 import org.employdemy.library.lms.dto.LibrarianOverviewResponse;
 import org.employdemy.library.lms.service.LibrarianService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -60,6 +58,16 @@ public class LibrarianController {
             e.printStackTrace();
             return ResponseEntity.status(500)
                     .body(Map.of("error", "Failed to load pending returns"));
+        }
+    }
+
+    @PostMapping("/sidebar/issuebook")
+    @PreAuthorize("hasRole('LIBRARIAN')")
+    public ResponseEntity<?> issueBook(@RequestBody IssueBookRequestDTO dto){
+        try {
+            return ResponseEntity.ok(librarianService.issueBook(dto));
+        }catch (Exception e){
+            return ResponseEntity.status(500).body(Map.of("error",e.getMessage()));
         }
     }
 
