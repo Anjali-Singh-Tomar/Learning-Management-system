@@ -71,4 +71,24 @@ public class LibrarianController {
         }
     }
 
+    @GetMapping("/sidebar/managebooks")
+    @PreAuthorize("hasRole('LIBRARIAN')")
+    public ResponseEntity<?> manageBooks(){
+        try {
+            return ResponseEntity.ok(librarianService.getManageBooks());
+        }catch (Exception e){
+            return ResponseEntity.status(500).body(Map.of("error",e.getMessage()));
+        }
+    }
+
+    @GetMapping("/sidebar/managemembers")
+    @PreAuthorize("hasRole('LIBRARIAN')")
+    public ResponseEntity<?> manageMembers(){
+        try{
+            return ResponseEntity.ok(librarianService.manageMembers());
+        }catch (Exception e){
+            return ResponseEntity.status(500).body(Map.of("error",e.getMessage()));
+        }
+    }
+
 }

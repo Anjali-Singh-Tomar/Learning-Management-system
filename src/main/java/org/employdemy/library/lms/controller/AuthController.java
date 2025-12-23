@@ -37,6 +37,7 @@ public class AuthController {
     private static final String ADMIN_PASSWORD = "admin123";
     private static final Long ADMIN_USER_ID = 0L;
 
+    private static final String libraryName="Employdemy Library";
 
     public AuthController(
             JwtUtil jwtUtil,

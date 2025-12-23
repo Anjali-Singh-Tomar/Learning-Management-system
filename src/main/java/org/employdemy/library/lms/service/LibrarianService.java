@@ -3,10 +3,7 @@ package org.employdemy.library.lms.service;
 import lombok.RequiredArgsConstructor;
 import org.employdemy.library.lms.dto.*;
 import org.employdemy.library.lms.exception.ResourceNotFoundException;
-import org.employdemy.library.lms.model.Book;
-import org.employdemy.library.lms.model.Transaction;
-import org.employdemy.library.lms.model.TransactionStatus;
-import org.employdemy.library.lms.model.User;
+import org.employdemy.library.lms.model.*;
 import org.employdemy.library.lms.repository.BookRepository;
 import org.employdemy.library.lms.repository.TransactionRepository;
 import org.employdemy.library.lms.repository.UserRepository;
@@ -157,6 +154,41 @@ public class LibrarianService {
                 dto.getDueDate(),
                 "Book Issued Successfully"
         );
+    }
+
+
+    @Transactional
+    public List<ManageBooksDTO> getManageBooks(){
+        List<Book> book=bookRepository.findAll();
+
+        return book.stream()
+                .map(b->{
+                    ManageBooksDTO dto=new ManageBooksDTO();
+                    dto.setTitle(b.getTitle());
+                    dto.setAuthor(b.getAuthor());
+                    dto.setIsbn(b.getIsbn());
+                    dto.setGenre(b.getGenre());
+                    dto.setStatus(b.getAvailableCopies()>0?"Available":"Borrowed");
+                    dto.setAvailableCopies(b.getAvailableCopies());
+                    return dto;
+                })
+                .toList();
+
+    }
+
+    public List<ManageMembersDTO> manageMembers(){
+        List<User> users=userRepository.findByRole(Role.MEMBER);
+
+        return users.stream()
+                .map(u->{
+                    ManageMembersDTO dto=new ManageMembersDTO();
+                    dto.setName(u.getName());
+                    dto.setEmail(u.getEmail());
+                    dto.setStatus(u.isActive()?"Active":"Not Active");
+                    dto.setBorrowedCount(transactionRepository.countByUser_IdAndReturnedAtIsNull(u.getId()));
+                    return dto;
+                })
+                .toList();
     }
 
 
