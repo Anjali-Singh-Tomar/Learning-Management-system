@@ -3,19 +3,18 @@ package org.employdemy.library.lms.service;
 import lombok.AllArgsConstructor;
 import org.employdemy.library.lms.dto.BookRequestDTO;
 import org.employdemy.library.lms.dto.BookResponseDTO;
+import org.employdemy.library.lms.dto.BrowseBookDTO;
 import org.employdemy.library.lms.exception.ResourceAlreadyExistsException;
 import org.employdemy.library.lms.exception.ResourceNotFoundException;
 import org.employdemy.library.lms.mapper.BookMapper;
-import org.employdemy.library.lms.model.Book;
-import org.employdemy.library.lms.model.Genre;
-import org.employdemy.library.lms.model.Role;
-import org.employdemy.library.lms.model.User;
+import org.employdemy.library.lms.model.*;
 import org.employdemy.library.lms.repository.BookRepository;
+import org.employdemy.library.lms.repository.TransactionRepository;
 import org.employdemy.library.lms.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,6 +25,7 @@ public class BookService {
     private final BookMapper bookMapper;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
+    private final TransactionRepository transactionRepository;
 
 
     // ------------------------------------------------------------------------
@@ -78,6 +78,54 @@ public class BookService {
         return bookRepository.findAll().stream()
                 .map(bookMapper::toDTO)
                 .collect(Collectors.toList());
+    }
+
+    // ------------------------------------------------------------------------
+    // 3. GET ALL BOOKS FOR MEMBER
+    // ------------------------------------------------------------------------
+    public List<BrowseBookDTO> getBrowseBooks(Long memberId) {
+
+        List<Book> books = bookRepository.findAll();
+        User user = userRepository.findById(memberId)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + memberId));
+        List<Transaction> transactions = transactionRepository.findByUser(user);
+
+        Map<Long, TransactionStatus> bookStatusMap = new HashMap<>();
+
+        for (Transaction tx : transactions) {
+            TransactionStatus status = tx.getStatus();
+
+            // consider only active states
+            if (status == TransactionStatus.REQUESTED ||
+                    status == TransactionStatus.BORROWED) {
+
+                bookStatusMap.put(tx.getBook().getId(), status);
+            }
+        }
+
+        List<BrowseBookDTO> browseBooks = new ArrayList<>();
+
+        for (Book book : books) {
+
+            TransactionStatus status = bookStatusMap.get(book.getId());
+
+            BrowseBookDTO dto = new BrowseBookDTO(
+                    book.getId(),
+                    book.getTitle(),
+                    book.getAuthor(),
+                    book.getGenre(),
+                    book.getImageName(),
+                    book.getImageType(),
+                    (book.getImageData() != null)
+                            ? Base64.getEncoder().encodeToString(book.getImageData())
+                            : null,
+                    book.isActive(),
+                    (status == null) ? "NOT_REQUESTED" : status.name()
+            );
+
+            browseBooks.add(dto);
+        }
+        return  browseBooks;
     }
 
     // ------------------------------------------------------------------------

@@ -3,6 +3,7 @@ package org.employdemy.library.lms.controller;
 import jakarta.annotation.security.PermitAll;
 import org.employdemy.library.lms.dto.BookRequestDTO;
 import org.employdemy.library.lms.dto.BookResponseDTO;
+import org.employdemy.library.lms.dto.BrowseBookDTO;
 import org.employdemy.library.lms.model.Book;
 import org.employdemy.library.lms.model.Genre;
 import org.employdemy.library.lms.service.BookService;
@@ -97,6 +98,14 @@ public class BookController {
                     "error", "Failed to load books"
             ));
         }
+    }
+
+    // ----------------------------------------------------
+    // 3. GET ALL BOOKS FOR MEMBER
+    // ----------------------------------------------------
+    @GetMapping("/browse/{memberId}")
+    public List<BrowseBookDTO> browseBooks(@PathVariable Long memberId) {
+        return bookService.getBrowseBooks(memberId);
     }
 
     // ----------------------------------------------------
