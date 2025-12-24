@@ -2,7 +2,8 @@ package org.employdemy.library.lms.service;
 
 import lombok.RequiredArgsConstructor;
 import org.employdemy.library.lms.dto.*;
-import org.employdemy.library.lms.model.TransactionStatus;
+import org.employdemy.library.lms.exception.ResourceNotFoundException;
+import org.employdemy.library.lms.model.*;
 import org.employdemy.library.lms.repository.BookRepository;
 import org.employdemy.library.lms.repository.TransactionRepository;
 import org.employdemy.library.lms.repository.UserRepository;
@@ -20,6 +21,7 @@ public class LibrarianService {
     private final BookRepository bookRepository;
     private final TransactionRepository transactionRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
 
     public LibrarianOverviewResponse getLibrarianOverview(){
@@ -100,6 +102,91 @@ public class LibrarianService {
                             t.getDueDate(),
                             dueLabel
                     );
+                })
+                .toList();
+    }
+
+    @Transactional
+    public IssueBookResponseDTO issueBook(IssueBookRequestDTO dto){
+        User user =userRepository.findById(dto.getUserId())
+                .orElseThrow(()-> new ResourceNotFoundException("user not found: "+dto.getUserId()));
+
+        if(!user.isActive()){
+            throw new RuntimeException("User is not Active");
+        }
+
+        Book book=bookRepository.findById(dto.getBookId())
+                .orElseThrow(()-> new ResourceNotFoundException("Book not foung: "+dto.getBookId()));
+
+        if(book.getAvailableCopies()<=0){
+            throw new RuntimeException("No Copies Available for this book");
+        }
+
+        boolean alreadyBorrowed= transactionRepository
+                .existsByUserAndBookAndReturnedAtIsNull(user,book);
+
+        if(alreadyBorrowed){
+            throw new RuntimeException("User already borrowed this book");
+        }
+
+        Transaction transaction=new Transaction();
+        transaction.setUser(user);
+        transaction.setBook(book);
+        transaction.setBorrowedAt(LocalDate.now());
+        transaction.setDueDate(dto.getDueDate());
+        transaction.setStatus(TransactionStatus.BORROWED);
+
+        book.setAvailableCopies(book.getAvailableCopies()-1);
+
+        transactionRepository.save(transaction);
+        bookRepository.save(book);
+
+        notificationService.sendNotification(
+                transaction.getUser().getId(),
+                "Book Issued",
+                "Your Book "+transaction.getBook().getTitle()+"has been successfully issued by the Librarian"
+        );
+
+        return new IssueBookResponseDTO(
+                transaction.getId(),
+                user.getName(),
+                book.getTitle(),
+                dto.getDueDate(),
+                "Book Issued Successfully"
+        );
+    }
+
+
+    @Transactional
+    public List<ManageBooksDTO> getManageBooks(){
+        List<Book> book=bookRepository.findAll();
+
+        return book.stream()
+                .map(b->{
+                    ManageBooksDTO dto=new ManageBooksDTO();
+                    dto.setTitle(b.getTitle());
+                    dto.setAuthor(b.getAuthor());
+                    dto.setIsbn(b.getIsbn());
+                    dto.setGenre(b.getGenre());
+                    dto.setStatus(b.getAvailableCopies()>0?"Available":"Borrowed");
+                    dto.setAvailableCopies(b.getAvailableCopies());
+                    return dto;
+                })
+                .toList();
+
+    }
+
+    public List<ManageMembersDTO> manageMembers(){
+        List<User> users=userRepository.findByRole(Role.MEMBER);
+
+        return users.stream()
+                .map(u->{
+                    ManageMembersDTO dto=new ManageMembersDTO();
+                    dto.setName(u.getName());
+                    dto.setEmail(u.getEmail());
+                    dto.setStatus(u.isActive()?"Active":"Not Active");
+                    dto.setBorrowedCount(transactionRepository.countByUser_IdAndReturnedAtIsNull(u.getId()));
+                    return dto;
                 })
                 .toList();
     }

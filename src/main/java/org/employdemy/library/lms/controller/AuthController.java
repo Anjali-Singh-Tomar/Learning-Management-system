@@ -10,6 +10,7 @@ import org.employdemy.library.lms.service.EmailService;
 import org.employdemy.library.lms.service.OtpService;
 import org.employdemy.library.lms.service.OtpStore;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,6 +37,7 @@ public class AuthController {
     private static final String ADMIN_PASSWORD = "admin123";
     private static final Long ADMIN_USER_ID = 0L;
 
+    private static final String libraryName="Employdemy Library";
 
     public AuthController(
             JwtUtil jwtUtil,
@@ -97,7 +99,7 @@ public class AuthController {
         if (!user.isActive()) {
             return ResponseEntity.status(403).body(Map.of("error", "User account is inactive"));
         }
-
+ 
         // generate OTP for normal user
         String otp = otpService.generateOtp();
         otpStore.saveOtp(identifier, otp);
@@ -161,5 +163,37 @@ public class AuthController {
         response.setRole(role);
 
         return ResponseEntity.ok(response);
+    }
+
+
+
+
+    @PostMapping("/resend-otp")
+    public ResponseEntity<?> resendOtp(@RequestBody Map<String, String> request){
+        String identifier=request.get("identifier");
+
+        User user = userRepository.findByEmail(identifier).orElseGet(() -> userRepository.findByEmpId(identifier).orElse(null));
+
+        if ((identifier.equalsIgnoreCase(ADMIN_EMAIL) || identifier.equalsIgnoreCase(ADMIN_EMPID))){
+            String otp = otpService.generateOtp();
+            otpStore.saveOtp(identifier, otp);
+            emailService.sendOtp(ADMIN_EMAIL, otp);
+
+            return ResponseEntity.ok(
+                    Map.of("message", "OTP sent again to admin email", "identifier", identifier)
+            );
+        } else if(user.getEmail().equals(identifier) || user.getEmpId().equals(identifier)){
+
+            String otp = otpService.generateOtp();
+            otpStore.saveOtp(identifier, otp);
+            emailService.sendOtp(user.getEmail(), otp);
+            return ResponseEntity.ok(
+                    Map.of("message", "OTP sent again to your email", "identifier", identifier));
+
+        }else {
+            return ResponseEntity.ok(Map.of("message", "Entered email/empno is not correct"));
+        }
+
+
     }
 }

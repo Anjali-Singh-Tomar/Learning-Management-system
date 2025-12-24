@@ -147,4 +147,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     String findStatus(Long transactionId);
 
 
+
+    boolean existsByUserAndBookAndReturnedAtIsNull(User user, Book book);
+
+
 }

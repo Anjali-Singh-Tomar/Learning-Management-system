@@ -69,7 +69,7 @@ public class SecurityConfig {
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(entryPoint))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/login", "/api/auth/verify-otp").permitAll()
+                        .requestMatchers("/api/auth/login", "/api/auth/verify-otp", "/api/auth/resend-otp").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/api/books/**").permitAll()
