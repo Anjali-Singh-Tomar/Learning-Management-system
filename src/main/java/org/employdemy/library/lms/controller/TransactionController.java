@@ -101,42 +101,14 @@ public class TransactionController {
     // --------------------------------------------------------------
     // 3. RENEW BOOK
     // --------------------------------------------------------------
-    @PostMapping("/renew/{transactionId}")
-    public ResponseEntity<?> renewBook(@PathVariable Long transactionId) {
+    @PostMapping("/renew")
+    public ResponseEntity<?> renewBook(@Valid @RequestBody TransactionRequestDTO dto) {
         try {
-            return ResponseEntity.ok(transactionService.createRenewRequest(transactionId));
+            return ResponseEntity.ok(transactionService.createRenewRequest(dto));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of(
                     "error", e.getMessage()
             ));
-        }
-    }
-
-    // --------------------------------------------------------------
-    // 3. APPROVE - RENEW BOOK
-    // --------------------------------------------------------------
-    @PostMapping("/approve/renew/{transactionId}")
-    public ResponseEntity<?> renewApprove(@PathVariable Long transactionId) {
-        try {
-            return ResponseEntity.ok(transactionService.approveRenewRequest(transactionId));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of(
-                    "error", e.getMessage()
-            ));
-        }
-    }
-
-    // --------------------------------------------------------------
-    // 1. DECLINE RENEW REQUEST
-    // --------------------------------------------------------------
-    @PostMapping("/decline/renew/{transactionId}")
-    public ResponseEntity<?> declineRenew(
-            @PathVariable Long transactionId,
-            @RequestParam(required = false) String reason) {
-        try {
-            return ResponseEntity.ok(transactionService.declineRenew(transactionId, reason));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
 
