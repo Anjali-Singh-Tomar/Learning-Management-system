@@ -104,7 +104,7 @@ public class TransactionController {
     @PostMapping("/renew")
     public ResponseEntity<?> renewBook(@Valid @RequestBody TransactionRequestDTO dto) {
         try {
-            return ResponseEntity.ok(transactionService.createRenewRequest(dto));
+            return ResponseEntity.ok(transactionService.renewBook(dto));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of(
                     "error", e.getMessage()

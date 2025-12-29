@@ -135,7 +135,7 @@ public class TransactionService {
     // ---------------------------------------------------------------------
     // RENEW BOOK
     // ---------------------------------------------------------------------
-    public TransactionResponseDTO createRenewRequest(TransactionRequestDTO dto) {
+    public TransactionResponseDTO renewBook(TransactionRequestDTO dto) {
 
         User user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found: " + dto.getUserId()));
