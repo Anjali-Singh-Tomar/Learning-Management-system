@@ -88,6 +88,7 @@ public class TransactionService {
 
         tx.setReturnedAt(LocalDate.now());
         tx.setStatus(TransactionStatus.RETURNED);
+        tx.getBook().setAvailableCopies(tx.getBook().getAvailableCopies() + 1);
         transactionRepository.save(tx);
 
         // Notify user
