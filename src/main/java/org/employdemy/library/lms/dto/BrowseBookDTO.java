@@ -3,9 +3,7 @@ package org.employdemy.library.lms.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.employdemy.library.lms.model.Genre;
-import org.employdemy.library.lms.model.TransactionStatus;
 
 @Data
 @AllArgsConstructor
