@@ -20,5 +20,6 @@ public class BrowseBookDTO {
     private String imageType;
     private String imageBase64;
     private boolean active;
+    private Integer availableCopies;
     private String requestStatus;//REQUESTED, BORROWED
 }
