@@ -1,10 +1,8 @@
 package org.employdemy.library.lms.service;
 
 import lombok.AllArgsConstructor;
-import org.employdemy.library.lms.dto.DueSoonResponseDTO;
 import org.employdemy.library.lms.dto.TransactionRequestDTO;
 import org.employdemy.library.lms.dto.TransactionResponseDTO;
-import org.employdemy.library.lms.exception.ResourceAlreadyExistsException;
 import org.employdemy.library.lms.exception.ResourceNotFoundException;
 import org.employdemy.library.lms.mapper.TransactionMapper;
 import org.employdemy.library.lms.model.*;
@@ -15,9 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -54,7 +50,7 @@ public class TransactionService {
 
         Book book = bookService.getBookEntity(dto.getBookId());
         Transaction tx = transactionRepository
-                .findByUserAndBookAndStatusIn(user, book, List.of(TransactionStatus.BORROWED, TransactionStatus.RENEWED, TransactionStatus.RETURN_DECLINED))
+                .findByUserAndBookAndStatusIn(user, book, List.of(TransactionStatus.BORROWED, TransactionStatus.RENEWED))
                 .orElseThrow(() -> new RuntimeException("No active borrowed transaction found."));
 
         // Create a return request
@@ -118,7 +114,7 @@ public class TransactionService {
             throw new RuntimeException("This is not a return request.");
         }
 
-        tx.setStatus(TransactionStatus.RETURN_DECLINED);
+        tx.setStatus(TransactionStatus.BORROWED);
         transactionRepository.save(tx);
 
         notificationService.sendNotification(

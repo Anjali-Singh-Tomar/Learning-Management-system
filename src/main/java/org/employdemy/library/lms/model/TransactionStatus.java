@@ -6,6 +6,5 @@ public enum TransactionStatus {
     RETURNED,
     RENEWED,
     DECLINED,
-    RETURN_REQUESTED,
-    RETURN_DECLINED
+    RETURN_REQUESTED
 }

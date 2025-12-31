@@ -99,11 +99,9 @@ public class BookService {
             if (status == TransactionStatus.REQUESTED ||
                     status == TransactionStatus.BORROWED ||
                     status == TransactionStatus.RENEWED ||
-                    status == TransactionStatus.RETURN_DECLINED ||
                     status == TransactionStatus.RETURN_REQUESTED) {
                     //setting desired status for this endpoint
                     if(status == TransactionStatus.RENEWED ||
-                            status == TransactionStatus.RETURN_DECLINED ||
                             status == TransactionStatus.RETURN_REQUESTED)
                         status = TransactionStatus.BORROWED;
                 bookStatusMap.put(tx.getBook().getId(), status);

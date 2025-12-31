@@ -52,7 +52,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     SELECT t
     FROM Transaction t
     WHERE t.user.id = :userId
-      AND t.status IN ('BORROWED', 'RENEWED', 'RETURN_REQUESTED','RETURN_DECLINED')
+      AND t.status IN ('BORROWED', 'RENEWED', 'RETURN_REQUESTED')
 """)
     List<Transaction> findCurrentBorrowed(Long userId);
 
