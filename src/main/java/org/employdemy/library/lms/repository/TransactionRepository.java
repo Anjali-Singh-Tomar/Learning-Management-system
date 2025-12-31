@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +20,11 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     // FIND ACTIVE BORROW
     Optional<Transaction> findByUserAndBookAndStatus(User user, Book book, TransactionStatus status);
 
+    Optional<Transaction> findByUserAndBookAndStatusIn(
+            User user,
+            Book book,
+            Collection<TransactionStatus> statuses
+    );
 
     long countByStatus(TransactionStatus status);
 
@@ -46,7 +52,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     SELECT t
     FROM Transaction t
     WHERE t.user.id = :userId
-      AND t.status IN ('BORROWED', 'RENEWED')
+      AND t.status IN ('BORROWED', 'RENEWED', 'RETURN_REQUESTED','RETURN_DECLINED')
 """)
     List<Transaction> findCurrentBorrowed(Long userId);
 

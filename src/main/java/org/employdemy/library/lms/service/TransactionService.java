@@ -54,7 +54,7 @@ public class TransactionService {
 
         Book book = bookService.getBookEntity(dto.getBookId());
         Transaction tx = transactionRepository
-                .findByUserAndBookAndStatus(user, book, TransactionStatus.BORROWED)
+                .findByUserAndBookAndStatusIn(user, book, List.of(TransactionStatus.BORROWED, TransactionStatus.RENEWED, TransactionStatus.RETURN_DECLINED))
                 .orElseThrow(() -> new RuntimeException("No active borrowed transaction found."));
 
         // Create a return request
