@@ -35,7 +35,7 @@ public class MemberController {
             return ResponseEntity.ok(dto);
 
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(Map.of("error", "Failed to fetch member overview"));
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
         }
     }
 

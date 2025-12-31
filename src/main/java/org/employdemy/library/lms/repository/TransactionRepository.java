@@ -23,7 +23,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     Optional<Transaction> findByUserAndBookAndStatusIn(
             User user,
             Book book,
-            Collection<TransactionStatus> statuses
+            List<TransactionStatus> statuses
     );
 
     long countByStatus(TransactionStatus status);
