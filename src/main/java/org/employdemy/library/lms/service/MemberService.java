@@ -8,7 +8,6 @@ import org.employdemy.library.lms.dto.RecommendedBookDTO;
 import org.employdemy.library.lms.model.Transaction;
 import org.employdemy.library.lms.repository.BookRepository;
 import org.employdemy.library.lms.repository.TransactionRepository;
-import org.employdemy.library.lms.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +23,6 @@ public class MemberService {
 
     private final BookRepository bookRepository;
     private final TransactionRepository transactionRepository;
-    private final UserRepository userRepository;
 
     public MemberDashboardResponseDTO getMemberOverview(Long memberId){
         long currentlyBorrowed= transactionRepository.countByUser_IdAndReturnedAtIsNull(memberId);
@@ -92,7 +90,6 @@ public class MemberService {
         List<Transaction> list=transactionRepository.findCurrentBorrowed(memberId);
 
         return list.stream().map(t -> {
-            LocalDate today=LocalDate.now();
             int daysLeft =(int) ChronoUnit.DAYS.between(LocalDate.now(), t.getDueDate());
 
 

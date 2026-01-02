@@ -5,12 +5,8 @@ import org.employdemy.library.lms.dto.NotificationResponseDTO;
 import org.employdemy.library.lms.mapper.NotificationMapper;
 import org.employdemy.library.lms.model.*;
 import org.employdemy.library.lms.repository.NotificationRepository;
-import org.employdemy.library.lms.repository.TransactionRepository;
 import org.employdemy.library.lms.repository.UserRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
