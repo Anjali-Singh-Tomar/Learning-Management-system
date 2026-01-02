@@ -97,8 +97,13 @@ public class BookService {
 
             // consider only active states
             if (status == TransactionStatus.REQUESTED ||
-                    status == TransactionStatus.BORROWED) {
-
+                    status == TransactionStatus.BORROWED ||
+                    status == TransactionStatus.RENEWED ||
+                    status == TransactionStatus.RETURN_REQUESTED) {
+                    //setting desired status for this endpoint
+                    if(status == TransactionStatus.RENEWED ||
+                            status == TransactionStatus.RETURN_REQUESTED)
+                        status = TransactionStatus.BORROWED;
                 bookStatusMap.put(tx.getBook().getId(), status);
             }
         }
@@ -120,6 +125,7 @@ public class BookService {
                             ? Base64.getEncoder().encodeToString(book.getImageData())
                             : null,
                     book.isActive(),
+                    book.getAvailableCopies(),
                     (status == null) ? "NOT_REQUESTED" : status.name()
             );
 
