@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.List;
 
@@ -92,7 +93,7 @@ public class MemberService {
 
         return list.stream().map(t -> {
             LocalDate today=LocalDate.now();
-            int daysLeft=(int) today.until(t.getDueDate()).getDays();
+            int daysLeft =(int) ChronoUnit.DAYS.between(LocalDate.now(), t.getDueDate());
 
 
             return new MyBooksDTO(

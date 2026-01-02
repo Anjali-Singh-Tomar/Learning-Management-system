@@ -118,7 +118,7 @@ public class NotificationService {
 
         List<User> recipients = getAdminAndLibrarians();
 
-        String title = "📘 Books Due Soon (Next 3 Days)";
+        String title = "Books Due Soon (Next 3 Days)";
         String message = buildMessage(transactions);
 
         for (User user : recipients) {
@@ -134,7 +134,7 @@ public class NotificationService {
         String message = "Your borrowed book '"
                 + tx.getBook().getTitle()
                 + "' was due on " + tx.getDueDate()
-                + " and is now OVERDUE. Please return it as soon as possible.";
+                + " and is now OVERDUE.";
 
         sendNotification(tx.getUser().getId(), "Book Overdue", message);
     }
@@ -147,7 +147,7 @@ public class NotificationService {
 
         List<User> recipients = getAdminAndLibrarians();
 
-        String title = "📘 Books Overdue for return";
+        String title = " Books Overdue for return";
         String message = buildMessage(transactions);
 
         for (User user : recipients) {
