@@ -43,4 +43,9 @@ public class UserMapper {
         user.setEmpId(dto.getEmpId());
         return user;
     }
+
+    public User changePassword(User user, String password){
+        user.setPassword(encoder.encode(password));
+        return user;
+    }
 }

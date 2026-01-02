@@ -1,17 +1,13 @@
 package org.employdemy.library.lms.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.employdemy.library.lms.dto.BorrowedBookDTO;
-import org.employdemy.library.lms.dto.MemberDashboardResponseDTO;
-import org.employdemy.library.lms.dto.MyBooksDTO;
-import org.employdemy.library.lms.dto.RecommendedBookDTO;
+import org.employdemy.library.lms.dto.*;
 import org.employdemy.library.lms.service.MemberService;
+import org.employdemy.library.lms.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -22,6 +18,7 @@ import java.util.Map;
 public class MemberController {
 
     private final MemberService memberService;
+    private final UserService userService;
 
     @PreAuthorize("hasRole('MEMBER')")
     @GetMapping("/dashboard/{memberId}/overview")
@@ -81,6 +78,65 @@ public class MemberController {
             return ResponseEntity.ok(books);
         } catch (Exception e){
             return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    //-----------------------------------------------------------------------------
+    //MEMBER SETTINGS
+    //-----------------------------------------------------------------------------
+
+    @PreAuthorize("hasRole('MEMBER')")
+    @PutMapping("/sidebar/{id}/name")
+    public ResponseEntity<ApiResponse<Void>> updateName(
+            @PathVariable Long id,
+            @RequestBody @Valid UpdateNameDTO dto){
+
+        try{
+            memberService.updateUserName(id,dto.getName());
+
+            return ResponseEntity.ok(
+                    ApiResponse.success(
+                            200,
+                            "Name updated Successfully",
+                            null
+                    )
+            );
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(
+                    ApiResponse.error(
+                            400,
+                            "Failed to update name",
+                            e.getMessage()
+                    )
+            );
+        }
+    }
+
+    @PreAuthorize("hasRole('MEMBER')")
+    @PutMapping("/sidebar/{id}/change-password")
+    public ResponseEntity<ApiResponse<Void>> changePassword(
+            @PathVariable Long id,
+            @RequestBody @Valid ChangePasswordDTO  dto){
+
+
+        try{
+            memberService.changePassword(id,dto);
+
+            return ResponseEntity.ok(
+                    ApiResponse.success(
+                            200,
+                            "Password changed successfully",
+                            null
+                    )
+            );
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                    ApiResponse.error(
+                            400,
+                            "Password change failed",
+                            e.getMessage()
+                    )
+            );
         }
     }
 }
