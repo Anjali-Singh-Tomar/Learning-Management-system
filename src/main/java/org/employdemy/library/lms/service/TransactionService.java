@@ -236,7 +236,7 @@ public class TransactionService {
                 .orElseThrow(() -> new RuntimeException("Book not found"));
 
         // Create pending transaction
-        Transaction tx = transactionMapper.toEntity(dto,user,book);
+        Transaction tx = transactionMapper.toEntity(user,book);
 
         Transaction saved = transactionRepository.save(tx);
 

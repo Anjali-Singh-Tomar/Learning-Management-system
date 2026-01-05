@@ -27,7 +27,7 @@ public class TransactionMapper {
         return dto;
     }
 
-    public Transaction toEntity(TransactionRequestDTO dto, User user, Book book) {
+    public Transaction toEntity( User user, Book book) {
         Transaction transaction = new Transaction();
         transaction.setUser(user);
         transaction.setBook(book);
