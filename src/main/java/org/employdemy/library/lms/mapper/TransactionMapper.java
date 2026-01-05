@@ -1,7 +1,6 @@
 package org.employdemy.library.lms.mapper;
 
 import org.employdemy.library.lms.dto.PendingResponseDTO;
-import org.employdemy.library.lms.dto.TransactionRequestDTO;
 import org.employdemy.library.lms.dto.TransactionResponseDTO;
 import org.employdemy.library.lms.model.Book;
 import org.employdemy.library.lms.model.Transaction;

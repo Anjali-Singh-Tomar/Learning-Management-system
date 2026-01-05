@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.employdemy.library.lms.dto.*;
 import org.employdemy.library.lms.dto.ApiResponse;
 import org.employdemy.library.lms.dto.IssueBookRequestDTO;
-import org.employdemy.library.lms.dto.LibrarianOverviewResponse;
 import org.employdemy.library.lms.service.LibrarianService;
 import org.employdemy.library.lms.service.TransactionService;
 import org.springframework.http.ResponseEntity;
