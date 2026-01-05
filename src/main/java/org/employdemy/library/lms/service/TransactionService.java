@@ -1,6 +1,7 @@
 package org.employdemy.library.lms.service;
 
 import lombok.AllArgsConstructor;
+import org.employdemy.library.lms.dto.PendingResponseDTO;
 import org.employdemy.library.lms.dto.TransactionRequestDTO;
 import org.employdemy.library.lms.dto.TransactionResponseDTO;
 import org.employdemy.library.lms.exception.ResourceNotFoundException;
@@ -178,6 +179,20 @@ public class TransactionService {
         return transactionRepository.findAll()
                 .stream()
                 .map(transactionMapper::toDTO)
+                .toList();
+    }
+
+    // ---------------------------------------------------------------------
+    // GET THE REQUESTED TRANSACTIONS
+    // ---------------------------------------------------------------------
+    @Transactional
+    public List<PendingResponseDTO> getAllRequests() {
+
+        List<TransactionStatus> statuses =
+                List.of(TransactionStatus.REQUESTED, TransactionStatus.RETURN_REQUESTED);
+
+        return transactionRepository.findByStatusIn(statuses).stream()
+                .map(transactionMapper::toPendingDTO)
                 .toList();
     }
 

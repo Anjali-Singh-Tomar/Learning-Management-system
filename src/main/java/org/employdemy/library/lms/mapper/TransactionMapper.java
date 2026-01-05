@@ -1,5 +1,6 @@
 package org.employdemy.library.lms.mapper;
 
+import org.employdemy.library.lms.dto.PendingResponseDTO;
 import org.employdemy.library.lms.dto.TransactionRequestDTO;
 import org.employdemy.library.lms.dto.TransactionResponseDTO;
 import org.employdemy.library.lms.model.Book;
@@ -35,4 +36,24 @@ public class TransactionMapper {
         transaction.setStatus(TransactionStatus.REQUESTED);
         return transaction;
     }
+
+    public PendingResponseDTO toPendingDTO(Transaction transaction) {
+
+        PendingResponseDTO dto = new PendingResponseDTO();
+        dto.setId(transaction.getId());
+        dto.setUserId(transaction.getUser().getId());
+        dto.setUserName(transaction.getUser().getName());
+        dto.setBookId(transaction.getBook().getId());
+        dto.setBookTitle(transaction.getBook().getTitle());
+        dto.setBookISBN(transaction.getBook().getIsbn());
+        dto.setDueDate(transaction.getDueDate());
+
+        if(transaction.getStatus()== TransactionStatus.REQUESTED)
+            dto.setType("issue");
+        else if(transaction.getStatus()== TransactionStatus.RETURN_REQUESTED)
+            dto.setType("return");
+
+        return dto;
+    }
+
 }

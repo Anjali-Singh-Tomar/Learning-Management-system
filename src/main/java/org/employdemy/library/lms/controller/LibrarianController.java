@@ -1,13 +1,14 @@
 package org.employdemy.library.lms.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.employdemy.library.lms.dto.IssueBookRequestDTO;
-import org.employdemy.library.lms.dto.LibrarianOverviewResponse;
+import org.employdemy.library.lms.dto.*;
 import org.employdemy.library.lms.service.LibrarianService;
+import org.employdemy.library.lms.service.TransactionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -17,6 +18,7 @@ import java.util.Map;
 public class LibrarianController {
 
     private final LibrarianService librarianService;
+    private final TransactionService transactionService;
 
     @GetMapping("/dashboard/overview")
     @PreAuthorize("hasRole('LIBRARIAN')")
@@ -88,6 +90,30 @@ public class LibrarianController {
             return ResponseEntity.ok(librarianService.manageMembers());
         }catch (Exception e){
             return ResponseEntity.status(500).body(Map.of("error",e.getMessage()));
+        }
+    }
+
+    @GetMapping("/sidebar/pending-request")
+    public ResponseEntity<ApiResponse<?>> pendingRequest(){
+
+        try{
+            List<PendingResponseDTO> data=transactionService.getAllRequests();
+
+            return ResponseEntity.ok(
+                    ApiResponse.success(
+                            200,
+                            "Request data fetched",
+                            data
+                    )
+            );
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(
+                    ApiResponse.error(
+                            400,
+                            "Failed to fetch the data"+e.getMessage(),
+                            null
+                    )
+            );
         }
     }
 
