@@ -85,7 +85,7 @@ public class MemberController {
     //MEMBER SETTINGS
     //-----------------------------------------------------------------------------
 
-    @PreAuthorize("hasRole('MEMBER')")
+    @PreAuthorize("hasAnyRole('MEMBER', 'LIBRARIAN')")
     @PutMapping("/sidebar/{id}/name")
     public ResponseEntity<ApiResponse<Void>> updateName(
             @PathVariable Long id,
@@ -112,7 +112,7 @@ public class MemberController {
         }
     }
 
-    @PreAuthorize("hasRole('MEMBER')")
+    @PreAuthorize("hasAnyRole('MEMBER', 'LIBRARIAN')")
     @PutMapping("/sidebar/{id}/change-password")
     public ResponseEntity<ApiResponse<Void>> changePassword(
             @PathVariable Long id,

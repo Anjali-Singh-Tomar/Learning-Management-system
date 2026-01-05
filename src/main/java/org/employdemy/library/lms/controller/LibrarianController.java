@@ -2,6 +2,9 @@ package org.employdemy.library.lms.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.employdemy.library.lms.dto.*;
+import org.employdemy.library.lms.dto.ApiResponse;
+import org.employdemy.library.lms.dto.IssueBookRequestDTO;
+import org.employdemy.library.lms.dto.LibrarianOverviewResponse;
 import org.employdemy.library.lms.service.LibrarianService;
 import org.employdemy.library.lms.service.TransactionService;
 import org.springframework.http.ResponseEntity;
@@ -112,6 +115,28 @@ public class LibrarianController {
                             400,
                             "Failed to fetch the data"+e.getMessage(),
                             null
+                    )
+            );
+        }
+    }
+
+    @GetMapping("/sidebar/borrowedBooks")
+    @PreAuthorize("hasRole('LIBRARIAN')")
+    public ResponseEntity<ApiResponse<?>> borrowedBooks(){
+        try{
+            return ResponseEntity.ok(
+                    ApiResponse.success(
+                            200,
+                            "Borrowed Books fetched Successfully",
+                            librarianService.getBorrowedBooks()
+                    )
+            );
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(
+                    ApiResponse.error(
+                            500,
+                            "Failed to Fetch the Borrowed Books",
+                            e.getMessage()
                     )
             );
         }

@@ -46,7 +46,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     """)
     long countDueSoon(Long userId, LocalDate today, LocalDate fiveDays);
 
-    // 4. List of currently borrowed books
+    // 4. List of currently borrowed books by an user
     @Query("""
     SELECT t
     FROM Transaction t
@@ -54,6 +54,17 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
       AND t.status IN ('BORROWED', 'RENEWED', 'RETURN_REQUESTED')
 """)
     List<Transaction> findCurrentBorrowed(Long userId);
+
+    //List of all current Borrowed Books
+
+    @Query("""
+    SELECT t
+    FROM Transaction t
+    WHERE t.status IN ('BORROWED', 'RENEWED', 'RETURN_REQUESTED')
+""")
+    List<Transaction> findAllCurrentBorrowed();
+
+
 
     // History of user transaction
     @Query("""

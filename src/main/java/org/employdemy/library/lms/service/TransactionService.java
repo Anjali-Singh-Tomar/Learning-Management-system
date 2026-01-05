@@ -175,7 +175,7 @@ public class TransactionService {
     // ---------------------------------------------------------------------
     // GET ALL THE BORROWED BOOKS
     // ---------------------------------------------------------------------
-    public List<TransactionResponseDTO> getAllBorrowedBooks() {
+    public List<TransactionResponseDTO> getAllTransactions() {
         return transactionRepository.findAll()
                 .stream()
                 .map(transactionMapper::toDTO)
