@@ -89,11 +89,11 @@ public class AuthController {
                 .orElseGet(() -> userRepository.findByEmpId(identifier).orElse(null));
 
         if (user == null) {
-            return ResponseEntity.status(401).body(Map.of("error", "Invalid username or password"));
+            return ResponseEntity.status(401).body(Map.of("error", "Invalid username"));
         }
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            return ResponseEntity.status(401).body(Map.of("error", "Invalid username or password"));
+            return ResponseEntity.status(401).body(Map.of("error", "Invalid password"));
         }
 
         if (!user.isActive()) {

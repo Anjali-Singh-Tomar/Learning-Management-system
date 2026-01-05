@@ -3,9 +3,10 @@ package org.employdemy.library.lms.dto;
 
 import java.time.LocalDate;
 
-public record IssuedTodayDTO(
+public record TodayActivityDTO(
         Long transactionId,
         String bookTitle,
         String memberName,
-        LocalDate borrowedAt
+        LocalDate borrowedAt,
+        String Type
 ){}

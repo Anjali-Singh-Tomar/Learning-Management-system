@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -42,36 +43,33 @@ public class LibrarianService {
     }
 
     @Transactional
-    public LTAResponse getTodayActivity() {
+    public List<TodayActivityDTO> getTodayActivity() {
 
         LocalDate today = LocalDate.now();
 
-        List<IssuedTodayDTO> issuedToday =
-                transactionRepository.findIssuedToday(today)
-                        .stream()
-                        .map(t -> new IssuedTodayDTO(
-                                t.getId(),
-                                t.getBook().getTitle(),
-                                t.getUser().getName(),
-                                t.getBorrowedAt()
-                        ))
-                        .toList();
+        List<TodayActivityDTO> todayActivity =
+                Stream.concat(
+                        transactionRepository.findIssuedToday(today)
+                                .stream()
+                                .map(t -> new TodayActivityDTO(
+                                        t.getId(),
+                                        t.getBook().getTitle(),
+                                        t.getUser().getName(),
+                                        t.getBorrowedAt(),
+                                        "Issue"
+                                )),
+                        transactionRepository.findReturnedToday(today)
+                                .stream()
+                                .map(t -> new TodayActivityDTO(
+                                        t.getId(),
+                                        t.getBook().getTitle(),
+                                        t.getUser().getName(),
+                                        t.getReturnedAt(),
+                                        "Return"
+                                ))
+                ).toList();
 
-        List<ReturnedTodayDTO> returnedToday =
-                transactionRepository.findReturnedToday(today)
-                        .stream()
-                        .map(t -> new ReturnedTodayDTO(
-                                t.getId(),
-                                t.getBook().getTitle(),
-                                t.getUser().getName(),
-                                t.getReturnedAt()
-                        ))
-                        .toList();
-
-        return new LTAResponse(
-                issuedToday,
-                returnedToday
-        );
+        return todayActivity;
     }
 
     @Transactional
@@ -116,7 +114,7 @@ public class LibrarianService {
         }
 
         Book book=bookRepository.findById(dto.getBookId())
-                .orElseThrow(()-> new ResourceNotFoundException("Book not foung: "+dto.getBookId()));
+                .orElseThrow(()-> new ResourceNotFoundException("Book not found: "+dto.getBookId()));
 
         if(book.getAvailableCopies()<=0){
             throw new RuntimeException("No Copies Available for this book");
