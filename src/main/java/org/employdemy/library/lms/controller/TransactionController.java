@@ -115,11 +115,11 @@ public class TransactionController {
     // --------------------------------------------------------------
     // 4. GET ALL BORROWED BOOKS (Admin + Librarian)
     // --------------------------------------------------------------
-    @GetMapping("/borrowed-books")
+    @GetMapping("/all")
     @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
     public ResponseEntity<?> getAllBorrowedBooks() {
         try {
-            return ResponseEntity.ok(transactionService.getAllBorrowedBooks());
+            return ResponseEntity.ok(transactionService.getAllTransactions());
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Map.of(
                     "error", "Failed to fetch borrowed books"

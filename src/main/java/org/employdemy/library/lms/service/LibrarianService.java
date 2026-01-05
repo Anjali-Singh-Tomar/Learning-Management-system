@@ -17,6 +17,7 @@ import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class LibrarianService {
 
     private final BookRepository bookRepository;
@@ -189,6 +190,24 @@ public class LibrarianService {
                 .toList();
     }
 
+
+    public List<LibrarianBorrowedDTO> getBorrowedBooks(){
+        List<Transaction> transactions=transactionRepository.findAllCurrentBorrowed();
+
+        LocalDate today=LocalDate.now();
+
+        return transactions.stream()
+                .map(t->{
+                    LibrarianBorrowedDTO dto=new LibrarianBorrowedDTO();
+                    dto.setUserName(t.getUser().getName());
+                    dto.setBookName(t.getBook().getTitle());
+                    dto.setBorrowDate(t.getBorrowedAt());
+                    dto.setDueDate(t.getDueDate());
+                    dto.setStatus(today.isAfter(t.getDueDate())?"Overdue":"Active");
+                    return dto;
+                })
+                .toList();
+    }
 
 
 }
