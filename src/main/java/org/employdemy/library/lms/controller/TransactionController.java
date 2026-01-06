@@ -1,5 +1,6 @@
 package org.employdemy.library.lms.controller;
 
+import org.employdemy.library.lms.dto.ApiResponse;
 import org.employdemy.library.lms.dto.TransactionRequestDTO;
 import org.employdemy.library.lms.dto.TransactionResponseDTO;
 import org.employdemy.library.lms.model.TransactionStatus;
@@ -177,12 +178,26 @@ public class TransactionController {
     // 6. SEND REMINDER TO MEMBER FOR RETURN
     // --------------------------------------------------------------
     @PostMapping("/{transactionId}/reminder")
-    public ResponseEntity<?> sendReminder(@PathVariable Long transactionId) {
+    public ResponseEntity<ApiResponse<?>> sendReminder(@PathVariable Long transactionId) {
 
-        transactionService.sendReminder(transactionId);
-        return ResponseEntity.ok(Map.of(
-                "message", "Reminder sent successfully"
-        ));
+        try{
+            String message =transactionService.sendReminder(transactionId);
+            return ResponseEntity.ok(
+                    ApiResponse.success(
+                            200,
+                            message,
+                            null
+                    )
+            );
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                    ApiResponse.error(
+                            400,
+                            "failed to send reminder",
+                            e.getMessage()
+                    )
+            );
+        }
     }
 
 }

@@ -310,18 +310,24 @@ public class TransactionService {
         return "Borrow request declined successfully.";
     }
 
-    public void sendReminder(Long transactionId) {
+    public String sendReminder(Long transactionId) {
 
         Transaction tx = transactionRepository.findById(transactionId)
                 .orElseThrow(() -> new RuntimeException("Transaction not found"));
 
-        if (tx.getStatus() != TransactionStatus.BORROWED) {
+        String notify;
+        if(tx.getStatus() == TransactionStatus.RETURN_REQUESTED){
+            notify = "User has already requested a return";
+            return notify;
+        }
+        else if (tx.getStatus() != TransactionStatus.BORROWED && tx.getStatus() != TransactionStatus.RENEWED) {
+            notify = " Not yet Borrowed";
             throw new RuntimeException("Reminder can only be sent for borrowed books");
         }
 
         User member = tx.getUser();
 
-        String title = "📚 Book Return Reminder";
+        String title = "Book Return Reminder";
         String message = buildSingleReminderMessage(tx);
 
         // Notify member
@@ -330,9 +336,11 @@ public class TransactionService {
                 title,
                 message
         );
+        notify ="Reminder Sent";
 
         // OPTIONAL: notify admin
 //        notifyAdminForManualReminder(tx);
+        return  notify;
     }
 
 
