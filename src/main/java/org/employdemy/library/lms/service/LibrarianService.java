@@ -199,6 +199,7 @@ public class LibrarianService {
         return transactions.stream()
                 .map(t->{
                     LibrarianBorrowedDTO dto=new LibrarianBorrowedDTO();
+                    dto.setId(t.getId());
                     dto.setUserName(t.getUser().getName());
                     dto.setBookName(t.getBook().getTitle());
                     dto.setBorrowDate(t.getBorrowedAt());
@@ -207,6 +208,16 @@ public class LibrarianService {
                     return dto;
                 })
                 .toList();
+    }
+
+
+    public void markAsReturned(Long id){
+        Transaction transaction=transactionRepository.findById(id)
+                .orElseThrow(()->new ResourceNotFoundException("Transaction not found"+id));
+
+        transaction.setStatus(TransactionStatus.RETURNED);
+        transaction.setReturnedAt(LocalDate.now());
+        transactionRepository.save(transaction);
     }
 
 
