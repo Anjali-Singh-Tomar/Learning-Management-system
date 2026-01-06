@@ -295,9 +295,8 @@ public class TransactionService {
             throw new RuntimeException("Only borrow requests can be declined.");
         }
 
-        // Update transaction status
-        tx.setStatus(TransactionStatus.DECLINED);
-        transactionRepository.save(tx);
+        // delete transaction once decline
+        transactionRepository.delete(tx);
 
         // Notify the user
         notificationService.sendNotification(
