@@ -1,6 +1,7 @@
 package org.employdemy.library.lms.service;
 
 import lombok.AllArgsConstructor;
+import org.employdemy.library.lms.dto.PendingResponseDTO;
 import org.employdemy.library.lms.dto.TransactionRequestDTO;
 import org.employdemy.library.lms.dto.TransactionResponseDTO;
 import org.employdemy.library.lms.exception.ResourceNotFoundException;
@@ -182,6 +183,20 @@ public class TransactionService {
     }
 
     // ---------------------------------------------------------------------
+    // GET THE REQUESTED TRANSACTIONS
+    // ---------------------------------------------------------------------
+    @Transactional
+    public List<PendingResponseDTO> getAllRequests() {
+
+        List<TransactionStatus> statuses =
+                List.of(TransactionStatus.REQUESTED, TransactionStatus.RETURN_REQUESTED);
+
+        return transactionRepository.findByStatusIn(statuses).stream()
+                .map(transactionMapper::toPendingDTO)
+                .toList();
+    }
+
+    // ---------------------------------------------------------------------
     // SEARCH BORROWED BOOKS
     // ---------------------------------------------------------------------
     public List<TransactionResponseDTO> searchBorrowedBooks(String query) {
@@ -221,7 +236,7 @@ public class TransactionService {
                 .orElseThrow(() -> new RuntimeException("Book not found"));
 
         // Create pending transaction
-        Transaction tx = transactionMapper.toEntity(dto,user,book);
+        Transaction tx = transactionMapper.toEntity(user,book);
 
         Transaction saved = transactionRepository.save(tx);
 

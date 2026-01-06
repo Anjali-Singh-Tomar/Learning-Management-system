@@ -166,5 +166,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 
     boolean existsByUserAndBookAndReturnedAtIsNull(User user, Book book);
 
+    List<Transaction> findByStatusIn(List<TransactionStatus> statues);
+
 
 }

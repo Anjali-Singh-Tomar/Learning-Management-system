@@ -74,10 +74,10 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.GET, "/api/books/**").permitAll()
                         .requestMatchers("/api/users/**").hasRole("ADMIN")
+                        .requestMatchers("/api/librarian/**").hasRole("LIBRARIAN")
                         .requestMatchers("/api/books/**").hasAnyRole("ADMIN", "LIBRARIAN")
                         .requestMatchers("/api/transactions/**").hasAnyRole("ADMIN", "LIBRARIAN", "MEMBER")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/member/sidebar/**").hasAnyRole("MEMBER", "LIBRARIAN", "ADMIN")
                         .requestMatchers("/api/member/**").hasRole("MEMBER")
                         .requestMatchers("/api/notifications/**").hasAnyRole("ADMIN", "LIBRARIAN","MEMBER")
 
