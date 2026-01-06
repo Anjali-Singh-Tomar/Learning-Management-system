@@ -143,15 +143,15 @@ public class LibrarianController {
 
 
     @PostMapping("/sidebar/borrowedBooks/{id}")
-    public ResponseEntity<ApiResponse<Void>> markReturned(@PathVariable Long id){
+    public ResponseEntity<ApiResponse<String>> markReturned(@PathVariable Long id){
         try{
 
-            librarianService.markAsReturned(id);
+            ;
             return ResponseEntity.ok(
                     ApiResponse.success(
                             200,
                             "The Transaction is Marked as Returned Successfully",
-                            null
+                            librarianService.markAsReturned(id)
                     )
             );
         } catch (Exception e) {

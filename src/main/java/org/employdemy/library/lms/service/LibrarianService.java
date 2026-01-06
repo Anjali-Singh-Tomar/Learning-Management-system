@@ -211,13 +211,19 @@ public class LibrarianService {
     }
 
 
-    public void markAsReturned(Long id){
+    public String markAsReturned(Long id){
         Transaction transaction=transactionRepository.findById(id)
-                .orElseThrow(()->new ResourceNotFoundException("Transaction not found"+id));
+                .orElseThrow(()->new ResourceNotFoundException("Transaction not found for id -:"+id));
 
-        transaction.setStatus(TransactionStatus.RETURNED);
-        transaction.setReturnedAt(LocalDate.now());
+        if(transaction.getStatus()!=TransactionStatus.RETURNED){
+            transaction.setStatus(TransactionStatus.RETURNED);
+            transaction.setReturnedAt(LocalDate.now());
+        }else{
+            return "Book is Already Returned";
+        }
+
         transactionRepository.save(transaction);
+        return "Book has been returned Successfully";
     }
 
 
