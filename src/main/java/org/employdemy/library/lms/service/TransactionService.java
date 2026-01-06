@@ -154,6 +154,7 @@ public class TransactionService {
         }
 
         tx.setStatus(TransactionStatus.RENEWED);
+        tx.setDueDate(tx.getDueDate().plusDays(7));
         Transaction saved = transactionRepository.save(tx);
         return transactionMapper.toDTO(saved);
     }
