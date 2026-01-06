@@ -321,7 +321,6 @@ public class TransactionService {
             return notify;
         }
         else if (tx.getStatus() != TransactionStatus.BORROWED && tx.getStatus() != TransactionStatus.RENEWED) {
-            notify = " Not yet Borrowed";
             throw new RuntimeException("Reminder can only be sent for borrowed books");
         }
 
