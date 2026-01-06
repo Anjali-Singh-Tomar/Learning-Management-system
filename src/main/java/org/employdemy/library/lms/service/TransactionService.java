@@ -258,7 +258,7 @@ public class TransactionService {
     // ---------------------------------------------------------------------
     // APPROVE BORROW REQUEST
     // ---------------------------------------------------------------------
-    public TransactionResponseDTO approveBorrow(Long id) {
+    public void approveBorrow(Long id) {
 
         Transaction tx = transactionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Transaction not found"));
@@ -276,8 +276,6 @@ public class TransactionService {
                 "Borrow Approved",
                 "Your request for '" + tx.getBook().getTitle() + "' has been approved"
         );
-
-        return transactionMapper.toDTO(saved);
     }
 
 
