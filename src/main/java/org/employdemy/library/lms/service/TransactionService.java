@@ -285,7 +285,7 @@ public class TransactionService {
     // DECLINE BORROW REQUEST
     // ---------------------------------------------------------------------
     @Transactional
-    public String declineBorrow(Long transactionId) {
+    public String declineBorrow(Long transactionId, String message) {
 
         // Fetch transaction
         Transaction tx = transactionRepository.findById(transactionId)
@@ -304,7 +304,8 @@ public class TransactionService {
                 tx.getUser().getId(),
                 "Borrow Request Declined",
                 "Your borrow request for '" + tx.getBook().getTitle() +
-                        "' was declined."
+                        "' was declined" +
+                        (message != null ? "Reason: " + message : "")
         );
 
         return "Borrow request declined successfully.";
