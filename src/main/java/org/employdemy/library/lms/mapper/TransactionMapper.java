@@ -46,7 +46,7 @@ public class TransactionMapper {
         dto.setBookTitle(transaction.getBook().getTitle());
         dto.setBookISBN(transaction.getBook().getIsbn());
         dto.setDueDate(transaction.getDueDate());
-        dto.setDate(transaction.getReturnedAt());
+        dto.setDate(transaction.getRequestedAt().toLocalDate());
 
         if(transaction.getStatus()== TransactionStatus.REQUESTED)
             dto.setType("issue");
