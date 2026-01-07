@@ -87,11 +87,23 @@ public class LibrarianController {
 
     @GetMapping("/sidebar/managemembers")
     @PreAuthorize("hasRole('LIBRARIAN')")
-    public ResponseEntity<?> manageMembers(){
+    public ResponseEntity<ApiResponse<List<ManageMembersDTO>>> manageMembers(){
         try{
-            return ResponseEntity.ok(librarianService.manageMembers());
+            return ResponseEntity.ok(
+                    ApiResponse.success(
+                            200,
+                            "All Members are fetched Successfully",
+                            librarianService.manageMembers()
+                    )
+            );
         }catch (Exception e){
-            return ResponseEntity.status(500).body(Map.of("error",e.getMessage()));
+            return ResponseEntity.badRequest().body(
+                    ApiResponse.error(
+                            500,
+                            "Members could not fetch",
+                            e.getMessage()
+                    )
+            );
         }
     }
 
@@ -165,23 +177,45 @@ public class LibrarianController {
         }
     }
 
-    @PreAuthorize(("hasRole('LIBRARIAN')"))
-    @GetMapping("/sidebar/memberDetails/{userId}")
-    public ResponseEntity<ApiResponse<MemberDetailsDTO>> memberDetails(@PathVariable Long userId){
+//    @PreAuthorize(("hasRole('LIBRARIAN')"))
+//    @GetMapping("/sidebar/memberDetails/{userId}")
+//    public ResponseEntity<ApiResponse<MemberDetailsDTO>> memberDetails(@PathVariable Long userId){
+//
+//        try{
+//            return ResponseEntity.ok(
+//                    ApiResponse.success(
+//                            200,
+//                            "Member Details fetched Successfully",
+//                            librarianService.getmemberDetails(userId)
+//                    )
+//            );
+//        } catch (Exception e) {
+//            return ResponseEntity.badRequest().body(
+//                    ApiResponse.error(
+//                            500,
+//                            "Fetching of Member Details Failed",
+//                            e.getMessage()
+//                    )
+//            );
+//        }
+//    }
 
+    @GetMapping("/searchMembers")
+    public ResponseEntity<ApiResponse<?>> searchMembers(@RequestParam String keyword){
         try{
+
             return ResponseEntity.ok(
                     ApiResponse.success(
                             200,
-                            "Member Details fetched Successfully",
-                            librarianService.getmemberDetails(userId)
+                            "Member Found",
+                            null
                     )
             );
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(
                     ApiResponse.error(
                             500,
-                            "Fetching of Member Details Failed",
+                            "Failed to search the member",
                             e.getMessage()
                     )
             );

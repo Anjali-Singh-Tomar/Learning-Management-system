@@ -275,8 +275,6 @@ public class TransactionService {
                 "Borrow Approved",
                 "Your request for '" + tx.getBook().getTitle() + "' has been approved"
         );
-
-        return transactionMapper.toDTO(saved);
     }
 
 

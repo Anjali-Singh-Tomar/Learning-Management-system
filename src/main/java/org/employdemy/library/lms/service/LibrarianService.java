@@ -182,10 +182,16 @@ public class LibrarianService {
         return users.stream()
                 .map(u->{
                     ManageMembersDTO dto=new ManageMembersDTO();
-                    dto.setName(u.getName());
-                    dto.setEmail(u.getEmail());
-                    dto.setStatus(u.isActive()?"Active":"Not Active");
+                    dto.setId(u.getId());
+                    dto.setMemberName(u.getName());
+                    dto.setMemberId(u.getEmpId());
+                    dto.setMemberEmail(u.getEmail());
+                    dto.setJoiningDate(u.getJoiningDate());
                     dto.setBorrowedCount(transactionRepository.countByUser_IdAndReturnedAtIsNull(u.getId()));
+                    dto.setTotalBorrowed(transactionRepository.countByUser_IdAndReturnedAtIsNotNull(u.getId()));
+                    dto.setOverdue(transactionRepository.countOverdueByUser(u.getId(),LocalDate.now()));
+                    dto.setStatus(u.isActive()?"Active":"Not Active");
+
                     return dto;
                 })
                 .toList();
@@ -227,29 +233,30 @@ public class LibrarianService {
         return "Book has been returned Successfully";
     }
 
-    public MemberDetailsDTO getmemberDetails(Long userId){
-        User user = userRepository.findById(userId)
-                .orElseThrow(()->new ResourceNotFoundException("User Doesn't exist"));
+//    public MemberDetailsDTO getmemberDetails(Long userId){
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(()->new ResourceNotFoundException("User Doesn't exist"));
+//
+//        if(!user.isActive()){
+//            throw new RuntimeException("User is not in active state");
+//        }
+//
+//        long currentlyBorrowed=transactionRepository.countByUser_IdAndReturnedAtIsNull(userId);
+//        long totalBorrowed=transactionRepository.countByUser_IdAndReturnedAtIsNotNull(userId);
+//        long overdue=transactionRepository.countOverdueByUser(userId,LocalDate.now());
+//
+//        return new MemberDetailsDTO(
+//                user.getName(),
+//                user.getEmpId(),
+//                user.getEmail(),
+//                user.isActive(),
+//                user.getJoiningDate(),
+//                currentlyBorrowed,
+//                totalBorrowed,
+//                overdue
+//        );
+//    }
 
-        if(!user.isActive()){
-            throw new RuntimeException("User is not in active state");
-        }
-
-        long currentlyBorrowed=transactionRepository.countByUser_IdAndReturnedAtIsNull(userId);
-        long totalBorrowed=transactionRepository.countByUser_IdAndReturnedAtIsNotNull(userId);
-        long overdue=transactionRepository.countOverdueByUser(userId,LocalDate.now());
-
-        return new MemberDetailsDTO(
-                user.getName(),
-                user.getEmpId(),
-                user.getEmail(),
-                user.isActive(),
-                user.getJoiningDate(),
-                currentlyBorrowed,
-                totalBorrowed,
-                overdue
-        );
-    }
 
 
 }
