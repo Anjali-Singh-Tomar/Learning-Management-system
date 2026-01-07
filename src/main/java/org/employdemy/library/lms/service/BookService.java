@@ -5,6 +5,7 @@ import org.employdemy.library.lms.dto.BookRequestDTO;
 import org.employdemy.library.lms.dto.BookResponseDTO;
 import org.employdemy.library.lms.dto.BrowseBookDTO;
 import org.employdemy.library.lms.exception.ResourceAlreadyExistsException;
+import org.employdemy.library.lms.exception.ResourceDeactivatedException;
 import org.employdemy.library.lms.exception.ResourceNotFoundException;
 import org.employdemy.library.lms.mapper.BookMapper;
 import org.employdemy.library.lms.model.*;
@@ -152,13 +153,24 @@ public class BookService {
     }
 
     // ------------------------------------------------------------------------
-    // 5. DELETE / DEACTIVATE BOOK
+    // 5.DEACTIVATE BOOK
+    // ------------------------------------------------------------------------
+    public void deactivateBook(Long id) {
+        Book book = getBookEntity(id);
+        if(!book.isActive()){
+            throw new ResourceDeactivatedException("Book Not Active");
+        }
+        book.setActive(false); // Soft delete-- active status changed
+        bookRepository.save(book);
+    }
+
+    // ------------------------------------------------------------------------
+    // 5.DELETE BOOK
     // ------------------------------------------------------------------------
     public void deleteBook(Long id) {
         Book book = getBookEntity(id);
-
-        book.setActive(false); // Soft delete
-        bookRepository.save(book);
+        bookRepository.delete(book);
+        // permanent delete
     }
 
     // ------------------------------------------------------------------------
