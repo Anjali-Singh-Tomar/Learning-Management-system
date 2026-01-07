@@ -257,6 +257,53 @@ public class LibrarianService {
 //        );
 //    }
 
+    public List<ManageMembersDTO> getSearchMembers(String keyword){
+
+        List<User> users=userRepository.searchUsers(keyword);
+
+        return users.stream()
+                .map(u->{
+                    ManageMembersDTO dto=new ManageMembersDTO();
+                    dto.setId(u.getId());
+                    dto.setMemberName(u.getName());
+                    dto.setMemberId(u.getEmpId());
+                    dto.setMemberEmail(u.getEmail());
+                    dto.setJoiningDate(u.getJoiningDate());
+                    dto.setBorrowedCount(transactionRepository.countByUser_IdAndReturnedAtIsNull(u.getId()));
+                    dto.setTotalBorrowed(transactionRepository.countByUser_IdAndReturnedAtIsNotNull(u.getId()));
+                    dto.setOverdue(transactionRepository.countOverdueByUser(u.getId(),LocalDate.now()));
+                    dto.setStatus(u.isActive()?"Active":"Not Active");
+
+                    return dto;
+                })
+                .toList();
+
+    }
+
+    public List<ManageMembersDTO> getFilterMembers(Boolean status){
+
+        List<User> users=userRepository.findUsersByActiveStatus(status);
+
+        return users.stream()
+                .map(u->{
+                    ManageMembersDTO dto=new ManageMembersDTO();
+                    dto.setId(u.getId());
+                    dto.setMemberName(u.getName());
+                    dto.setMemberId(u.getEmpId());
+                    dto.setMemberEmail(u.getEmail());
+                    dto.setJoiningDate(u.getJoiningDate());
+                    dto.setBorrowedCount(transactionRepository.countByUser_IdAndReturnedAtIsNull(u.getId()));
+                    dto.setTotalBorrowed(transactionRepository.countByUser_IdAndReturnedAtIsNotNull(u.getId()));
+                    dto.setOverdue(transactionRepository.countOverdueByUser(u.getId(),LocalDate.now()));
+                    dto.setStatus(u.isActive()?"Active":"Not Active");
+
+                    return dto;
+                })
+                .toList();
+
+    }
+
+
 
 
 }

@@ -201,14 +201,14 @@ public class LibrarianController {
 //    }
 
     @GetMapping("/searchMembers")
-    public ResponseEntity<ApiResponse<?>> searchMembers(@RequestParam String keyword){
+    public ResponseEntity<ApiResponse<List<ManageMembersDTO>>> searchMembers(@RequestParam String keyword){
         try{
 
             return ResponseEntity.ok(
                     ApiResponse.success(
                             200,
                             "Member Found",
-                            null
+                            librarianService.getSearchMembers(keyword)
                     )
             );
         } catch (Exception e) {
@@ -216,6 +216,28 @@ public class LibrarianController {
                     ApiResponse.error(
                             500,
                             "Failed to search the member",
+                            e.getMessage()
+                    )
+            );
+        }
+    }
+
+    @GetMapping("/filterMembers")
+    public ResponseEntity<ApiResponse<List<ManageMembersDTO>>> filterMembers(@RequestParam Boolean status){
+
+        try{
+            return ResponseEntity.ok(
+                    ApiResponse.success(
+                            200,
+                            "Filter By status is fetched successfully",
+                            librarianService.getFilterMembers(status)
+                    )
+            );
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                    ApiResponse.error(
+                            500,
+                            "Filteration of Members is failed",
                             e.getMessage()
                     )
             );
