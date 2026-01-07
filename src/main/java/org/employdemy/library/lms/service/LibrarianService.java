@@ -7,6 +7,7 @@ import org.employdemy.library.lms.model.*;
 import org.employdemy.library.lms.repository.BookRepository;
 import org.employdemy.library.lms.repository.TransactionRepository;
 import org.employdemy.library.lms.repository.UserRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -224,6 +225,30 @@ public class LibrarianService {
 
         transactionRepository.save(transaction);
         return "Book has been returned Successfully";
+    }
+
+    public MemberDetailsDTO getmemberDetails(Long userId){
+        User user = userRepository.findById(userId)
+                .orElseThrow(()->new ResourceNotFoundException("User Doesn't exist"));
+
+        if(!user.isActive()){
+            throw new RuntimeException("User is not in active state");
+        }
+
+        long currentlyBorrowed=transactionRepository.countByUser_IdAndReturnedAtIsNull(userId);
+        long totalBorrowed=transactionRepository.countByUser_IdAndReturnedAtIsNotNull(userId);
+        long overdue=transactionRepository.countOverdueByUser(userId,LocalDate.now());
+
+        return new MemberDetailsDTO(
+                user.getName(),
+                user.getEmpId(),
+                user.getEmail(),
+                user.isActive(),
+                user.getJoiningDate(),
+                currentlyBorrowed,
+                totalBorrowed,
+                overdue
+        );
     }
 
 

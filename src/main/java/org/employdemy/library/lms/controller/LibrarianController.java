@@ -165,4 +165,27 @@ public class LibrarianController {
         }
     }
 
+    @PreAuthorize(("hasRole('LIBRARIAN')"))
+    @GetMapping("/sidebar/memberDetails/{userId}")
+    public ResponseEntity<ApiResponse<MemberDetailsDTO>> memberDetails(@PathVariable Long userId){
+
+        try{
+            return ResponseEntity.ok(
+                    ApiResponse.success(
+                            200,
+                            "Member Details fetched Successfully",
+                            librarianService.getmemberDetails(userId)
+                    )
+            );
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                    ApiResponse.error(
+                            500,
+                            "Fetching of Member Details Failed",
+                            e.getMessage()
+                    )
+            );
+        }
+    }
+
 }
