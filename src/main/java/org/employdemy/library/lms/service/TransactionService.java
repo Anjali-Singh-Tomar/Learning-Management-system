@@ -154,7 +154,6 @@ public class TransactionService {
         }
 
         tx.setStatus(TransactionStatus.RENEWED);
-        tx.setDueDate(LocalDate.now().plusDays(15));
         Transaction saved = transactionRepository.save(tx);
         return transactionMapper.toDTO(saved);
     }
@@ -258,7 +257,7 @@ public class TransactionService {
     // ---------------------------------------------------------------------
     // APPROVE BORROW REQUEST
     // ---------------------------------------------------------------------
-    public TransactionResponseDTO approveBorrow(Long id) {
+    public void approveBorrow(Long id) {
 
         Transaction tx = transactionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Transaction not found"));
@@ -285,7 +284,7 @@ public class TransactionService {
     // DECLINE BORROW REQUEST
     // ---------------------------------------------------------------------
     @Transactional
-    public String declineBorrow(Long transactionId) {
+    public String declineBorrow(Long transactionId, String message) {
 
         // Fetch transaction
         Transaction tx = transactionRepository.findById(transactionId)
@@ -296,33 +295,38 @@ public class TransactionService {
             throw new RuntimeException("Only borrow requests can be declined.");
         }
 
-        // Update transaction status
-        tx.setStatus(TransactionStatus.DECLINED);
-        transactionRepository.save(tx);
+        // delete transaction once decline
+        transactionRepository.delete(tx);
 
         // Notify the user
         notificationService.sendNotification(
                 tx.getUser().getId(),
                 "Borrow Request Declined",
                 "Your borrow request for '" + tx.getBook().getTitle() +
-                        "' was declined."
+                        "' was declined" +
+                        (message != null ? "Reason: " + message : "")
         );
 
         return "Borrow request declined successfully.";
     }
 
-    public void sendReminder(Long transactionId) {
+    public String sendReminder(Long transactionId) {
 
         Transaction tx = transactionRepository.findById(transactionId)
                 .orElseThrow(() -> new RuntimeException("Transaction not found"));
 
-        if (tx.getStatus() != TransactionStatus.BORROWED) {
+        String notify;
+        if(tx.getStatus() == TransactionStatus.RETURN_REQUESTED){
+            notify = "User has already requested a return";
+            return notify;
+        }
+        else if (tx.getStatus() != TransactionStatus.BORROWED && tx.getStatus() != TransactionStatus.RENEWED) {
             throw new RuntimeException("Reminder can only be sent for borrowed books");
         }
 
         User member = tx.getUser();
 
-        String title = "📚 Book Return Reminder";
+        String title = "Book Return Reminder";
         String message = buildSingleReminderMessage(tx);
 
         // Notify member
@@ -331,9 +335,11 @@ public class TransactionService {
                 title,
                 message
         );
+        notify ="Reminder Sent";
 
         // OPTIONAL: notify admin
 //        notifyAdminForManualReminder(tx);
+        return  notify;
     }
 
 

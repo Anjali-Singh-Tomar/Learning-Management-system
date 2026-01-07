@@ -1,5 +1,6 @@
 package org.employdemy.library.lms.controller;
 
+import org.employdemy.library.lms.dto.ApiResponse;
 import org.employdemy.library.lms.dto.TransactionRequestDTO;
 import org.employdemy.library.lms.dto.TransactionResponseDTO;
 import org.employdemy.library.lms.model.TransactionStatus;
@@ -41,20 +42,57 @@ public class TransactionController {
     // 1. APPROVE BORROW REQUEST
     // --------------------------------------------------------------
     @PostMapping("/approve/borrow/{transactionId}")
-    public ResponseEntity<?> approveBorrow(@PathVariable Long transactionId) {
-        try {
-            return ResponseEntity.ok(transactionService.approveBorrow(transactionId));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+    public ResponseEntity<ApiResponse<?>> approveBorrow(@PathVariable Long transactionId) {
+
+        try{
+            transactionService.approveBorrow(transactionId);
+
+            return ResponseEntity.ok(
+                    ApiResponse.success(
+                            200,
+                            "Borrow Approved",
+                            null
+                    )
+            );
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(
+                    ApiResponse.error(
+                            400,
+                            "Failed to approve borrow request",
+                            e.getMessage()
+                    )
+            );
         }
+
     }
 
     // --------------------------------------------------------------
     // 1. DECLINE BORROW REQUEST
     // --------------------------------------------------------------
     @PostMapping("/decline/borrow/{transactionId}")
-    public ResponseEntity<?> declineBorrow(@PathVariable Long transactionId) {
-        return ResponseEntity.ok(transactionService.declineBorrow(transactionId));
+    public ResponseEntity<ApiResponse<?>> declineBorrow(
+            @PathVariable Long transactionId
+            , @RequestBody(required = false) String reason) {
+
+        try{
+            String message=transactionService.declineBorrow(transactionId,reason);
+
+            return ResponseEntity.ok(
+                    ApiResponse.success(
+                            200,
+                            message,
+                            null
+                    )
+            );
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(
+                    ApiResponse.error(
+                            400,
+                            "Failed to decline borrow request",
+                            e.getMessage()
+                    )
+            );
+        }
     }
 
     // --------------------------------------------------------------
@@ -75,11 +113,26 @@ public class TransactionController {
     // 1. APPROVE RETURN REQUEST
     // --------------------------------------------------------------
     @PostMapping("/approve/return/{transactionId}")
-    public ResponseEntity<?> approveReturn(@PathVariable Long transactionId) {
-        try {
-            return ResponseEntity.ok(transactionService.approveReturn(transactionId));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+    public ResponseEntity<ApiResponse<?>> approveReturn(@PathVariable Long transactionId) {
+
+        try{
+            String message=transactionService.approveReturn(transactionId);
+
+            return ResponseEntity.ok(
+                    ApiResponse.success(
+                            200,
+                            message,
+                            null
+                    )
+            );
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(
+                    ApiResponse.error(
+                            400,
+                            "Failed to approve return request",
+                            e.getMessage()
+                    )
+            );
         }
     }
 
@@ -87,13 +140,28 @@ public class TransactionController {
     // 1. DECLINE RETURN REQUEST
     // --------------------------------------------------------------
     @PostMapping("/decline/return/{transactionId}")
-    public ResponseEntity<?> declineReturn(
+    public ResponseEntity<ApiResponse<?>> declineReturn(
             @PathVariable Long transactionId,
             @RequestParam(required = false) String reason) {
-        try {
-            return ResponseEntity.ok(transactionService.declineReturn(transactionId, reason));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+
+        try{
+            String message=transactionService.declineReturn(transactionId, reason);
+
+            return ResponseEntity.ok(
+                    ApiResponse.success(
+                            200,
+                            message,
+                            null
+                    )
+            );
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(
+                    ApiResponse.error(
+                            400,
+                            "Failed to decline return request",
+                            e.getMessage()
+                    )
+            );
         }
     }
 
@@ -177,12 +245,26 @@ public class TransactionController {
     // 6. SEND REMINDER TO MEMBER FOR RETURN
     // --------------------------------------------------------------
     @PostMapping("/{transactionId}/reminder")
-    public ResponseEntity<?> sendReminder(@PathVariable Long transactionId) {
+    public ResponseEntity<ApiResponse<?>> sendReminder(@PathVariable Long transactionId) {
 
-        transactionService.sendReminder(transactionId);
-        return ResponseEntity.ok(Map.of(
-                "message", "Reminder sent successfully"
-        ));
+        try{
+            String message =transactionService.sendReminder(transactionId);
+            return ResponseEntity.ok(
+                    ApiResponse.success(
+                            200,
+                            message,
+                            null
+                    )
+            );
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                    ApiResponse.error(
+                            400,
+                            "failed to send reminder",
+                            e.getMessage()
+                    )
+            );
+        }
     }
 
 }

@@ -20,5 +20,6 @@ public class PendingResponseDTO {
     private String bookTitle;
     private String bookISBN;
     private LocalDate dueDate;
+    private LocalDate date;
     private String type;
 }
