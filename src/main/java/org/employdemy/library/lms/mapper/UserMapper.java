@@ -6,6 +6,8 @@ import org.employdemy.library.lms.model.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+
 @Component
 public class UserMapper {
 
@@ -41,6 +43,7 @@ public class UserMapper {
         user.setPassword(encoder.encode(dto.getPassword()));//bcrypting the password and saving in the entity
         user.setRole(dto.getRole());
         user.setEmpId(dto.getEmpId());
+        user.setJoiningDate(LocalDate.now());
         return user;
     }
 

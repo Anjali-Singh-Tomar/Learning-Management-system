@@ -169,4 +169,13 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     List<Transaction> findByStatusIn(List<TransactionStatus> statues);
 
 
+    @Query("""
+    SELECT COUNT(t)
+    FROM Transaction t
+    WHERE t.user.id = :userId
+    AND t.dueDate < :today
+""")
+    long countOverdueByUser(@Param("userId") Long userId,
+                            @Param("today") LocalDate today);
+
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +31,8 @@ public class User {
     private String empId;
 
     private boolean active = true;
+
+    private LocalDate joiningDate;
 
     // One user can have many transactions
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
