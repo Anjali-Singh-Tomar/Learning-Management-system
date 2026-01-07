@@ -1,6 +1,7 @@
 package org.employdemy.library.lms.controller;
 
 import jakarta.annotation.security.PermitAll;
+import org.employdemy.library.lms.dto.ApiResponse;
 import org.employdemy.library.lms.dto.BookRequestDTO;
 import org.employdemy.library.lms.dto.BookResponseDTO;
 import org.employdemy.library.lms.dto.BrowseBookDTO;
@@ -142,20 +143,30 @@ public class BookController {
     }
 
     // ----------------------------------------------------
-    // 6. DELETE BOOK
+    // 6. DEACTIVATE BOOK
     // ----------------------------------------------------
-    @DeleteMapping("/{id}")
+    @PutMapping("/deactivate/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
-    public ResponseEntity<?> deleteBook(@PathVariable Long id) {
-        try {
-            bookService.deleteBook(id);
-            return ResponseEntity.ok(Map.of(
-                    "message", "Book deleted successfully"
-            ));
-        } catch (Exception e) {
-            return ResponseEntity.status(404).body(Map.of(
-                    "error", "Book not found"
-            ));
+    public ResponseEntity<?> deactivateBook(@PathVariable Long id) {
+
+        try{
+            bookService.deactivateBook(id);
+
+            return ResponseEntity.ok(
+                    ApiResponse.success(
+                            200,
+                            "Following Book deactivated successfully",
+                            null
+                    )
+            );
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(
+                    ApiResponse.error(
+                            400,
+                            "Failed to deactivate book",
+                            e.getMessage()
+                    )
+            );
         }
     }
 
@@ -210,6 +221,31 @@ public class BookController {
             return ResponseEntity.status(500).body(Map.of(
                     "error", "Failed to load active books"
             ));
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
+    public ResponseEntity<?> deleteBook(@PathVariable Long id) {
+
+        try{
+            bookService.deleteBook(id);
+
+            return ResponseEntity.ok(
+                    ApiResponse.success(
+                            200,
+                            "Following Book deleted successfully",
+                            null
+                    )
+            );
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(
+                    ApiResponse.error(
+                            400,
+                            "Failed to delete book",
+                            e.getMessage()
+                    )
+            );
         }
     }
 }
