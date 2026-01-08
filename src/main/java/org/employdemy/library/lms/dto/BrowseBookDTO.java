@@ -14,6 +14,7 @@ public class BrowseBookDTO {
     private String title;
     private String author;
     private Genre genre;
+    private Integer publishedYear;
     private String imageName;
     private String imageType;
     private String imageBase64;

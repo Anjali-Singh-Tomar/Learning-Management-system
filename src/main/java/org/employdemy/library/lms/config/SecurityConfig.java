@@ -78,6 +78,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/books/**").hasAnyRole("ADMIN", "LIBRARIAN")
                         .requestMatchers("/api/transactions/**").hasAnyRole("ADMIN", "LIBRARIAN", "MEMBER")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/member/sidebar/**").permitAll()
                         .requestMatchers("/api/member/**").hasRole("MEMBER")
                         .requestMatchers("/api/notifications/**").hasAnyRole("ADMIN", "LIBRARIAN","MEMBER")
 

@@ -121,6 +121,7 @@ public class BookService {
                     book.getTitle(),
                     book.getAuthor(),
                     book.getGenre(),
+                    book.getPublishedYear(),
                     book.getImageName(),
                     book.getImageType(),
                     (book.getImageData() != null)
