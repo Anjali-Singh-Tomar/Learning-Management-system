@@ -240,16 +240,19 @@ public class TransactionService {
 
         Book book = bookRepository.findById(dto.getBookId())
                 .orElseThrow(() -> new RuntimeException("Book not found"));
-        List<TransactionStatus> ts = List.of(
-                TransactionStatus.RENEWED,
-                TransactionStatus.BORROWED,
-                TransactionStatus.RETURN_REQUESTED,
-                TransactionStatus.REQUESTED
-        );
-        Optional<Transaction> t=  transactionRepository.findByUserAndBookAndStatusIn(user,book,ts);
-        if(t.isEmpty()){
-            throw new ResourceAlreadyExistsException("Book Already borrowed by this user.");
-        }
+
+        //Todo: this code should check the book and user relation , currently not working
+//        List<TransactionStatus> ts = List.of(
+//                TransactionStatus.RENEWED,
+//                TransactionStatus.BORROWED,
+//                TransactionStatus.RETURN_REQUESTED,
+//                TransactionStatus.REQUESTED
+//        );
+//        Optional<Transaction> t=  transactionRepository.findByUserAndBookAndStatusIn(user,book,ts);
+//        if(t.isEmpty()){
+//            throw new ResourceAlreadyExistsException("Book Already borrowed by this user.");
+//        }
+
         // Create pending transaction
         Transaction tx = transactionMapper.toEntity(user,book);
 
