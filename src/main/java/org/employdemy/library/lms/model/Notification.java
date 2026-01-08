@@ -26,6 +26,8 @@ public class Notification {
     private boolean readFlag = false;
 
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Enumerated(EnumType.STRING)
     private NotificationType type;
 }
 
