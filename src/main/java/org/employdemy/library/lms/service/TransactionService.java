@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.employdemy.library.lms.dto.PendingResponseDTO;
 import org.employdemy.library.lms.dto.TransactionRequestDTO;
 import org.employdemy.library.lms.dto.TransactionResponseDTO;
+import org.employdemy.library.lms.exception.ResourceAlreadyExistsException;
 import org.employdemy.library.lms.exception.ResourceNotFoundException;
 import org.employdemy.library.lms.mapper.TransactionMapper;
 import org.employdemy.library.lms.model.*;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -66,7 +68,8 @@ public class TransactionService {
                     librarian.getId(),
                     "Return Request Pending",
                     "User '" + tx.getUser().getName() +
-                            "' has requested to return the book '" + tx.getBook().getTitle() + "'."
+                            "' has requested to return the book '" + tx.getBook().getTitle() + "'.",
+                    NotificationType.REQUEST
             );
         }
 
@@ -96,7 +99,8 @@ public class TransactionService {
         notificationService.sendNotification(
                 tx.getUser().getId(),
                 "Return Approved",
-                "Your return request for '" + tx.getBook().getTitle() + "' has been approved."
+                "Your return request for '" + tx.getBook().getTitle() + "' has been approved.",
+                NotificationType.APPROVE
         );
 
         return "Return successfully completed.";
@@ -123,7 +127,8 @@ public class TransactionService {
                 tx.getUser().getId(),
                 "Return Declined",
                 "Your request to return '" + tx.getBook().getTitle() + "' was declined. " +
-                        (reason != null ? "Reason: " + reason : "")
+                        (reason != null ? "Reason: " + reason : ""),
+                NotificationType.DECLINE
         );
 
         return "Return request declined.";
@@ -149,7 +154,8 @@ public class TransactionService {
             notificationService.sendNotification(
                     librarian.getId(),
                     "Renew Book",
-                    user.getName() + " has Renewed the book " + book.getTitle()
+                    user.getName() + " has Renewed the book " + book.getTitle(),
+                    NotificationType.RENEW
             );
         }
 
@@ -234,7 +240,16 @@ public class TransactionService {
 
         Book book = bookRepository.findById(dto.getBookId())
                 .orElseThrow(() -> new RuntimeException("Book not found"));
-
+        List<TransactionStatus> ts = List.of(
+                TransactionStatus.RENEWED,
+                TransactionStatus.BORROWED,
+                TransactionStatus.RETURN_REQUESTED,
+                TransactionStatus.REQUESTED
+        );
+        Optional<Transaction> t=  transactionRepository.findByUserAndBookAndStatusIn(user,book,ts);
+        if(t.isEmpty()){
+            throw new ResourceAlreadyExistsException("Book Already borrowed by this user.");
+        }
         // Create pending transaction
         Transaction tx = transactionMapper.toEntity(user,book);
 
@@ -246,7 +261,8 @@ public class TransactionService {
             notificationService.sendNotification(
                     librarian.getId(),
                     "Borrow Request",
-                    user.getName() + " has requested to borrow " + book.getTitle()
+                    user.getName() + " has requested to borrow " + book.getTitle(),
+                    NotificationType.REQUEST
             );
         }
 
@@ -273,7 +289,8 @@ public class TransactionService {
         notificationService.sendNotification(
                 tx.getUser().getId(),
                 "Borrow Approved",
-                "Your request for '" + tx.getBook().getTitle() + "' has been approved"
+                "Your request for '" + tx.getBook().getTitle() + "' has been approved",
+                NotificationType.APPROVE
         );
     }
 
@@ -302,7 +319,8 @@ public class TransactionService {
                 "Borrow Request Declined",
                 "Your borrow request for '" + tx.getBook().getTitle() +
                         "' was declined" +
-                        (message != null ? "Reason: " + message : "")
+                        (message != null ? "Reason: " + message : ""),
+                NotificationType.DECLINE
         );
 
         return "Borrow request declined successfully.";
@@ -331,7 +349,8 @@ public class TransactionService {
         notificationService.sendNotification(
                 member.getId(),
                 title,
-                message
+                message,
+                NotificationType.REMINDER
         );
         notify ="Reminder Sent";
 

@@ -144,7 +144,8 @@ public class LibrarianService {
         notificationService.sendNotification(
                 transaction.getUser().getId(),
                 "Book Issued",
-                "Your Book "+transaction.getBook().getTitle()+"has been successfully issued by the Librarian"
+                "Your Book "+transaction.getBook().getTitle()+"has been successfully issued by the Librarian",
+                NotificationType.ISSUE
         );
 
         return new IssueBookResponseDTO(

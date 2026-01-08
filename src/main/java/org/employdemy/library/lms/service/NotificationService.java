@@ -48,7 +48,7 @@ public class NotificationService {
         return sb.toString();
     }
 
-    public void sendNotification(Long userId, String title, String message) {
+    public void sendNotification(Long userId, String title, String message, NotificationType type) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -57,10 +57,10 @@ public class NotificationService {
         notification.setUser(user);
         notification.setTitle(title);
         notification.setMessage(message);
+        notification.setType(type);
 
         notificationRepository.save(notification);
 
-        // TODO: include if condition to filter the email that should be sent
         if (user.getEmail() != null) {
             emailService.sendEmail(
                     user.getEmail(),
@@ -103,7 +103,7 @@ public class NotificationService {
     public void sendDueSoonReminder(Transaction tx) {
         String message = "Your borrowed book '" + tx.getBook().getTitle()
                 + "' is due on " + tx.getDueDate();
-        sendNotification(tx.getUser().getId(), "Due Soon Books", message);
+        sendNotification(tx.getUser().getId(), "Due Soon Books", message,NotificationType.REMINDER);
     }
 
     public void sendDueSoonReminderToAdminLib(List<Transaction> transactions) {
@@ -121,7 +121,8 @@ public class NotificationService {
             sendNotification(
                     user.getId(),
                     title,
-                    message
+                    message,
+                    NotificationType.REMINDER
             );
         }
     }
@@ -132,7 +133,7 @@ public class NotificationService {
                 + "' was due on " + tx.getDueDate()
                 + " and is now OVERDUE.";
 
-        sendNotification(tx.getUser().getId(), "Book Overdue", message);
+        sendNotification(tx.getUser().getId(), "Book Overdue", message,NotificationType.REMINDER);
     }
 
     public void sendOverdueReminderToAdminLib(List<Transaction> transactions) {
@@ -150,7 +151,8 @@ public class NotificationService {
             sendNotification(
                     user.getId(),
                     title,
-                    message
+                    message,
+                    NotificationType.REMINDER
             );
         }
     }

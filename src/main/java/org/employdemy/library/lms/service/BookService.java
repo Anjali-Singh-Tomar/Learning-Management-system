@@ -52,7 +52,8 @@ public class BookService {
             notificationService.sendNotification(
                     m.getId(),
                     "New Book Added",
-                    "A new book '" + savedBook.getTitle() + "' has been added."
+                    "A new book '" + savedBook.getTitle() + "' has been added.",
+                    NotificationType.NEW_BOOK
             );
         }
         // Convert back Entity → ResponseDTO

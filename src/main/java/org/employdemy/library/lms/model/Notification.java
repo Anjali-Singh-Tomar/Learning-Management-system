@@ -26,5 +26,6 @@ public class Notification {
     private boolean readFlag = false;
 
     private LocalDateTime createdAt = LocalDateTime.now();
+    private NotificationType type;
 }
 
