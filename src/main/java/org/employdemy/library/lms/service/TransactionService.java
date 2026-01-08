@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import org.employdemy.library.lms.dto.PendingResponseDTO;
 import org.employdemy.library.lms.dto.TransactionRequestDTO;
 import org.employdemy.library.lms.dto.TransactionResponseDTO;
-import org.employdemy.library.lms.exception.ResourceAlreadyExistsException;
 import org.employdemy.library.lms.exception.ResourceNotFoundException;
 import org.employdemy.library.lms.mapper.TransactionMapper;
 import org.employdemy.library.lms.model.*;
@@ -16,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
