@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.employdemy.library.lms.dto.ApiResponse;
 import org.employdemy.library.lms.dto.NotificationResponseDTO;
 import org.employdemy.library.lms.dto.NotificationSettingRequestDTO;
-import org.employdemy.library.lms.model.Notification;
 import org.employdemy.library.lms.service.NotificationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

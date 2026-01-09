@@ -2,7 +2,6 @@ package org.employdemy.library.lms.repository;
 
 import org.employdemy.library.lms.model.Notification;
 import org.employdemy.library.lms.model.NotificationType;
-import org.employdemy.library.lms.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
