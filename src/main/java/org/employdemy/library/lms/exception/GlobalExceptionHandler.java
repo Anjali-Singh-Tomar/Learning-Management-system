@@ -90,7 +90,7 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(
                         HttpStatus.INTERNAL_SERVER_ERROR.value(),
                         "Something went wrong",
-                        null
+                        ex.getMessage()
                 ));
     }
 }

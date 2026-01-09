@@ -50,7 +50,9 @@ public class UserService {
     public UserResponseDTO getUserById(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found: " + id));
-        return userMapper.toDTO(user);
+
+        int borrowedCount=transactionRepository.countAllBorrowedBooks(id);
+        return userMapper.toDTO(user,borrowedCount);
     }
 
     public UserResponseDTO updateUser(Long id, UserUpdateDTO dto) {
@@ -74,5 +76,27 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found: " + id));
         userRepository.delete(user);
+    }
+
+    public String getActivateUser(Boolean active,Long userId){
+
+
+        User user=userRepository.findById(userId).orElseThrow(()->new ResourceNotFoundException("User does not exist with id "+userId));
+
+        if(active.equals(true) && user.isActive()==true){
+            return "User is already in active state";
+        }else if (active.equals(false) && user.isActive()==false){
+            return "User is already in Inactive state";
+        }else if(active.equals(false) && user.isActive()==true){
+            user.setActive(false);
+            userRepository.save(user);
+            return "User is successfully Deactivated";
+        }else {
+            user.setActive(true);
+            userRepository.save(user);
+            return "User is Successfully Activated";
+        }
+
+
     }
 }

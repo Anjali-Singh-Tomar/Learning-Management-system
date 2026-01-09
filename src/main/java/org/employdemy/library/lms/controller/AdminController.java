@@ -5,6 +5,7 @@ import org.employdemy.library.lms.dto.AdminManageUsersDTO;
 import org.employdemy.library.lms.dto.ApiResponse;
 import org.employdemy.library.lms.dto.RecommendedBookDTO;
 import org.employdemy.library.lms.service.AdminService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -56,22 +57,12 @@ public class AdminController {
     @GetMapping("/sidebar/manageUsers")
     public ResponseEntity<ApiResponse<List<AdminManageUsersDTO>>> manageUsers(){
 
-        try{
-            return ResponseEntity.ok(
-                    ApiResponse.success(
-                            200,
-                            "All the users are fetched successfully",
-                            adminService.getManageUsers()
-                    )
-            );
-        }catch (Exception e){
-            return ResponseEntity.badRequest().body(
-                    ApiResponse.error(
-                            500,
-                            "Fetching of users is failed",
-                            e.getMessage()
-                    )
-            );
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ApiResponse.success(
+                        HttpStatus.OK.value(),
+                        "All the users are fetched successfully",
+                        adminService.getManageUsers()
+                )
+        );
     }
 }

@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.employdemy.library.lms.dto.*;
 import org.employdemy.library.lms.service.MemberService;
 import org.employdemy.library.lms.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -91,25 +92,15 @@ public class MemberController {
             @PathVariable Long id,
             @RequestBody @Valid UpdateNameDTO dto){
 
-        try{
-            memberService.updateUserName(id,dto.getName());
+        memberService.updateUserName(id,dto.getName());
 
-            return ResponseEntity.ok(
-                    ApiResponse.success(
-                            200,
-                            "Name updated Successfully",
-                            null
-                    )
-            );
-        }catch (Exception e){
-            return ResponseEntity.badRequest().body(
-                    ApiResponse.error(
-                            400,
-                            "Failed to update name",
-                            e.getMessage()
-                    )
-            );
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ApiResponse.success(
+                        HttpStatus.OK.value(),
+                        "Name updated Successfully",
+                        null
+                )
+        );
     }
 
     @PreAuthorize("hasAnyRole('MEMBER', 'LIBRARIAN')")
@@ -118,25 +109,15 @@ public class MemberController {
             @PathVariable Long id,
             @RequestBody @Valid ChangePasswordDTO  dto){
 
+        memberService.changePassword(id,dto);
 
-        try{
-            memberService.changePassword(id,dto);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ApiResponse.success(
+                        HttpStatus.OK.value(),
+                        "Password has been changed Successfully",
+                        null
+                )
+        );
 
-            return ResponseEntity.ok(
-                    ApiResponse.success(
-                            200,
-                            "Password changed successfully",
-                            null
-                    )
-            );
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(
-                    ApiResponse.error(
-                            400,
-                            "Password change failed",
-                            e.getMessage()
-                    )
-            );
-        }
     }
 }

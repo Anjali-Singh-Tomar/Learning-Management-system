@@ -1,6 +1,7 @@
 package org.employdemy.library.lms.controller;
 
 import jakarta.annotation.security.PermitAll;
+import org.employdemy.library.lms.dto.ApiResponse;
 import org.employdemy.library.lms.dto.UserRequestDTO;
 import org.employdemy.library.lms.dto.UserResponseDTO;
 import org.employdemy.library.lms.dto.UserUpdateDTO;
@@ -98,6 +99,29 @@ public class UserController {
             return ResponseEntity.status(404).body(Map.of(
                     "error", "User not found with ID: " + id
             ));
+        }
+    }
+
+    @PutMapping("/activate/{userId}")
+    public ResponseEntity<ApiResponse<String>> activateUser(@RequestParam Boolean active,@PathVariable Long userId){
+
+        try{
+
+           return ResponseEntity.ok(
+                    ApiResponse.success(
+                            200,
+                            "User Activation/Deactivation is successfull",
+                            userService.getActivateUser(active,userId)
+                    )
+            );
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                    ApiResponse.error(
+                            500,
+                            "User Activation/Deactivation is not successfull",
+                            e.getMessage()
+                    )
+            );
         }
     }
 }

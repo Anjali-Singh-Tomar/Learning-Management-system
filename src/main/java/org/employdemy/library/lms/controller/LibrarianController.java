@@ -6,6 +6,7 @@ import org.employdemy.library.lms.dto.ApiResponse;
 import org.employdemy.library.lms.dto.IssueBookRequestDTO;
 import org.employdemy.library.lms.service.LibrarianService;
 import org.employdemy.library.lms.service.TransactionService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -88,93 +89,53 @@ public class LibrarianController {
     @GetMapping("/sidebar/managemembers")
     @PreAuthorize("hasRole('LIBRARIAN')")
     public ResponseEntity<ApiResponse<List<ManageMembersDTO>>> manageMembers(){
-        try{
-            return ResponseEntity.ok(
-                    ApiResponse.success(
-                            200,
-                            "All Members are fetched Successfully",
-                            librarianService.manageMembers()
-                    )
-            );
-        }catch (Exception e){
-            return ResponseEntity.badRequest().body(
-                    ApiResponse.error(
-                            500,
-                            "Members could not fetch",
-                            e.getMessage()
-                    )
-            );
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ApiResponse.success(
+                        HttpStatus.OK.value(),
+                        "All Members are fetched Successfully",
+                        librarianService.manageMembers()
+                )
+        );
     }
 
     @GetMapping("/sidebar/pending-request")
     public ResponseEntity<ApiResponse<?>> pendingRequest(){
 
-        try{
-            List<PendingResponseDTO> data=transactionService.getAllRequests();
+        List<PendingResponseDTO> data=transactionService.getAllRequests();
 
-            return ResponseEntity.ok(
-                    ApiResponse.success(
-                            200,
-                            "Request data fetched",
-                            data
-                    )
-            );
-        }catch (Exception e){
-            return ResponseEntity.badRequest().body(
-                    ApiResponse.error(
-                            400,
-                            "Failed to fetch the data"+e.getMessage(),
-                            null
-                    )
-            );
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ApiResponse.success(
+                        HttpStatus.OK.value(),
+                        "Request data fetched",
+                        data
+                )
+        );
     }
 
     @GetMapping("/sidebar/borrowedBooks")
     @PreAuthorize("hasRole('LIBRARIAN')")
     public ResponseEntity<ApiResponse<?>> borrowedBooks(){
-        try{
-            return ResponseEntity.ok(
-                    ApiResponse.success(
-                            200,
-                            "Borrowed Books fetched Successfully",
-                            librarianService.getBorrowedBooks()
-                    )
-            );
-        }catch (Exception e){
-            return ResponseEntity.badRequest().body(
-                    ApiResponse.error(
-                            500,
-                            "Failed to Fetch the Borrowed Books",
-                            e.getMessage()
-                    )
-            );
-        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ApiResponse.success(
+                        HttpStatus.OK.value(),
+                        "Borrowed Books fetched Successfully",
+                        librarianService.getBorrowedBooks()
+                )
+        );
     }
 
 
     @PostMapping("/sidebar/borrowedBooks/{id}")
     public ResponseEntity<ApiResponse<String>> markReturned(@PathVariable Long id){
-        try{
 
-            ;
-            return ResponseEntity.ok(
-                    ApiResponse.success(
-                            200,
-                            "The Transaction is Marked as Returned Successfully",
-                            librarianService.markAsReturned(id)
-                    )
-            );
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(
-                    ApiResponse.error(
-                            500,
-                            "Transaction has failed to marked as transaction",
-                            e.getMessage()
-                    )
-            );
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ApiResponse.success(
+                        HttpStatus.OK.value(),
+                        "The Transaction is Marked as Returned Successfully",
+                        librarianService.markAsReturned(id)
+                )
+        );
     }
 
 //    @PreAuthorize(("hasRole('LIBRARIAN')"))
@@ -202,46 +163,26 @@ public class LibrarianController {
 
     @GetMapping("/searchMembers")
     public ResponseEntity<ApiResponse<List<ManageMembersDTO>>> searchMembers(@RequestParam String keyword){
-        try{
 
-            return ResponseEntity.ok(
-                    ApiResponse.success(
-                            200,
-                            "Member Found",
-                            librarianService.getSearchMembers(keyword)
-                    )
-            );
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(
-                    ApiResponse.error(
-                            500,
-                            "Failed to search the member",
-                            e.getMessage()
-                    )
-            );
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ApiResponse.success(
+                        HttpStatus.OK.value(),
+                        "Member Found",
+                        librarianService.getSearchMembers(keyword)
+                )
+        );
     }
 
     @GetMapping("/filterMembers")
     public ResponseEntity<ApiResponse<List<ManageMembersDTO>>> filterMembers(@RequestParam Boolean status){
 
-        try{
-            return ResponseEntity.ok(
-                    ApiResponse.success(
-                            200,
-                            "Filter By status is fetched successfully",
-                            librarianService.getFilterMembers(status)
-                    )
-            );
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(
-                    ApiResponse.error(
-                            500,
-                            "Filteration of Members is failed",
-                            e.getMessage()
-                    )
-            );
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ApiResponse.success(
+                        HttpStatus.OK.value(),
+                        "Filter By status is fetched successfully",
+                        librarianService.getFilterMembers(status)
+                )
+        );
     }
 
 }
