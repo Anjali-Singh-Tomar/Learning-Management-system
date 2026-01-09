@@ -1,7 +1,9 @@
 package org.employdemy.library.lms.service;
 
+import org.employdemy.library.lms.model.NotificationSettings;
 import org.employdemy.library.lms.model.Transaction;
 import org.employdemy.library.lms.model.TransactionStatus;
+import org.employdemy.library.lms.repository.NotificationSettingRepository;
 import org.employdemy.library.lms.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,6 +21,9 @@ public class DueDateScheduler {
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    private NotificationSettingRepository notificationSettingRepository;
+
 
     // Runs every day at 9 AM
     @Scheduled(cron = "0 0 9 * * *")
@@ -34,7 +39,12 @@ public class DueDateScheduler {
 
         // send notification to each member
         dueSoonTransactions.forEach(tx -> {
-            notificationService.sendDueSoonReminder(tx);
+            NotificationSettings ns =
+                    notificationSettingRepository.findById(tx.getUser().getId())
+                            .orElseThrow(() -> new RuntimeException("NotificationSettings not found"));
+            if (ns.getDueDateReminder()){
+                notificationService.sendDueSoonReminder(tx);
+        }
         });
     }
 

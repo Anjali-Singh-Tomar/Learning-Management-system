@@ -28,8 +28,6 @@ public class MemberService {
     private final TransactionRepository transactionRepository;
     private final UserRepository userRepository;
 
-    private BCryptPasswordEncoder encoder= new BCryptPasswordEncoder(10);
-
     private final PasswordEncoder passwordEncoder;
 
     private final UserMapper userMapper;

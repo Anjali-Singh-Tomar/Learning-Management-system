@@ -2,9 +2,11 @@ package org.employdemy.library.lms.service;
 
 import lombok.RequiredArgsConstructor;
 import org.employdemy.library.lms.dto.NotificationResponseDTO;
+import org.employdemy.library.lms.dto.NotificationSettingRequestDTO;
 import org.employdemy.library.lms.mapper.NotificationMapper;
 import org.employdemy.library.lms.model.*;
 import org.employdemy.library.lms.repository.NotificationRepository;
+import org.employdemy.library.lms.repository.NotificationSettingRepository;
 import org.employdemy.library.lms.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
@@ -18,6 +20,7 @@ public class NotificationService {
     private final UserRepository userRepository;
     private final EmailService emailService;
     private final NotificationMapper notificationMapper;
+    private final NotificationSettingRepository notificationSettingRepository;
 
     // get the list of librarian with admin
     private List<User> getAdminAndLibrarians() {
@@ -61,12 +64,17 @@ public class NotificationService {
 
         notificationRepository.save(notification);
 
-        if (user.getEmail() != null) {
-            emailService.sendEmail(
-                    user.getEmail(),
-                    title,
-                    message
-            );
+        NotificationSettings ns =
+                notificationSettingRepository.findById(user.getId())
+                        .orElseThrow(() -> new RuntimeException("NotificationSettings not found"));
+        if(ns.getReceiveEmail()) {
+            if (user.getEmail() != null) {
+                emailService.sendEmail(
+                        user.getEmail(),
+                        title,
+                        message
+                );
+            }
         }
     }
 
@@ -87,6 +95,12 @@ public class NotificationService {
 
     public void markAllAsRead(Long userId) {
         List<Notification> list = notificationRepository.findByUserIdOrderByCreatedAtDesc(userId);
+        list.forEach(n -> n.setReadFlag(true));
+        notificationRepository.saveAll(list);
+    }
+
+    public void markAllPendingAsRead(Long userId) {
+        List<Notification> list = notificationRepository.findByUserIdAndType(userId,NotificationType.REQUEST);
         list.forEach(n -> n.setReadFlag(true));
         notificationRepository.saveAll(list);
     }
@@ -155,6 +169,17 @@ public class NotificationService {
                     NotificationType.REMINDER
             );
         }
+    }
+
+    public void settings(NotificationSettingRequestDTO dto){
+
+        NotificationSettings ns =
+                notificationSettingRepository.findById(dto.getUserId())
+                        .orElseThrow(() -> new RuntimeException("NotificationSettings not found"));
+        ns.setDueDateReminder(dto.getDueDateReminder());
+        ns.setNewBooksReminder(dto.getNewBooksReminder());
+        ns.setReceiveEmail(dto.getReceiveEmail());
+        notificationSettingRepository.save(ns);
     }
 
 }

@@ -1,6 +1,7 @@
 package org.employdemy.library.lms.repository;
 
 import org.employdemy.library.lms.model.Notification;
+import org.employdemy.library.lms.model.NotificationType;
 import org.employdemy.library.lms.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -13,6 +14,9 @@ public interface NotificationRepository extends JpaRepository<Notification,Long>
 
     // Get only unread notifications
     List<Notification> findByUserIdAndReadFlagFalseOrderByCreatedAtDesc(Long userId);
+
+    // Get all request notifications
+    List<Notification> findByUserIdAndType(Long userId, NotificationType type);
 
     // Delete all notifications of a user
     void deleteByUserId(Long userId);

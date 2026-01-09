@@ -43,4 +43,9 @@ public class User {
     @JsonIgnore
     private List<Notification> notifications = new ArrayList<>();
 
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private NotificationSettings notificationSettings;
+
 }

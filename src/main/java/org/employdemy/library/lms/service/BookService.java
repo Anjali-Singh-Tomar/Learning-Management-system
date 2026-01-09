@@ -10,6 +10,7 @@ import org.employdemy.library.lms.exception.ResourceNotFoundException;
 import org.employdemy.library.lms.mapper.BookMapper;
 import org.employdemy.library.lms.model.*;
 import org.employdemy.library.lms.repository.BookRepository;
+import org.employdemy.library.lms.repository.NotificationSettingRepository;
 import org.employdemy.library.lms.repository.TransactionRepository;
 import org.employdemy.library.lms.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ public class BookService {
     private final UserRepository userRepository;
     private final NotificationService notificationService;
     private final TransactionRepository transactionRepository;
+    private final NotificationSettingRepository notificationSettingsRepository;
 
 
     // ------------------------------------------------------------------------
@@ -49,12 +51,17 @@ public class BookService {
 
 
         for (User m : members) {
-            notificationService.sendNotification(
-                    m.getId(),
-                    "New Book Added",
-                    "A new book '" + savedBook.getTitle() + "' has been added.",
-                    NotificationType.NEW_BOOK
-            );
+            NotificationSettings ns =
+                    notificationSettingsRepository.findById(m.getId())
+                            .orElseThrow(() -> new RuntimeException("NotificationSettings not found"));
+            if(ns.getNewBooksReminder()) {
+                notificationService.sendNotification(
+                        m.getId(),
+                        "New Book Added",
+                        "A new book '" + savedBook.getTitle() + "' has been added.",
+                        NotificationType.NEW_BOOK
+                );
+            }
         }
         // Convert back Entity → ResponseDTO
         return bookMapper.toDTO(savedBook);

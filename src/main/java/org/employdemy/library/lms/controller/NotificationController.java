@@ -1,7 +1,9 @@
 package org.employdemy.library.lms.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.employdemy.library.lms.dto.ApiResponse;
 import org.employdemy.library.lms.dto.NotificationResponseDTO;
+import org.employdemy.library.lms.dto.NotificationSettingRequestDTO;
 import org.employdemy.library.lms.model.Notification;
 import org.employdemy.library.lms.service.NotificationService;
 import org.springframework.http.ResponseEntity;
@@ -47,6 +49,15 @@ public class NotificationController {
     }
 
     // ------------------------------------------------------------
+    // MARK ALL NOTIFICATIONS OF A USER AS READ
+    // ------------------------------------------------------------
+    @PostMapping("/read-all-pending/{userId}")
+    public ResponseEntity<String> markAllPendingAsRead(@PathVariable Long userId) {
+        notificationService.markAllPendingAsRead(userId);
+        return ResponseEntity.ok("All notifications marked as read");
+    }
+
+    // ------------------------------------------------------------
     // DELETE ONE NOTIFICATION
     // ------------------------------------------------------------
     @DeleteMapping("/{id}")
@@ -62,6 +73,33 @@ public class NotificationController {
     public ResponseEntity<String> deleteAllNotifications(@PathVariable Long userId) {
         notificationService.deleteAllNotifications(userId);
         return ResponseEntity.ok("All notifications deleted for user");
+    }
+
+    // ------------------------------------------------------------
+    // SET THE SETTINGS FOR NOTIFICATIONS
+    // ------------------------------------------------------------
+    @PostMapping("/settings")
+    public ResponseEntity<ApiResponse<?>> settings(@RequestBody NotificationSettingRequestDTO dto){
+
+        try{
+            notificationService.settings(dto);
+
+            return ResponseEntity.ok(
+                    ApiResponse.success(
+                            200,
+                            "Settings Updated successfully",
+                            null
+                    )
+            );
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                    ApiResponse.error(
+                            400,
+                            "Process failed",
+                            e.getMessage()
+                    )
+            );
+        }
     }
 }
 
