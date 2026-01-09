@@ -1,11 +1,14 @@
 package org.employdemy.library.lms.service;
 
 import lombok.RequiredArgsConstructor;
+import org.employdemy.library.lms.dto.AdminManageUsersDTO;
 import org.employdemy.library.lms.dto.AdminOverviewResponse;
 import org.employdemy.library.lms.dto.DueSoonResponseDTO;
 import org.employdemy.library.lms.dto.OverdueRecordDTO;
+import org.employdemy.library.lms.model.Role;
 import org.employdemy.library.lms.model.Transaction;
 import org.employdemy.library.lms.model.TransactionStatus;
+import org.employdemy.library.lms.model.User;
 import org.employdemy.library.lms.repository.BookRepository;
 import org.employdemy.library.lms.repository.TransactionRepository;
 import org.employdemy.library.lms.repository.UserRepository;
@@ -80,6 +83,23 @@ public class AdminService {
             dto.setDaysRemaining(java.time.temporal.ChronoUnit.DAYS.between(today, tx.getDueDate()));
             return dto;
         }).toList();
+    }
+
+    public List<AdminManageUsersDTO> getManageUsers(){
+
+        List<User> users=userRepository.findAllUsers();
+
+        return users.stream()
+                .map(u->{
+                    AdminManageUsersDTO dto=new AdminManageUsersDTO();
+                    dto.setUserName(u.getName());
+                    dto.setUserEmail(u.getEmail());
+                    dto.setJoinDate(u.getJoiningDate());
+                    dto.setRole(u.getRole());
+                    dto.setStatus(u.isActive()?"Active":"Not Active");
+                    return dto;
+                })
+                .toList();
     }
 }
 

@@ -15,7 +15,17 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmpId(String empId);
 
     long countByActiveTrue();
+
     List<User> findByRole(Role role);
+
+
+    @Query("""
+            SELECT u
+            FROM User u
+            WHERE u.role = 'MEMBER'
+                OR u.role = 'LIBRARIAN'
+            """)
+    List<User> findAllUsers();
 
     @Query("""
     SELECT u

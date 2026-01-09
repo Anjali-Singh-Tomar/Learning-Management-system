@@ -1,6 +1,8 @@
 package org.employdemy.library.lms.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.employdemy.library.lms.dto.AdminManageUsersDTO;
+import org.employdemy.library.lms.dto.ApiResponse;
 import org.employdemy.library.lms.dto.RecommendedBookDTO;
 import org.employdemy.library.lms.service.AdminService;
 import org.springframework.http.ResponseEntity;
@@ -47,6 +49,29 @@ public class AdminController {
             return ResponseEntity.ok(adminService.getDueSoonTransactions(days));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/sidebar/manageUsers")
+    public ResponseEntity<ApiResponse<List<AdminManageUsersDTO>>> manageUsers(){
+
+        try{
+            return ResponseEntity.ok(
+                    ApiResponse.success(
+                            200,
+                            "All the users are fetched successfully",
+                            adminService.getManageUsers()
+                    )
+            );
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(
+                    ApiResponse.error(
+                            500,
+                            "Fetching of users is failed",
+                            e.getMessage()
+                    )
+            );
         }
     }
 }
