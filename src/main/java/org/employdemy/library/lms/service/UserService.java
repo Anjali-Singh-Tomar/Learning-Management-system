@@ -1,11 +1,14 @@
 package org.employdemy.library.lms.service;
 
+import lombok.AllArgsConstructor;
 import org.employdemy.library.lms.dto.UserRequestDTO;
 import org.employdemy.library.lms.dto.UserResponseDTO;
 import org.employdemy.library.lms.dto.UserUpdateDTO;
 import org.employdemy.library.lms.exception.ResourceNotFoundException;
 import org.employdemy.library.lms.mapper.UserMapper;
+import org.employdemy.library.lms.model.NotificationSettings;
 import org.employdemy.library.lms.model.User;
+import org.employdemy.library.lms.repository.NotificationSettingRepository;
 import org.employdemy.library.lms.repository.TransactionRepository;
 import org.employdemy.library.lms.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -14,20 +17,23 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final TransactionRepository transactionRepository;
+    private final NotificationSettingRepository notificationSettingRepository;
 
-    public UserService(UserRepository userRepository, UserMapper userMapper, TransactionRepository transactionRepository) {
-        this.userRepository = userRepository;
-        this.userMapper = userMapper;
-        this.transactionRepository=transactionRepository;
-    }
 
     public UserResponseDTO createUser(UserRequestDTO dto) {
         User saved = userRepository.save(userMapper.toEntity(dto));
+
+        //create a notification setting for the user created
+        NotificationSettings notificationSettings=new NotificationSettings(saved
+                                        ,true,true,true);
+        notificationSettingRepository.save(notificationSettings);
+
         return userMapper.toDTO(saved);
     }
 

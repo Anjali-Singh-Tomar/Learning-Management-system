@@ -9,7 +9,6 @@ import org.employdemy.library.lms.model.User;
 import org.employdemy.library.lms.repository.BookRepository;
 import org.employdemy.library.lms.repository.TransactionRepository;
 import org.employdemy.library.lms.repository.UserRepository;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,8 +26,6 @@ public class MemberService {
     private final BookRepository bookRepository;
     private final TransactionRepository transactionRepository;
     private final UserRepository userRepository;
-
-    private BCryptPasswordEncoder encoder= new BCryptPasswordEncoder(10);
 
     private final PasswordEncoder passwordEncoder;
 
