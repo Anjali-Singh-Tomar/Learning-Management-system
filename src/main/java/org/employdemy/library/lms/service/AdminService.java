@@ -90,6 +90,7 @@ public class AdminService {
         return users.stream()
                 .map(u->{
                     AdminManageUsersDTO dto=new AdminManageUsersDTO();
+                    dto.setUserId(u.getId());
                     dto.setUserName(u.getName());
                     dto.setUserEmail(u.getEmail());
                     dto.setJoinDate(u.getJoiningDate());
@@ -159,6 +160,26 @@ public class AdminService {
             }
             return result;
 
+    }
+
+    public AdminReportsOverview getReportsOverview(){
+
+        LocalDate startDate = LocalDate.now()
+                .minusMonths(1)
+                .withDayOfMonth(1);
+
+        LocalDate endDate = startDate
+                .withDayOfMonth(startDate.lengthOfMonth());
+
+        LocalDate lastMonthDate = LocalDate.now().minusMonths(1);
+
+
+        return new AdminReportsOverview(
+                userRepository.countByActiveFalse(),
+                transactionRepository.countBorrowedBooksLastMonth(startDate,endDate),
+                transactionRepository.countMembersJoinedSinceLastMonth(lastMonthDate),
+                bookRepository.countLowStockBooks()
+        );
     }
 }
 
