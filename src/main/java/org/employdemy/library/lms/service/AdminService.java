@@ -2,7 +2,6 @@ package org.employdemy.library.lms.service;
 
 import lombok.RequiredArgsConstructor;
 import org.employdemy.library.lms.dto.*;
-import org.employdemy.library.lms.model.Role;
 import org.employdemy.library.lms.model.Transaction;
 import org.employdemy.library.lms.model.TransactionStatus;
 import org.employdemy.library.lms.model.User;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.TextStyle;
 import java.util.*;

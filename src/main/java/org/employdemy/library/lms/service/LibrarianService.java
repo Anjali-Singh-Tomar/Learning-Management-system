@@ -7,7 +7,6 @@ import org.employdemy.library.lms.model.*;
 import org.employdemy.library.lms.repository.BookRepository;
 import org.employdemy.library.lms.repository.TransactionRepository;
 import org.employdemy.library.lms.repository.UserRepository;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
