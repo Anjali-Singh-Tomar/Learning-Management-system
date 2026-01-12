@@ -5,8 +5,9 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class BorrowerActivityDTO {
+public class MonthlyActivityDTO {
 
     private String label;//months
-    private int count;
+    private int borrowCount;
+    private int returnCount;
 }

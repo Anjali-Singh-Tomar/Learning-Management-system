@@ -2,6 +2,7 @@ package org.employdemy.library.lms.service;
 
 import lombok.RequiredArgsConstructor;
 import org.employdemy.library.lms.dto.*;
+import org.employdemy.library.lms.model.Book;
 import org.employdemy.library.lms.model.Transaction;
 import org.employdemy.library.lms.model.TransactionStatus;
 import org.employdemy.library.lms.model.User;
@@ -124,7 +125,7 @@ public class AdminService {
                 .toList();
     }
 
-    public List<BorrowerActivityDTO> getBorrowerGraph(){
+    public List<ReportActivityDTO> getBorrowerGraph(){
 
             YearMonth endMonth = YearMonth.now().minusMonths(1); // last completed month
             YearMonth startMonth = endMonth.minusMonths(5);
@@ -147,7 +148,7 @@ public class AdminService {
                 );
             }
 
-            List<BorrowerActivityDTO> result = new ArrayList<>();
+            List<ReportActivityDTO> result = new ArrayList<>();
 
             for (int i = 0; i < 6; i++) {
                 YearMonth ym = startMonth.plusMonths(i);
@@ -156,10 +157,119 @@ public class AdminService {
                 String label = ym.getMonth()
                         .getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
 
-                result.add(new BorrowerActivityDTO(label, count));
+                result.add(new ReportActivityDTO(label, count));
             }
             return result;
+    }
 
+    public List<ReportActivityDTO> getMemberGraph(){
+
+        YearMonth endMonth = YearMonth.now().minusMonths(1); // last completed month
+        YearMonth startMonth = endMonth.minusMonths(5);
+
+        LocalDate fromDate = startMonth.atDay(1);
+
+        List<User> data =
+               userRepository.findAllUsers() ;
+
+        Map<YearMonth, Integer> dbMap = new HashMap<>();
+        for (User t : data) {
+            LocalDate joiningDate = t.getJoiningDate();
+            if (joiningDate == null) {
+                continue;
+            }
+            YearMonth yearMonth = YearMonth.from(joiningDate);
+            dbMap.put(
+                    yearMonth,
+                    dbMap.getOrDefault(yearMonth, 0) + 1
+            );
+        }
+
+        List<ReportActivityDTO> result = new ArrayList<>();
+
+        for (int i = 0; i < 6; i++) {
+            YearMonth ym = startMonth.plusMonths(i);
+            int count = dbMap.getOrDefault(ym, 0);
+
+            String label = ym.getMonth()
+                    .getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
+
+            result.add(new ReportActivityDTO(label, count));
+        }
+        return result;
+    }
+
+
+    public List<MonthlyActivityDTO> getBorrowReturnGraph(){
+
+        YearMonth endMonth = YearMonth.now().minusMonths(1); // last completed month
+        YearMonth startMonth = endMonth.minusMonths(5);
+
+        LocalDate fromDate = startMonth.atDay(1);
+
+        List<Transaction> data =
+                transactionRepository.countBorrowedBooksFromDate(fromDate);
+
+        Map<YearMonth, Integer> borrowedMap = new HashMap<>();
+        Map<YearMonth, Integer> returnedMap = new HashMap<>();
+        for (Transaction t : data) {
+            if (t.getBorrowedAt() != null) {
+                YearMonth borrowedMonth = YearMonth.from(t.getBorrowedAt());
+                borrowedMap.put(
+                        borrowedMonth,
+                        borrowedMap.getOrDefault(borrowedMonth, 0) + 1
+                );
+            }
+
+            if (t.getReturnedAt() != null) {
+                YearMonth returnedMonth = YearMonth.from(t.getReturnedAt());
+                returnedMap.put(
+                        returnedMonth,
+                        returnedMap.getOrDefault(returnedMonth, 0) + 1
+                );
+            }
+        }
+
+        List<MonthlyActivityDTO> result = new ArrayList<>();
+
+        for (int i = 0; i < 6; i++) {
+            YearMonth ym = startMonth.plusMonths(i);
+            int borrowedCount = borrowedMap.getOrDefault(ym, 0);
+            int returnedCount = returnedMap.getOrDefault(ym, 0);
+
+            String label = ym.getMonth()
+                    .getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
+
+            result.add(new MonthlyActivityDTO(label, borrowedCount, returnedCount));
+        }
+        return result;
+    }
+
+    public List<BookCategoryDTO> getBookByCategory(){
+
+        List<Book> books=bookRepository.findAll();
+
+        // get the data
+        Map<String, Integer> m=new HashMap<>();
+        for(Book b:books){
+            String genre =b.getGenre().toString();
+            m.put(
+                    genre,
+                    m.getOrDefault(genre, 0) + 1
+            );
+        }
+
+        List<BookCategoryDTO> group = new ArrayList<>();
+        //convert into dto
+        for (Map.Entry<String, Integer> entry : m.entrySet()) {
+            group.add(
+                    new BookCategoryDTO(
+                            entry.getKey(),    // genre
+                            entry.getValue()   // count
+                    )
+            );
+        }
+        return group;
     }
 
     public AdminReportsOverview getReportsOverview(){
