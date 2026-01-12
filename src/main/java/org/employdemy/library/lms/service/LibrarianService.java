@@ -274,6 +274,7 @@ public class LibrarianService {
                     dto.setTotalBorrowed(transactionRepository.countByUser_IdAndReturnedAtIsNotNull(u.getId()));
                     dto.setOverdue(transactionRepository.countOverdueByUser(u.getId(),LocalDate.now()));
                     dto.setStatus(u.isActive()?"Active":"Not Active");
+                    dto.setRole(u.getRole());
 
                     return dto;
                 })

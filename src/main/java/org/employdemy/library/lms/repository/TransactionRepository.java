@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -177,5 +178,16 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 """)
     long countOverdueByUser(@Param("userId") Long userId,
                             @Param("today") LocalDate today);
+
+    @Query("""
+SELECT t
+FROM Transaction t
+WHERE t.borrowedAt >= :fromDate
+  AND t.borrowedAt IS NOT NULL
+""")
+    List<Transaction> countBorrowedBooksFromDate(
+            @Param("fromDate") LocalDate fromDate
+    );
+
 
 }

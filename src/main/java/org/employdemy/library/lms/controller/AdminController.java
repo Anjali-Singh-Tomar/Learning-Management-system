@@ -1,9 +1,7 @@
 package org.employdemy.library.lms.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.employdemy.library.lms.dto.AdminManageUsersDTO;
-import org.employdemy.library.lms.dto.ApiResponse;
-import org.employdemy.library.lms.dto.RecommendedBookDTO;
+import org.employdemy.library.lms.dto.*;
 import org.employdemy.library.lms.service.AdminService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -62,6 +60,30 @@ public class AdminController {
                         HttpStatus.OK.value(),
                         "All the users are fetched successfully",
                         adminService.getManageUsers()
+                )
+        );
+    }
+
+    @GetMapping("/searchAllMembers")
+    public ResponseEntity<ApiResponse<List<ManageMembersDTO>>> searchAllMembers(@RequestParam String keyword){
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ApiResponse.success(
+                        HttpStatus.OK.value(),
+                        "Member Found",
+                        adminService.getSearchMembers(keyword)
+                )
+        );
+    }
+
+    @GetMapping("/borrower-activity-graph")
+    public ResponseEntity<ApiResponse<List<BorrowerActivityDTO>>> borrowerActivity(){
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ApiResponse.success(
+                        HttpStatus.OK.value(),
+                        "Graph Data Retrieved",
+                        adminService.getBorrowerGraph()
                 )
         );
     }

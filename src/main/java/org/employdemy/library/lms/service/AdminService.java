@@ -1,10 +1,7 @@
 package org.employdemy.library.lms.service;
 
 import lombok.RequiredArgsConstructor;
-import org.employdemy.library.lms.dto.AdminManageUsersDTO;
-import org.employdemy.library.lms.dto.AdminOverviewResponse;
-import org.employdemy.library.lms.dto.DueSoonResponseDTO;
-import org.employdemy.library.lms.dto.OverdueRecordDTO;
+import org.employdemy.library.lms.dto.*;
 import org.employdemy.library.lms.model.Role;
 import org.employdemy.library.lms.model.Transaction;
 import org.employdemy.library.lms.model.TransactionStatus;
@@ -16,7 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.time.YearMonth;
+import java.time.format.TextStyle;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -100,6 +100,67 @@ public class AdminService {
                     return dto;
                 })
                 .toList();
+    }
+
+    public List<ManageMembersDTO> getSearchMembers(String keyword){
+
+        List<User> users=userRepository.searchAllUsers(keyword);
+
+        return users.stream()
+                .map(u->{
+                    ManageMembersDTO dto=new ManageMembersDTO();
+                    dto.setId(u.getId());
+                    dto.setMemberName(u.getName());
+                    dto.setMemberId(u.getEmpId());
+                    dto.setMemberEmail(u.getEmail());
+                    dto.setJoiningDate(u.getJoiningDate());
+                    dto.setBorrowedCount(transactionRepository.countByUser_IdAndReturnedAtIsNull(u.getId()));
+                    dto.setTotalBorrowed(transactionRepository.countByUser_IdAndReturnedAtIsNotNull(u.getId()));
+                    dto.setOverdue(transactionRepository.countOverdueByUser(u.getId(),LocalDate.now()));
+                    dto.setStatus(u.isActive()?"Active":"Not Active");
+                    dto.setRole(u.getRole());
+
+                    return dto;
+                })
+                .toList();
+    }
+
+    public List<BorrowerActivityDTO> getBorrowerGraph(){
+
+            YearMonth endMonth = YearMonth.now().minusMonths(1); // last completed month
+            YearMonth startMonth = endMonth.minusMonths(5);
+
+            LocalDate fromDate = startMonth.atDay(1);
+
+            List<Transaction> data =
+                    transactionRepository.countBorrowedBooksFromDate(fromDate);
+
+            Map<YearMonth, Integer> dbMap = new HashMap<>();
+            for (Transaction t : data) {
+                LocalDate borrowedAt = t.getBorrowedAt();
+                if (borrowedAt == null) {
+                    continue;
+                }
+                YearMonth yearMonth = YearMonth.from(borrowedAt);
+                dbMap.put(
+                        yearMonth,
+                        dbMap.getOrDefault(yearMonth, 0) + 1
+                );
+            }
+
+            List<BorrowerActivityDTO> result = new ArrayList<>();
+
+            for (int i = 0; i < 6; i++) {
+                YearMonth ym = startMonth.plusMonths(i);
+                int count = dbMap.getOrDefault(ym, 0);
+
+                String label = ym.getMonth()
+                        .getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
+
+                result.add(new BorrowerActivityDTO(label, count));
+            }
+            return result;
+
     }
 }
 

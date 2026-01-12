@@ -3,6 +3,7 @@ package org.employdemy.library.lms.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.employdemy.library.lms.model.Role;
 
 import java.time.LocalDate;
 
@@ -20,4 +21,5 @@ public class ManageMembersDTO {
     private Long totalBorrowed;
     private Long overdue;
     private String status;
+    private Role role;
 }
