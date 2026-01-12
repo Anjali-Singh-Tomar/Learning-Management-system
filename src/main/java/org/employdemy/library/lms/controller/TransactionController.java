@@ -5,6 +5,7 @@ import org.employdemy.library.lms.dto.TransactionRequestDTO;
 import org.employdemy.library.lms.dto.TransactionResponseDTO;
 import org.employdemy.library.lms.model.TransactionStatus;
 import org.employdemy.library.lms.service.TransactionService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -74,25 +75,15 @@ public class TransactionController {
             @PathVariable Long transactionId
             , @RequestBody(required = false) String reason) {
 
-        try{
-            String message=transactionService.declineBorrow(transactionId,reason);
+        String message=transactionService.declineBorrow(transactionId,reason);
 
-            return ResponseEntity.ok(
-                    ApiResponse.success(
-                            200,
-                            message,
-                            null
-                    )
-            );
-        }catch (Exception e){
-            return ResponseEntity.badRequest().body(
-                    ApiResponse.error(
-                            400,
-                            "Failed to decline borrow request",
-                            e.getMessage()
-                    )
-            );
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ApiResponse.success(
+                        200,
+                        "Borrow Declined Successfully",
+                        message
+                )
+        );
     }
 
     // --------------------------------------------------------------
@@ -140,29 +131,19 @@ public class TransactionController {
     // 1. DECLINE RETURN REQUEST
     // --------------------------------------------------------------
     @PostMapping("/decline/return/{transactionId}")
-    public ResponseEntity<ApiResponse<?>> declineReturn(
+    public ResponseEntity<ApiResponse<String>> declineReturn(
             @PathVariable Long transactionId,
             @RequestParam(required = false) String reason) {
 
-        try{
-            String message=transactionService.declineReturn(transactionId, reason);
+        String message=transactionService.declineReturn(transactionId, reason);
 
-            return ResponseEntity.ok(
-                    ApiResponse.success(
-                            200,
-                            message,
-                            null
-                    )
-            );
-        }catch (Exception e){
-            return ResponseEntity.badRequest().body(
-                    ApiResponse.error(
-                            400,
-                            "Failed to decline return request",
-                            e.getMessage()
-                    )
-            );
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ApiResponse.success(
+                        HttpStatus.OK.value(),
+                        "Return Declined Successfully",
+                        message
+                )
+        );
     }
 
 
@@ -247,24 +228,14 @@ public class TransactionController {
     @PostMapping("/{transactionId}/reminder")
     public ResponseEntity<ApiResponse<?>> sendReminder(@PathVariable Long transactionId) {
 
-        try{
-            String message =transactionService.sendReminder(transactionId);
-            return ResponseEntity.ok(
-                    ApiResponse.success(
-                            200,
-                            message,
-                            null
-                    )
-            );
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(
-                    ApiResponse.error(
-                            400,
-                            "failed to send reminder",
-                            e.getMessage()
-                    )
-            );
-        }
+        String message =transactionService.sendReminder(transactionId);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ApiResponse.success(
+                        HttpStatus.OK.value(),
+                        message,
+                        null
+                )
+        );
     }
 
 }
