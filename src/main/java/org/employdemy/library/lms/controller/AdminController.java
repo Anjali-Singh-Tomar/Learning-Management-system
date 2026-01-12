@@ -64,7 +64,7 @@ public class AdminController {
         );
     }
 
-    @GetMapping("/searchAllMembers")
+    @GetMapping("/sidebar/users/searchAllMembers")
     public ResponseEntity<ApiResponse<List<ManageMembersDTO>>> searchAllMembers(@RequestParam String keyword){
 
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -76,14 +76,50 @@ public class AdminController {
         );
     }
 
-    @GetMapping("/borrower-activity-graph")
-    public ResponseEntity<ApiResponse<List<BorrowerActivityDTO>>> borrowerActivity(){
+    @GetMapping("/dashboard/borrower-activity-graph")
+    public ResponseEntity<ApiResponse<List<ReportActivityDTO>>> borrowerActivity(){
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 ApiResponse.success(
                         HttpStatus.OK.value(),
                         "Graph Data Retrieved",
                         adminService.getBorrowerGraph()
+                )
+        );
+    }
+
+    @GetMapping("/dashboard/member-graph")
+    public ResponseEntity<ApiResponse<List<ReportActivityDTO>>> memberGraph(){
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ApiResponse.success(
+                        HttpStatus.OK.value(),
+                        "Graph Data Retrieved",
+                        adminService.getMemberGraph()
+                )
+        );
+    }
+
+    @GetMapping("/reports/monthly-activity")
+    public ResponseEntity<ApiResponse<List<MonthlyActivityDTO>>> monthlyActivity(){
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ApiResponse.success(
+                        HttpStatus.OK.value(),
+                        "Graph Data Retrieved",
+                        adminService.getBorrowReturnGraph()
+                )
+        );
+    }
+
+    @GetMapping("/reports/book-category")
+    public ResponseEntity<ApiResponse<List<BookCategoryDTO>>> getBookByCategory(){
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ApiResponse.success(
+                        HttpStatus.OK.value(),
+                        "Book Category chart fetched",
+                        adminService.getBookByCategory()
                 )
         );
     }
