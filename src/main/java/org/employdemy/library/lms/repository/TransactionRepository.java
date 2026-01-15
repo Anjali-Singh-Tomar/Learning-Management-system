@@ -31,20 +31,25 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 
 
     // 1. Current borrowed books (not returned)
-    long countByUser_IdAndReturnedAtIsNull(Long userId);
+    long countByUser_IdAndBorrowedAtIsNotNullAndReturnedAtIsNull(Long userId);
 
     // 2. Books user has already read (returned)
     long countByUser_IdAndReturnedAtIsNotNull(Long userId);
 
     // 3. Items due soon (next 5 days)
     @Query("""
-        SELECT COUNT(t)
-        FROM Transaction t
-        WHERE t.user.id = :userId
-          AND t.returnedAt IS NULL
-          AND t.dueDate BETWEEN :today AND :fiveDays
-    """)
-    long countDueSoon(Long userId, LocalDate today, LocalDate fiveDays);
+    SELECT COUNT(t)
+    FROM Transaction t
+    WHERE t.user.id = :userId
+      AND t.borrowedAt IS NOT NULL
+      AND t.returnedAt IS NULL
+      AND t.dueDate BETWEEN :today AND :fiveDays
+""")
+    long countDueSoon(
+            @Param("userId") Long userId,
+            @Param("today") LocalDate today,
+            @Param("fiveDays") LocalDate fiveDays
+    );
 
     // 4. List of currently borrowed books by a user
     @Query("""

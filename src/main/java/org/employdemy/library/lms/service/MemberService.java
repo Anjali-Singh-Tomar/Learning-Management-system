@@ -32,7 +32,7 @@ public class MemberService {
     private final UserMapper userMapper;
 
     public MemberDashboardResponseDTO getMemberOverview(Long memberId){
-        long currentlyBorrowed= transactionRepository.countByUser_IdAndReturnedAtIsNull(memberId);
+        long currentlyBorrowed= transactionRepository.countByUser_IdAndBorrowedAtIsNotNullAndReturnedAtIsNull(memberId);
         long booksRead=transactionRepository.countByUser_IdAndReturnedAtIsNotNull(memberId);
 
         long dueSoon;
