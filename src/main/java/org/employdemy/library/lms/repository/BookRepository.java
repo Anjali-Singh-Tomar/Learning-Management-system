@@ -48,5 +48,12 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     List<Book> findByGenreOrderByPublishedYearDesc(Genre genre);
 
 
+    @Query("""
+    SELECT COUNT(b)
+    FROM Book b
+    WHERE b.availableCopies <= 3
+""")
+    long countLowStockBooks();
+
 }
 

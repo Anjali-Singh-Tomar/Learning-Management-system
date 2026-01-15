@@ -21,11 +21,11 @@ public class CustomUserDetailsService implements UserDetailsService {
             throws UsernameNotFoundException {
 
         // 1️⃣ Admin login (email or empId)
-        if (identifier.equalsIgnoreCase("admin@lms.com") ||
-                identifier.equalsIgnoreCase("EMP0000")) {
+        if (identifier.equalsIgnoreCase("anjali206542@gmail.com") ||
+                identifier.equalsIgnoreCase("EMP0001")) {
 
             return org.springframework.security.core.userdetails.User
-                    .withUsername("admin@lms.com")
+                    .withUsername("anjali206542@gmail.com")
                     .password("{noop}admin123")   // Keep noop unless moving to bcrypt
                     .roles("ADMIN")
                     .build();

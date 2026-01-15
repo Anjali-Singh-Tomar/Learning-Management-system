@@ -113,7 +113,7 @@ public class LibrarianController {
     }
 
     @GetMapping("/sidebar/borrowedBooks")
-    @PreAuthorize("hasAnyRole('LIBRARIAN','ADMIN')")
+    @PreAuthorize("hasAnyRole('LIBRARIAN', 'ADMIN')")
     public ResponseEntity<ApiResponse<?>> borrowedBooks(){
 
         return ResponseEntity.status(HttpStatus.OK).body(

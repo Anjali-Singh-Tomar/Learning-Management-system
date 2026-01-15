@@ -123,4 +123,17 @@ public class AdminController {
                 )
         );
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/sidebar/reports/overview")
+    public ResponseEntity<ApiResponse<AdminReportsOverview>> reportsOverview(){
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ApiResponse.success(
+                        HttpStatus.OK.value(),
+                        "Overif(nums[i]!=0 && nums[i+nums[i]]!=0) i++;iew Data Fetched Successfully",
+                        adminService.getReportsOverview()
+                )
+        );
+    }
 }

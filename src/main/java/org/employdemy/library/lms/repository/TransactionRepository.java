@@ -196,4 +196,27 @@ WHERE t.borrowedAt >= :fromDate
 """)
     List<Long> findRecommendedBookIds();
 
+
+    @Query("""
+    SELECT COUNT(t)
+    FROM Transaction t
+    WHERE t.borrowedAt BETWEEN :startDate AND :endDate
+""")
+    long countBorrowedBooksLastMonth(
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
+
+
+    @Query("""
+    SELECT COUNT(u)
+    FROM User u
+    WHERE u.role = 'MEMBER'
+      AND u.joiningDate >= :lastMonthDate
+""")
+    long countMembersJoinedSinceLastMonth(
+            @Param("lastMonthDate") LocalDate lastMonthDate
+    );
+
+
 }

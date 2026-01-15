@@ -14,6 +14,8 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class AdminManageUsersDTO {
 
+
+    private Long userId;
     private String userName;
     private String userEmail;
     private LocalDate joinDate;
