@@ -105,11 +105,11 @@ public class UserService {
 
         User user=userRepository.findById(userId).orElseThrow(()->new ResourceNotFoundException("User does not exist with id "+userId));
 
-        if(active.equals(true) && user.isActive()==true){
+        if(active.equals(true) && user.isActive()){
             return "User is already in active state";
-        }else if (active.equals(false) && user.isActive()==false){
+        }else if (active.equals(false) && !user.isActive()){
             return "User is already in Inactive state";
-        }else if(active.equals(false) && user.isActive()==true){
+        }else if(active.equals(false) && user.isActive()){
             user.setActive(false);
             userRepository.save(user);
             return "User is successfully Deactivated";
