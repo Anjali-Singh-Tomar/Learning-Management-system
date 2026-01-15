@@ -7,6 +7,8 @@ import org.employdemy.library.lms.dto.UserUpdateDTO;
 import org.employdemy.library.lms.exception.ResourceNotFoundException;
 import org.employdemy.library.lms.mapper.UserMapper;
 import org.employdemy.library.lms.model.NotificationSettings;
+import org.employdemy.library.lms.model.NotificationType;
+import org.employdemy.library.lms.model.Role;
 import org.employdemy.library.lms.model.User;
 import org.employdemy.library.lms.repository.NotificationSettingRepository;
 import org.employdemy.library.lms.repository.TransactionRepository;
@@ -24,15 +26,35 @@ public class UserService {
     private final UserMapper userMapper;
     private final TransactionRepository transactionRepository;
     private final NotificationSettingRepository notificationSettingRepository;
+    private final NotificationService notificationService;
 
 
     public UserResponseDTO createUser(UserRequestDTO dto) {
         User saved = userRepository.save(userMapper.toEntity(dto));
 
+        //send notification to librarians about the new user
+        List<User> librarian = userRepository.findByRole(Role.LIBRARIAN);
+
+        for (User m : librarian) {
+                notificationService.sendNotification(
+                        m.getId(),
+                        "New User Added",
+                        "A new User '" + saved.getName() + "' has been added.",
+                        NotificationType.NEW_USER
+                );
+        }
         //create a notification setting for the user created
         NotificationSettings notificationSettings=new NotificationSettings(saved
                                         ,true,true,true);
         notificationSettingRepository.save(notificationSettings);
+
+        //send a welcome mail to new user
+        notificationService.sendNotification(
+                saved.getId(),
+                "Welcome "+saved.getName(),
+                "Welcome to our Library " + saved.getName() + ", enlighten yourself with books.",
+                NotificationType.NEW_USER
+        );
 
         return userMapper.toDTO(saved);
     }
@@ -83,11 +105,11 @@ public class UserService {
 
         User user=userRepository.findById(userId).orElseThrow(()->new ResourceNotFoundException("User does not exist with id "+userId));
 
-        if(active.equals(true) && user.isActive()==true){
+        if(active.equals(true) && user.isActive()){
             return "User is already in active state";
-        }else if (active.equals(false) && user.isActive()==false){
+        }else if (active.equals(false) && !user.isActive()){
             return "User is already in Inactive state";
-        }else if(active.equals(false) && user.isActive()==true){
+        }else if(active.equals(false) && user.isActive()){
             user.setActive(false);
             userRepository.save(user);
             return "User is successfully Deactivated";
