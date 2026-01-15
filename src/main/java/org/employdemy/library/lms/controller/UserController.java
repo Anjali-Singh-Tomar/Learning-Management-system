@@ -1,9 +1,7 @@
 package org.employdemy.library.lms.controller;
 
-import jakarta.annotation.security.PermitAll;
 import org.employdemy.library.lms.dto.ApiResponse;
 import org.employdemy.library.lms.dto.UserRequestDTO;
-import org.employdemy.library.lms.dto.UserResponseDTO;
 import org.employdemy.library.lms.dto.UserUpdateDTO;
 import org.employdemy.library.lms.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +9,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
-import java.util.List;
 import java.util.Map;
 
 @RestController
