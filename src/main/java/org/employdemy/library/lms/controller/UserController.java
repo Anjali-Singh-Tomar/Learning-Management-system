@@ -69,6 +69,7 @@ public class UserController {
     // ---------------------------------------------------------
     // UPDATE USER BY ID
     // ---------------------------------------------------------
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(
             @PathVariable Long id,
