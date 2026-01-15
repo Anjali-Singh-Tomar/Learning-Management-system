@@ -40,8 +40,6 @@ public class MemberService {
             dueSoon= transactionRepository.countDueSoon(memberId, LocalDate.now(),LocalDate.now().plusDays(5));
         } else dueSoon=0L;
 
-        List<Transaction> transactions = transactionRepository.findOverdueTransactions();
-
         return new MemberDashboardResponseDTO(
                 currentlyBorrowed,
                 booksRead,
@@ -49,11 +47,18 @@ public class MemberService {
         );
     }
 
-    public List<RecommendedBookDTO> getRecommendedBooks(Long memberId) {
+    public List<RecommendedBookDTO> getRecommendedBooks() {
 
-        // Fetch only IDs from JPQL — no LOBs touched
-        List<Long> bookIds = bookRepository.findRecommendedBookIds(memberId);
-
+        List<Long> bookIds;
+        // Fetch only IDs from JPQL — no LOBs touched-- fetch the most borrowed book to least borrowed book
+        List<Long> mostBorrowed = transactionRepository.findRecommendedBookIds();
+        // If there is no transaction recommendation will fetch according to publish year latest to oldest
+        if(mostBorrowed.isEmpty()){
+            bookIds=bookRepository.findRecommendedBookIds();
+        }
+        else{
+            bookIds=mostBorrowed;
+        }
         return bookIds.stream()
                 .map(id -> bookRepository.findById(id).orElse(null))
                 .filter(book -> book != null)

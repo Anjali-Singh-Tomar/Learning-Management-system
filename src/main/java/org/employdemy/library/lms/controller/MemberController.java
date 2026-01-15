@@ -40,8 +40,9 @@ public class MemberController {
     @PreAuthorize("hasRole('MEMBER')")
     @GetMapping("/dashboard/{memberId}/recommendedbooks")
     public ResponseEntity<?> getRecommendedBooks(@PathVariable Long memberId) {
+        // not specific to user no need for memberId
         try {
-            List<RecommendedBookDTO> books = memberService.getRecommendedBooks(memberId);
+            List<RecommendedBookDTO> books = memberService.getRecommendedBooks();
 
             if (books == null || books.isEmpty()) {
                 return ResponseEntity.ok(Map.of("message", "No recommendations available"));
