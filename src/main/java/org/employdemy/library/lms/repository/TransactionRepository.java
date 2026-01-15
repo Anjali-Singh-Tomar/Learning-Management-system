@@ -46,7 +46,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     """)
     long countDueSoon(Long userId, LocalDate today, LocalDate fiveDays);
 
-    // 4. List of currently borrowed books by an user
+    // 4. List of currently borrowed books by a user
     @Query("""
     SELECT t
     FROM Transaction t
@@ -188,5 +188,12 @@ WHERE t.borrowedAt >= :fromDate
             @Param("fromDate") LocalDate fromDate
     );
 
+    @Query("""
+     SELECT t.book.id
+       FROM Transaction t
+       GROUP BY t.book.id
+       ORDER BY COUNT(t) DESC
+""")
+    List<Long> findRecommendedBookIds();
 
 }

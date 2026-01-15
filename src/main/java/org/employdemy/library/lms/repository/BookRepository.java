@@ -43,7 +43,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     WHERE b.active = true
     ORDER BY b.publishedYear DESC
 """)
-    List<Long> findRecommendedBookIds(Long userId);
+    List<Long> findRecommendedBookIds();
 
 
     List<Book> findByGenreOrderByPublishedYearDesc(Genre genre);
