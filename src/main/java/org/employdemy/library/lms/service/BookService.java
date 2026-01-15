@@ -49,6 +49,7 @@ public class BookService {
 
         List<User> members = userRepository.findByRole(Role.MEMBER);
 
+        List<User> admin = userRepository.findByRole(Role.ADMIN);
 
         for (User m : members) {
             NotificationSettings ns =
@@ -63,6 +64,21 @@ public class BookService {
                 );
             }
         }
+
+        for (User m : admin) {
+            NotificationSettings ns =
+                    notificationSettingsRepository.findById(m.getId())
+                            .orElseThrow(() -> new RuntimeException("NotificationSettings not found"));
+            if(ns.getNewBooksReminder()) {
+                notificationService.sendNotification(
+                        m.getId(),
+                        "New Book Added",
+                        "A new book '" + savedBook.getTitle() + "' has been added.",
+                        NotificationType.NEW_BOOK
+                );
+            }
+        }
+
         // Convert back Entity → ResponseDTO
         return bookMapper.toDTO(savedBook);
     }
