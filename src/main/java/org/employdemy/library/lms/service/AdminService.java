@@ -91,9 +91,9 @@ public class AdminService {
         return users.stream()
                 .map(u->{
                     AdminManageUsersDTO dto=new AdminManageUsersDTO();
-                    dto.setUserId(u.getId());
-                    dto.setUserName(u.getName());
-                    dto.setUserEmail(u.getEmail());
+                    dto.setId(u.getId());
+                    dto.setName(u.getName());
+                    dto.setEmail(u.getEmail());
                     dto.setJoinDate(u.getJoiningDate());
                     dto.setRole(u.getRole());
                     dto.setStatus(u.isActive()?"Active":"Not Active");

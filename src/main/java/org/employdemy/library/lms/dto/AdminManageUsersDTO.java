@@ -15,9 +15,9 @@ import java.time.LocalDate;
 public class AdminManageUsersDTO {
 
 
-    private Long userId;
-    private String userName;
-    private String userEmail;
+    private Long id;
+    private String name;
+    private String email;
     private LocalDate joinDate;
 
     private Role role;
