@@ -33,6 +33,7 @@ public class UserController {
     public ResponseEntity<?> createUser(@Valid @RequestBody UserRequestDTO dto) {
         try {
             return ResponseEntity.ok(userService.createUser(dto));
+
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of(
                     "error", e.getMessage()

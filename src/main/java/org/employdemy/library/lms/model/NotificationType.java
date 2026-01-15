@@ -6,6 +6,7 @@ public enum NotificationType {
     DECLINE,
     RENEW,
     NEW_BOOK,
+    NEW_USER,
     REMINDER,
     ISSUE    //FOR ISSUE BOOK BY LIBRARIAN
 
