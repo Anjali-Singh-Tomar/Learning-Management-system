@@ -15,7 +15,7 @@ public class UserUpdateDTO {
     @Email
     @Pattern(
             regexp = "^[A-Za-z0-9._%+-]+@(employdemy\\.com|gmail\\.com)$",
-            message = "Email must end with @employdemy.com"
+            message = "Email must end with @employdemy.com or @gmail.com"
 
     )
     private String email;

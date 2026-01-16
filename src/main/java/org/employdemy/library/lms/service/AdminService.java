@@ -114,7 +114,7 @@ public class AdminService {
                     dto.setMemberId(u.getEmpId());
                     dto.setMemberEmail(u.getEmail());
                     dto.setJoiningDate(u.getJoiningDate());
-                    dto.setBorrowedCount(transactionRepository.countByUser_IdAndReturnedAtIsNull(u.getId()));
+                    dto.setBorrowedCount(transactionRepository.countByUser_IdAndBorrowedAtIsNotNullAndReturnedAtIsNull(u.getId()));
                     dto.setTotalBorrowed(transactionRepository.countByUser_IdAndReturnedAtIsNotNull(u.getId()));
                     dto.setOverdue(transactionRepository.countOverdueByUser(u.getId(),LocalDate.now()));
                     dto.setStatus(u.isActive()?"Active":"Not Active");
