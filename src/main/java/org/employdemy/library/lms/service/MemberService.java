@@ -42,8 +42,8 @@ public class MemberService {
 
         return new MemberDashboardResponseDTO(
                 currentlyBorrowed,
-                booksRead,
-                dueSoon
+                dueSoon,
+                booksRead
         );
     }
 
