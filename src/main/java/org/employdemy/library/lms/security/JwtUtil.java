@@ -13,7 +13,7 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    private static final String SECRET = "supersecretjwtkeysupersecretjwtkey123"; // 32+ chars
+    private static final String SECRET = "zistarosupersecretjwtkeysupersecretjwtkey123"; // 32+ chars
     private static final long EXPIRATION_MS = 1000 * 60 * 60 * 10; // 10 hours
 
     private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());

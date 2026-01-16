@@ -15,7 +15,7 @@ public class EmailService {
     public void sendOtp(String toEmail, String otp) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(toEmail);
-        message.setSubject("Your LMS Login OTP");
+        message.setSubject("Zistaro's Castle Login OTP");
         message.setText("Your OTP is: " + otp + " (valid for 5 minutes)");
         mailSender.send(message);
     }
@@ -27,6 +27,7 @@ public class EmailService {
         message.setTo(to);
         message.setSubject(subject);
         message.setText(body);
+
 
         mailSender.send(message);
     }
