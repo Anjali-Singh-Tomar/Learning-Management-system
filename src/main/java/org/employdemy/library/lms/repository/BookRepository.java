@@ -55,5 +55,14 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 """)
     long countLowStockBooks();
 
+    @Query("""
+    SELECT b.genre, COUNT(t.id)
+      FROM Transaction t
+      JOIN t.book b
+      GROUP BY b.genre
+      ORDER BY b.genre
+""")
+    List<Object[]> findCountOfBooksByCategory();
+
 }
 

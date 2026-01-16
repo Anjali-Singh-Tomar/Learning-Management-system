@@ -2,7 +2,7 @@ package org.employdemy.library.lms.service;
 
 import lombok.RequiredArgsConstructor;
 import org.employdemy.library.lms.dto.*;
-import org.employdemy.library.lms.model.Book;
+import org.employdemy.library.lms.model.Genre;
 import org.employdemy.library.lms.model.Transaction;
 import org.employdemy.library.lms.model.TransactionStatus;
 import org.employdemy.library.lms.model.User;
@@ -247,29 +247,13 @@ public class AdminService {
 
     public List<BookCategoryDTO> getBookByCategory(){
 
-        List<Book> books=bookRepository.findAll();
-
-        // get the data
-        Map<String, Integer> m=new HashMap<>();
-        for(Book b:books){
-            String genre =b.getGenre().toString();
-            m.put(
-                    genre,
-                    m.getOrDefault(genre, 0) + 1
-            );
-        }
-
-        List<BookCategoryDTO> group = new ArrayList<>();
-        //convert into dto
-        for (Map.Entry<String, Integer> entry : m.entrySet()) {
-            group.add(
-                    new BookCategoryDTO(
-                            entry.getKey(),    // genre
-                            entry.getValue()   // count
-                    )
-            );
-        }
-        return group;
+        return bookRepository.findCountOfBooksByCategory()
+                .stream()
+                .map(row -> new BookCategoryDTO(
+                        (Genre) row[0],
+                        (Long) row[1]
+                ))
+                .toList();
     }
 
     public AdminReportsOverview getReportsOverview(){
