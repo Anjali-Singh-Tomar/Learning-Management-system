@@ -4,6 +4,16 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+src/main/java/org/employdemy/library/lms/config/SecurityConfig.java
+src/main/java/org/employdemy/library/lms/security
+
+# Environment / secrets
+.env
+*.env
+application.properties
+application.yml
+application-*.yml
+
 ### STS ###
 .apt_generated
 .classpath
