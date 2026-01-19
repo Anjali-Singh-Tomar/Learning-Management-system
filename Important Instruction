@@ -1,0 +1,11 @@
+These files are not included in te public repository for security purpose, it should be added to run the application:
+
+src/main/java/org/employdemy/library/lms/config/SecurityConfig.java
+  -this is a java file including all the security configurations to be included in config folder.
+src/main/java/org/employdemy/library/lms/security
+  -this is a folder which consist of five java files CustomJwtEntryPoint, CustomUserDetails, CustomUserDetailsService, JwtAuthenticationFilter and JwtUtil
+  -included for jwt token generation and authentication in application
+src/main/resources/application.properties
+  -this includes all the important connection details needs to be connected to database, and admin email.
+
+----Kindly contact for the files.
