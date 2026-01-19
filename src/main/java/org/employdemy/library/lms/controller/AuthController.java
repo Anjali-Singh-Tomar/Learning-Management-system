@@ -167,44 +167,44 @@ public class AuthController {
     }
 
     //TODO: Modification needed for temporary token
-    @PostMapping("/change-pwd/verify-otp")
-    public ResponseEntity<ApiResponse<?>> verifyOtpForChangePwd(@RequestBody Map<String, String> request) {
-
-        String identifier = request.get("identifier");
-        String otp = request.get("otp");
-
-        Role role;
-        boolean valid = otpStore.verifyOtp(identifier, otp);
-        if (identifier.equalsIgnoreCase(ADMIN_EMAIL) || identifier.equalsIgnoreCase(ADMIN_EMPID)) {
-            role = Role.ADMIN;
-        } else {
-
-            // Normal user
-            User user = userRepository.findByEmail(identifier)
-                    .orElseGet(() -> userRepository.findByEmpId(identifier).orElse(null));
-            role = user.getRole();
-        }
-
-        // CREATE JWT TOKEN
-        String token = jwtUtil.generateToken(identifier, role);
-
-        if (!valid)
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-                    ApiResponse.error(
-                            HttpStatus.UNAUTHORIZED.value(),
-                            "Invalid or Expired OTP",
-                            token
-                    )
-            );
-
-        return ResponseEntity.status(HttpStatus.OK).body(
-                ApiResponse.success(
-                        HttpStatus.OK.value(),
-                        "Verified Succesfully",
-                        token
-                )
-        );
-    }
+//    @PostMapping("/change-pwd/verify-otp")
+//    public ResponseEntity<ApiResponse<?>> verifyOtpForChangePwd(@RequestBody Map<String, String> request) {
+//
+//        String identifier = request.get("identifier");
+//        String otp = request.get("otp");
+//
+//        Role role;
+//        boolean valid = otpStore.verifyOtp(identifier, otp);
+//        if (identifier.equalsIgnoreCase(ADMIN_EMAIL) || identifier.equalsIgnoreCase(ADMIN_EMPID)) {
+//            role = Role.ADMIN;
+//        } else {
+//
+//            // Normal user
+//            User user = userRepository.findByEmail(identifier)
+//                    .orElseGet(() -> userRepository.findByEmpId(identifier).orElse(null));
+//            role = user.getRole();
+//        }
+//
+//        // CREATE JWT TOKEN
+//        String token = jwtUtil.generateToken(identifier, role);
+//
+//        if (!valid)
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+//                    ApiResponse.error(
+//                            HttpStatus.UNAUTHORIZED.value(),
+//                            "Invalid or Expired OTP",
+//                            token
+//                    )
+//            );
+//
+//        return ResponseEntity.status(HttpStatus.OK).body(
+//                ApiResponse.success(
+//                        HttpStatus.OK.value(),
+//                        "Verified Succesfully",
+//                        token
+//                )
+//        );
+//    }
 
 
     @PostMapping("/resend-otp")
