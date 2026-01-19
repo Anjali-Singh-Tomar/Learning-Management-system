@@ -160,5 +160,24 @@ public class MemberService {
 
 
     }
+
+    //TODO: Modification needed for temporary token
+    public void forgotPassword(Long userId, String newPwd){
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+
+        if(passwordEncoder.matches(newPwd, user.getPassword())){
+            throw new RuntimeException("New Password is same as the Old Password");
+        }
+
+        else{
+            User updatedUser=userMapper.changePassword(user, newPwd);
+            userRepository.save(updatedUser);
+        }
+
+
+    }
 }
 

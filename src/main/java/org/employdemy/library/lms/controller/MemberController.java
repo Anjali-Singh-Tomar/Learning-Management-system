@@ -121,4 +121,25 @@ public class MemberController {
         );
 
     }
+
+
+    //TODO: change the token to temporary token which has validity for few minutes no login
+
+    @PreAuthorize("hasAnyRole('MEMBER', 'LIBRARIAN','ADMIN')")
+    @PutMapping("/{id}/change-password-forgot")
+    public ResponseEntity<ApiResponse<Void>> forgotPassword(
+            @PathVariable Long id,
+            @RequestBody String  newPwd){
+
+        memberService.forgotPassword(id,newPwd);
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ApiResponse.success(
+                        HttpStatus.OK.value(),
+                        "Password has been changed Successfully",
+                        null
+                )
+        );
+
+    }
 }
